@@ -14,14 +14,66 @@ using System.Windows.Shapes;
 
 namespace lab4_task3
 {
-    /// <summary>
-    /// Interaction logic for ViewWindow.xaml
-    /// </summary>
     public partial class ViewWindow : Window
     {
         public ViewWindow()
         {
             InitializeComponent();
+            UpdateCount();
+        }
+
+        private void BtnBack_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
+
+        private void Filter_Changed(object sender, EventArgs e)
+        {
+            UpdateCount();
+        }
+
+        private void BtnResetFilters_Click(object sender, RoutedEventArgs e)
+        {
+            FilterCbPryznachennya.SelectedIndex = 0;
+            FilterTxtOwner.Clear();
+            FilterTxtMinValue.Clear();
+            FilterTxtMaxValue.Clear();
+            UpdateCount();
+        }
+
+        private void LbDilyanky_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            bool hasSelection = LbDilyanky.SelectedItem != null;
+            BtnDetails.IsEnabled = hasSelection;
+            BtnEdit.IsEnabled = hasSelection;
+            BtnMap.IsEnabled = hasSelection;
+        }
+
+        private void UpdateCount()
+        {
+            if (ResultCountText != null && LbDilyanky != null)
+            {
+                ResultCountText.Text = $"Знайдено: {LbDilyanky.Items.Count}";
+            }
+        }
+
+        private void BtnDetails_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("Відкриття деталей...");
+        }
+
+        private void BtnEdit_Click(object sender, RoutedEventArgs e)
+        {
+            var editWin = new AddEditWindow();
+            editWin.Owner = this;
+            editWin.ShowDialog();
+        }
+
+        private void BtnMap_Click(object sender, RoutedEventArgs e)
+        {
+            var mapWin = new VisualizationWindow();
+            mapWin.Owner = this;
+            mapWin.ShowDialog();
         }
     }
 }

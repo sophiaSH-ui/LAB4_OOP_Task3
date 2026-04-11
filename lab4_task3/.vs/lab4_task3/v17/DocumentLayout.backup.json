@@ -1,0 +1,45 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|f:\\something\\lab4_oop_task3\\lab4_task3\\lab4_task3\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|solutionrelative:lab4_task3\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 1,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedHeight": 111,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MainWindow.xaml.cs",
+              "DocumentMoniker": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\MainWindow.xaml.cs",
+              "RelativeDocumentMoniker": "lab4_task3\\MainWindow.xaml.cs",
+              "ToolTip": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\MainWindow.xaml.cs",
+              "RelativeToolTip": "lab4_task3\\MainWindow.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-11T17:34:39.025Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

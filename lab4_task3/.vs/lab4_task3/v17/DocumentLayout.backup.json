@@ -3,8 +3,8 @@
   "WorkspaceRootPath": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|f:\\something\\lab4_oop_task3\\lab4_task3\\lab4_task3\\views\\viewwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|solutionrelative:lab4_task3\\views\\viewwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+      "AbsoluteMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|f:\\something\\lab4_oop_task3\\lab4_task3\\lab4_task3\\views\\addeditwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|solutionrelative:lab4_task3\\views\\addeditwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|f:\\something\\lab4_oop_task3\\lab4_task3\\lab4_task3\\views\\viewwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -15,12 +15,12 @@
       "RelativeMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|solutionrelative:lab4_task3\\views\\addeditwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|f:\\something\\lab4_oop_task3\\lab4_task3\\lab4_task3\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|solutionrelative:lab4_task3\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|f:\\something\\lab4_oop_task3\\lab4_task3\\lab4_task3\\views\\viewwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|solutionrelative:lab4_task3\\views\\viewwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|f:\\something\\lab4_oop_task3\\lab4_task3\\lab4_task3\\views\\addeditwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|solutionrelative:lab4_task3\\views\\addeditwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|f:\\something\\lab4_oop_task3\\lab4_task3\\lab4_task3\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|solutionrelative:lab4_task3\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|f:\\something\\lab4_oop_task3\\lab4_task3\\lab4_task3\\views\\visualizationwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -45,17 +45,9 @@
       "VerticalTabListWidth": 256,
       "DocumentGroups": [
         {
-          "DockedHeight": 111,
-          "SelectedChildIndex": 7,
+          "DockedHeight": 175,
+          "SelectedChildIndex": 2,
           "Children": [
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
-            },
             {
               "$type": "Document",
               "DocumentIndex": 5,
@@ -76,22 +68,23 @@
               "RelativeDocumentMoniker": "lab4_task3\\views\\ViewWindow.xaml.cs",
               "ToolTip": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\views\\ViewWindow.xaml.cs",
               "RelativeToolTip": "lab4_task3\\views\\ViewWindow.xaml.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAD4AAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAABsAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-11T19:22:06.743Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 0,
               "Title": "AddEditWindow.xaml.cs",
               "DocumentMoniker": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\views\\AddEditWindow.xaml.cs",
               "RelativeDocumentMoniker": "lab4_task3\\views\\AddEditWindow.xaml.cs",
               "ToolTip": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\views\\AddEditWindow.xaml.cs",
               "RelativeToolTip": "lab4_task3\\views\\AddEditWindow.xaml.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAABIAAAASAAAAAAAAAA==",
+              "ViewState": "AgIAADkAAAAAAAAAAAAkwFkAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-11T19:21:36.494Z"
+              "WhenOpened": "2026-04-11T19:21:36.494Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -111,15 +104,15 @@
               "Title": "AddEditWindow.xaml",
               "DocumentMoniker": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\views\\AddEditWindow.xaml",
               "RelativeDocumentMoniker": "lab4_task3\\views\\AddEditWindow.xaml",
-              "ToolTip": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\views\\AddEditWindow.xaml",
-              "RelativeToolTip": "lab4_task3\\views\\AddEditWindow.xaml",
+              "ToolTip": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\views\\AddEditWindow.xaml*",
+              "RelativeToolTip": "lab4_task3\\views\\AddEditWindow.xaml*",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
               "WhenOpened": "2026-04-11T19:04:09.002Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
               "Title": "ViewWindow.xaml",
               "DocumentMoniker": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\views\\ViewWindow.xaml",
               "RelativeDocumentMoniker": "lab4_task3\\views\\ViewWindow.xaml",
@@ -138,7 +131,8 @@
               "ToolTip": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\views\\VisualizationWindow.xaml",
               "RelativeToolTip": "lab4_task3\\views\\VisualizationWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-04-11T19:03:18.476Z"
+              "WhenOpened": "2026-04-11T19:03:18.476Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -149,11 +143,12 @@
               "ToolTip": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\MainWindow.xaml",
               "RelativeToolTip": "lab4_task3\\MainWindow.xaml",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-04-11T17:34:41.03Z"
+              "WhenOpened": "2026-04-11T17:34:41.03Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "MainWindow.xaml.cs",
               "DocumentMoniker": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\MainWindow.xaml.cs",
               "RelativeDocumentMoniker": "lab4_task3\\MainWindow.xaml.cs",
@@ -161,8 +156,21 @@
               "RelativeToolTip": "lab4_task3\\MainWindow.xaml.cs",
               "ViewState": "AgIAACYAAAAAAAAAAAAwwBkAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-11T17:34:39.025Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-04-11T17:34:39.025Z"
+            }
+          ]
+        },
+        {
+          "DockedHeight": 47,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
             }
           ]
         }

@@ -9,16 +9,29 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace lab4_task3
+namespace lab4_task3 // ПЕРЕВІР, ЩОБ ТУТ БУЛО lab4_task3
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+
+        private void BtnAdd_Click(object sender, RoutedEventArgs e)
+        {
+           
+        }
+
+        private void BtnView_Click(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
+        private void BtnExit_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown();
         }
     }
 }

@@ -7,7 +7,27 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="views\AddEditWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="views\ViewWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="views\VisualizationWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="MainWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="views\AddEditWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="views\ViewWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="views\VisualizationWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

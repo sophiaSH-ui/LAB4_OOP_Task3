@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "WY3Kr5ndJRQ=",
+  "dgSpecHash": "yh0F8M5crNI=",
   "success": true,
-  "projectFilePath": "D:\\OneDrive\\C#\\4 семестр\\Лабораторна 4\\Варіант 3\\lab4_task3\\lab4_task3\\lab4_task3.csproj",
+  "projectFilePath": "O:\\OneDrive\\C#\\4 семестр\\Лабораторна 4\\Варіант 3\\lab4_task3\\lab4_task3\\lab4_task3.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ArtikTheOnlyOne\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\9.0.0\\microsoft.extensions.dependencyinjection.abstractions.9.0.0.nupkg.sha512",
     "C:\\Users\\ArtikTheOnlyOne\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\9.0.0\\microsoft.extensions.logging.abstractions.9.0.0.nupkg.sha512",

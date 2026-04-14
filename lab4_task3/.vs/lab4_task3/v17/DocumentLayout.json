@@ -1,42 +1,26 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\",
+  "WorkspaceRootPath": "O:\\OneDrive\\C#\\4 \u0441\u0435\u043C\u0435\u0441\u0442\u0440\\\u041B\u0430\u0431\u043E\u0440\u0430\u0442\u043E\u0440\u043D\u0430 4\\\u0412\u0430\u0440\u0456\u0430\u043D\u0442 3\\lab4_task3\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|f:\\something\\lab4_oop_task3\\lab4_task3\\lab4_task3\\views\\addeditwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|solutionrelative:lab4_task3\\views\\addeditwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}|Solution Items{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}|O:\\OneDrive\\C#\\4 \u0441\u0435\u043C\u0435\u0441\u0442\u0440\\\u041B\u0430\u0431\u043E\u0440\u0430\u0442\u043E\u0440\u043D\u0430 4\\\u0412\u0430\u0440\u0456\u0430\u043D\u0442 3\\lab4_task3\\DTO.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}|Solution Items{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}|solutionrelative:DTO.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|f:\\something\\lab4_oop_task3\\lab4_task3\\lab4_task3\\views\\viewwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|solutionrelative:lab4_task3\\views\\viewwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|f:\\something\\lab4_oop_task3\\lab4_task3\\lab4_task3\\views\\addeditwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|solutionrelative:lab4_task3\\views\\addeditwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|f:\\something\\lab4_oop_task3\\lab4_task3\\lab4_task3\\views\\viewwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|solutionrelative:lab4_task3\\views\\viewwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|f:\\something\\lab4_oop_task3\\lab4_task3\\lab4_task3\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|solutionrelative:lab4_task3\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|f:\\something\\lab4_oop_task3\\lab4_task3\\lab4_task3\\views\\visualizationwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|o:\\onedrive\\c#\\4 \u0441\u0435\u043C\u0435\u0441\u0442\u0440\\\u043B\u0430\u0431\u043E\u0440\u0430\u0442\u043E\u0440\u043D\u0430 4\\\u0432\u0430\u0440\u0456\u0430\u043D\u0442 3\\lab4_task3\\lab4_task3\\views\\visualizationwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|solutionrelative:lab4_task3\\views\\visualizationwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|f:\\something\\lab4_oop_task3\\lab4_task3\\lab4_task3\\views\\visualizationwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|solutionrelative:lab4_task3\\views\\visualizationwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+      "AbsoluteMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|o:\\onedrive\\c#\\4 \u0441\u0435\u043C\u0435\u0441\u0442\u0440\\\u043B\u0430\u0431\u043E\u0440\u0430\u0442\u043E\u0440\u043D\u0430 4\\\u0432\u0430\u0440\u0456\u0430\u043D\u0442 3\\lab4_task3\\lab4_task3\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|solutionrelative:lab4_task3\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|f:\\something\\lab4_oop_task3\\lab4_task3\\lab4_task3\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|solutionrelative:lab4_task3\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+      "AbsoluteMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|o:\\onedrive\\c#\\4 \u0441\u0435\u043C\u0435\u0441\u0442\u0440\\\u043B\u0430\u0431\u043E\u0440\u0430\u0442\u043E\u0440\u043D\u0430 4\\\u0432\u0430\u0440\u0456\u0430\u043D\u0442 3\\lab4_task3\\lab4_task3\\views\\addeditwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|solutionrelative:lab4_task3\\views\\addeditwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|f:\\something\\lab4_oop_task3\\lab4_task3\\lab4_task3\\app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
-      "RelativeMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|solutionrelative:lab4_task3\\app.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+      "AbsoluteMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|o:\\onedrive\\c#\\4 \u0441\u0435\u043C\u0435\u0441\u0442\u0440\\\u043B\u0430\u0431\u043E\u0440\u0430\u0442\u043E\u0440\u043D\u0430 4\\\u0432\u0430\u0440\u0456\u0430\u043D\u0442 3\\lab4_task3\\lab4_task3\\views\\viewwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{43B9493F-A8E8-42BE-A77B-BD83CB160EC1}|lab4_task3\\lab4_task3.csproj|solutionrelative:lab4_task3\\views\\viewwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -46,117 +30,72 @@
       "DocumentGroups": [
         {
           "DockedHeight": 175,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "VisualizationWindow.xaml.cs",
-              "DocumentMoniker": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\views\\VisualizationWindow.xaml.cs",
-              "RelativeDocumentMoniker": "lab4_task3\\views\\VisualizationWindow.xaml.cs",
-              "ToolTip": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\views\\VisualizationWindow.xaml.cs",
-              "RelativeToolTip": "lab4_task3\\views\\VisualizationWindow.xaml.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAARAAAAAAAAAA==",
+              "DocumentIndex": 0,
+              "Title": "DTO.cs",
+              "DocumentMoniker": "O:\\OneDrive\\C#\\4 \u0441\u0435\u043C\u0435\u0441\u0442\u0440\\\u041B\u0430\u0431\u043E\u0440\u0430\u0442\u043E\u0440\u043D\u0430 4\\\u0412\u0430\u0440\u0456\u0430\u043D\u0442 3\\lab4_task3\\DTO.cs",
+              "RelativeDocumentMoniker": "DTO.cs",
+              "ToolTip": "O:\\OneDrive\\C#\\4 \u0441\u0435\u043C\u0435\u0441\u0442\u0440\\\u041B\u0430\u0431\u043E\u0440\u0430\u0442\u043E\u0440\u043D\u0430 4\\\u0412\u0430\u0440\u0456\u0430\u043D\u0442 3\\lab4_task3\\DTO.cs",
+              "RelativeToolTip": "DTO.cs",
+              "ViewState": "AgIAABUAAAAAAAAAAAAAAJ0AAAAfAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-11T19:22:11.695Z"
+              "WhenOpened": "2026-04-13T18:28:33.662Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
+              "Title": "VisualizationWindow.xaml.cs",
+              "DocumentMoniker": "O:\\OneDrive\\C#\\4 \u0441\u0435\u043C\u0435\u0441\u0442\u0440\\\u041B\u0430\u0431\u043E\u0440\u0430\u0442\u043E\u0440\u043D\u0430 4\\\u0412\u0430\u0440\u0456\u0430\u043D\u0442 3\\lab4_task3\\lab4_task3\\views\\VisualizationWindow.xaml.cs",
+              "RelativeDocumentMoniker": "lab4_task3\\views\\VisualizationWindow.xaml.cs",
+              "ToolTip": "O:\\OneDrive\\C#\\4 \u0441\u0435\u043C\u0435\u0441\u0442\u0440\\\u041B\u0430\u0431\u043E\u0440\u0430\u0442\u043E\u0440\u043D\u0430 4\\\u0412\u0430\u0440\u0456\u0430\u043D\u0442 3\\lab4_task3\\lab4_task3\\views\\VisualizationWindow.xaml.cs",
+              "RelativeToolTip": "lab4_task3\\views\\VisualizationWindow.xaml.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-04-11T19:22:11.695Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
               "Title": "ViewWindow.xaml.cs",
-              "DocumentMoniker": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\views\\ViewWindow.xaml.cs",
+              "DocumentMoniker": "O:\\OneDrive\\C#\\4 \u0441\u0435\u043C\u0435\u0441\u0442\u0440\\\u041B\u0430\u0431\u043E\u0440\u0430\u0442\u043E\u0440\u043D\u0430 4\\\u0412\u0430\u0440\u0456\u0430\u043D\u0442 3\\lab4_task3\\lab4_task3\\views\\ViewWindow.xaml.cs",
               "RelativeDocumentMoniker": "lab4_task3\\views\\ViewWindow.xaml.cs",
-              "ToolTip": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\views\\ViewWindow.xaml.cs",
+              "ToolTip": "O:\\OneDrive\\C#\\4 \u0441\u0435\u043C\u0435\u0441\u0442\u0440\\\u041B\u0430\u0431\u043E\u0440\u0430\u0442\u043E\u0440\u043D\u0430 4\\\u0412\u0430\u0440\u0456\u0430\u043D\u0442 3\\lab4_task3\\lab4_task3\\views\\ViewWindow.xaml.cs",
               "RelativeToolTip": "lab4_task3\\views\\ViewWindow.xaml.cs",
-              "ViewState": "AgIAAAwAAAAAAAAAAAAAABsAAAAJAAAAAAAAAA==",
+              "ViewState": "AgIAADQAAAAAAAAAAAAcwBsAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-11T19:22:06.743Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 3,
               "Title": "AddEditWindow.xaml.cs",
-              "DocumentMoniker": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\views\\AddEditWindow.xaml.cs",
+              "DocumentMoniker": "O:\\OneDrive\\C#\\4 \u0441\u0435\u043C\u0435\u0441\u0442\u0440\\\u041B\u0430\u0431\u043E\u0440\u0430\u0442\u043E\u0440\u043D\u0430 4\\\u0412\u0430\u0440\u0456\u0430\u043D\u0442 3\\lab4_task3\\lab4_task3\\views\\AddEditWindow.xaml.cs",
               "RelativeDocumentMoniker": "lab4_task3\\views\\AddEditWindow.xaml.cs",
-              "ToolTip": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\views\\AddEditWindow.xaml.cs",
+              "ToolTip": "O:\\OneDrive\\C#\\4 \u0441\u0435\u043C\u0435\u0441\u0442\u0440\\\u041B\u0430\u0431\u043E\u0440\u0430\u0442\u043E\u0440\u043D\u0430 4\\\u0412\u0430\u0440\u0456\u0430\u043D\u0442 3\\lab4_task3\\lab4_task3\\views\\AddEditWindow.xaml.cs",
               "RelativeToolTip": "lab4_task3\\views\\AddEditWindow.xaml.cs",
-              "ViewState": "AgIAAAgAAAAAAAAAAAAQwEQAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAADgAAAAAAAAAAAAwwEQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-04-11T19:21:36.494Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "App.xaml",
-              "DocumentMoniker": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\App.xaml",
-              "RelativeDocumentMoniker": "lab4_task3\\App.xaml",
-              "ToolTip": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\App.xaml",
-              "RelativeToolTip": "lab4_task3\\App.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-04-11T19:05:42.923Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "AddEditWindow.xaml",
-              "DocumentMoniker": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\views\\AddEditWindow.xaml",
-              "RelativeDocumentMoniker": "lab4_task3\\views\\AddEditWindow.xaml",
-              "ToolTip": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\views\\AddEditWindow.xaml",
-              "RelativeToolTip": "lab4_task3\\views\\AddEditWindow.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-04-11T19:04:09.002Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "ViewWindow.xaml",
-              "DocumentMoniker": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\views\\ViewWindow.xaml",
-              "RelativeDocumentMoniker": "lab4_task3\\views\\ViewWindow.xaml",
-              "ToolTip": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\views\\ViewWindow.xaml",
-              "RelativeToolTip": "lab4_task3\\views\\ViewWindow.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-04-11T19:03:46.403Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "VisualizationWindow.xaml",
-              "DocumentMoniker": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\views\\VisualizationWindow.xaml",
-              "RelativeDocumentMoniker": "lab4_task3\\views\\VisualizationWindow.xaml",
-              "ToolTip": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\views\\VisualizationWindow.xaml",
-              "RelativeToolTip": "lab4_task3\\views\\VisualizationWindow.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-04-11T19:03:18.476Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "MainWindow.xaml",
-              "DocumentMoniker": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\MainWindow.xaml",
-              "RelativeDocumentMoniker": "lab4_task3\\MainWindow.xaml",
-              "ToolTip": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\MainWindow.xaml",
-              "RelativeToolTip": "lab4_task3\\MainWindow.xaml",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
-              "WhenOpened": "2026-04-11T17:34:41.03Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
               "Title": "MainWindow.xaml.cs",
-              "DocumentMoniker": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\MainWindow.xaml.cs",
+              "DocumentMoniker": "O:\\OneDrive\\C#\\4 \u0441\u0435\u043C\u0435\u0441\u0442\u0440\\\u041B\u0430\u0431\u043E\u0440\u0430\u0442\u043E\u0440\u043D\u0430 4\\\u0412\u0430\u0440\u0456\u0430\u043D\u0442 3\\lab4_task3\\lab4_task3\\MainWindow.xaml.cs",
               "RelativeDocumentMoniker": "lab4_task3\\MainWindow.xaml.cs",
-              "ToolTip": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\MainWindow.xaml.cs",
+              "ToolTip": "O:\\OneDrive\\C#\\4 \u0441\u0435\u043C\u0435\u0441\u0442\u0440\\\u041B\u0430\u0431\u043E\u0440\u0430\u0442\u043E\u0440\u043D\u0430 4\\\u0412\u0430\u0440\u0456\u0430\u043D\u0442 3\\lab4_task3\\lab4_task3\\MainWindow.xaml.cs",
               "RelativeToolTip": "lab4_task3\\MainWindow.xaml.cs",
-              "ViewState": "AgIAACYAAAAAAAAAAAAwwBkAAAANAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABkAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-04-11T17:34:39.025Z"
+              "WhenOpened": "2026-04-11T17:34:39.025Z",
+              "EditorCaption": ""
             }
           ]
         },

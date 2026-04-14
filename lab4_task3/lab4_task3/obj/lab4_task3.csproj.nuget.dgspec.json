@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "O:\\OneDrive\\C#\\4 семестр\\Лабораторна 4\\Варіант 3\\lab4_task3\\lab4_task3\\lab4_task3.csproj": {}
+    "D:\\OneDrive\\C#\\4 семестр\\Лабораторна 4\\Варіант 3\\lab4_task3\\lab4_task3\\lab4_task3.csproj": {}
   },
   "projects": {
-    "O:\\OneDrive\\C#\\4 семестр\\Лабораторна 4\\Варіант 3\\lab4_task3\\lab4_task3\\lab4_task3.csproj": {
+    "D:\\OneDrive\\C#\\4 семестр\\Лабораторна 4\\Варіант 3\\lab4_task3\\lab4_task3\\lab4_task3.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "O:\\OneDrive\\C#\\4 семестр\\Лабораторна 4\\Варіант 3\\lab4_task3\\lab4_task3\\lab4_task3.csproj",
+        "projectUniqueName": "D:\\OneDrive\\C#\\4 семестр\\Лабораторна 4\\Варіант 3\\lab4_task3\\lab4_task3\\lab4_task3.csproj",
         "projectName": "lab4_task3",
-        "projectPath": "O:\\OneDrive\\C#\\4 семестр\\Лабораторна 4\\Варіант 3\\lab4_task3\\lab4_task3\\lab4_task3.csproj",
+        "projectPath": "D:\\OneDrive\\C#\\4 семестр\\Лабораторна 4\\Варіант 3\\lab4_task3\\lab4_task3\\lab4_task3.csproj",
         "packagesPath": "C:\\Users\\ArtikTheOnlyOne\\.nuget\\packages\\",
-        "outputPath": "O:\\OneDrive\\C#\\4 семестр\\Лабораторна 4\\Варіант 3\\lab4_task3\\lab4_task3\\obj\\",
+        "outputPath": "D:\\OneDrive\\C#\\4 семестр\\Лабораторна 4\\Варіант 3\\lab4_task3\\lab4_task3\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "A:\\Microsoft Visual Studio\\Shared\\NuGetPackages"

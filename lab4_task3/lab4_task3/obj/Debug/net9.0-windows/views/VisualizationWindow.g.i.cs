@@ -52,7 +52,7 @@ namespace lab4_task3 {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/lab4_task3;component/views/visualizationwindow.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/lab4_task3;V1.0.0.0;component/views/visualizationwindow.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\views\VisualizationWindow.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

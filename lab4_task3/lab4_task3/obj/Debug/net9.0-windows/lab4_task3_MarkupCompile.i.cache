@@ -4,16 +4,16 @@
 winexe
 C#
 .cs
-D:\OneDrive\C#\4 семестр\Лабораторна 4\Варіант 3\lab4_task3\lab4_task3\obj\Debug\net9.0-windows\
+F:\something\LAB4_OOP_Task3\lab4_task3\lab4_task3\obj\Debug\net9.0-windows\
 lab4_task3
 none
 false
-TRACE;DEBUG;NET;NET9_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NET9_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
-D:\OneDrive\C#\4 семестр\Лабораторна 4\Варіант 3\lab4_task3\lab4_task3\App.xaml
+TRACE;DEBUG;NET;NET9_0;NETCOREAPP
+F:\something\LAB4_OOP_Task3\lab4_task3\lab4_task3\App.xaml
 4678597132
 
 10-1922010631
-203-405358019
+204-2083224439
 MainWindow.xaml;views\AddEditWindow.xaml;views\ViewWindow.xaml;views\VisualizationWindow.xaml;
 
 False

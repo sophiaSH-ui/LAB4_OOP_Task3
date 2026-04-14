@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "D:\\OneDrive\\C#\\4 семестр\\Лабораторна 4\\Варіант 3\\lab4_task3\\lab4_task3\\lab4_task3.csproj": {}
+    "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\lab4_task3.csproj": {}
   },
   "projects": {
-    "D:\\OneDrive\\C#\\4 семестр\\Лабораторна 4\\Варіант 3\\lab4_task3\\lab4_task3\\lab4_task3.csproj": {
+    "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\lab4_task3.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\OneDrive\\C#\\4 семестр\\Лабораторна 4\\Варіант 3\\lab4_task3\\lab4_task3\\lab4_task3.csproj",
+        "projectUniqueName": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\lab4_task3.csproj",
         "projectName": "lab4_task3",
-        "projectPath": "D:\\OneDrive\\C#\\4 семестр\\Лабораторна 4\\Варіант 3\\lab4_task3\\lab4_task3\\lab4_task3.csproj",
-        "packagesPath": "C:\\Users\\ArtikTheOnlyOne\\.nuget\\packages\\",
-        "outputPath": "D:\\OneDrive\\C#\\4 семестр\\Лабораторна 4\\Варіант 3\\lab4_task3\\lab4_task3\\obj\\",
+        "projectPath": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\lab4_task3.csproj",
+        "packagesPath": "C:\\Users\\Asus\\.nuget\\packages\\",
+        "outputPath": "F:\\something\\LAB4_OOP_Task3\\lab4_task3\\lab4_task3\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
-          "A:\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\ArtikTheOnlyOne\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Asus\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -26,7 +26,6 @@
         ],
         "sources": {
           "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -45,7 +44,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.300"
+        "SdkAnalysisLevel": "9.0.100"
       },
       "frameworks": {
         "net9.0-windows7.0": {
@@ -75,7 +74,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.312/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.101/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

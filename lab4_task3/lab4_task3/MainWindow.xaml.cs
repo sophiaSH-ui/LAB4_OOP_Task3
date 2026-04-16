@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using lab4_task3.views;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -8,7 +9,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
+using System.Windows;
 
 namespace lab4_task3
 {
@@ -19,43 +20,14 @@ namespace lab4_task3
             InitializeComponent();
         }
 
-        private bool IsLocationValid()
+        private void BtnLReg_Click(object sender, RoutedEventArgs e)
         {
-            if (CbLocation.SelectedIndex == -1 &&
-                (string.IsNullOrWhiteSpace(CbLocation.Text) || CbLocation.Text == "Почніть вводити назву..."))
-            {
-                MessageBox.Show("Будь ласка, спочатку оберіть або введіть населений пункт!",
-                                "Увага", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return false;
-            }
-            return true;
+            AppUtils.NavigateTo(this, new LandRegistry());
         }
 
-        private void NavigateTo(Window targetWindow)
+        private void BtnAddOwner_Click(object sender, RoutedEventArgs e)
         {
-            targetWindow.Owner = this;
-            targetWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-
-            targetWindow.Closed += (s, e) => this.Show();
-
-            this.Hide();
-            targetWindow.Show();
-        }
-
-        private void BtnAdd_Click(object sender, RoutedEventArgs e)
-        {
-            if (IsLocationValid())
-            {
-                NavigateTo(new AddEditWindow());
-            }
-        }
-
-        private void BtnView_Click(object sender, RoutedEventArgs e)
-        {
-            if (IsLocationValid())
-            {
-                NavigateTo(new ViewWindow());
-            }
+            AppUtils.NavigateTo(this, new CreatingAccountOwner());
         }
 
         private void BtnExit_Click(object sender, RoutedEventArgs e)

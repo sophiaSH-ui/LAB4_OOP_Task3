@@ -1,0 +1,125 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="lab4_task3.views.LandRegistry"
+        Title="Земельний реєстр" Height="580" Width="460"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Background="{StaticResource CreamBrush}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="220"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="40"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0"
+                Background="{StaticResource DarkGreenBrush}"
+                CornerRadius="0,0,40,40"
+                Padding="20,20,20,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="48"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0" 
+                        Background="Transparent" BorderThickness="0"
+                        Foreground="{StaticResource LightGreenBrush}" FontSize="32"
+                        Cursor="Hand" Click="BtnBack_Click" Margin="0,-15,0,0" 
+                        Content="←" Height="48" VerticalAlignment="Top"/>
+
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,-30,0,0">
+                    <TextBlock Text="📋"
+                               FontSize="70"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,10"/>
+                    <TextBlock Text="ЗЕМЕЛЬНИЙ РЕЄСТР"
+                               FontFamily="Segoe UI Semibold"
+                               FontSize="26"
+                               FontWeight="Bold"
+                               Foreground="{StaticResource LightGreenBrush}"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="1"
+                Style="{StaticResource Card}"
+                Margin="40,-40,40,0"
+                VerticalAlignment="Top">
+            <StackPanel Margin="0,10,0,0">
+
+                <TextBlock Text="Оберіть населений пункт:" 
+                           Style="{StaticResource FieldLabel}" 
+                           Foreground="{StaticResource MutedGreenBrush}"
+                           Margin="0,0,0,8"/>
+
+                <ComboBox x:Name="CbLocation" 
+                          Style="{StaticResource InputCombo}"
+                          IsEditable="True"
+                          Text="Почніть вводити назву..."
+                          Margin="0,0,0,15">
+                    <ComboBoxItem Content="Київ"/>
+                    <ComboBoxItem Content="Львів"/>
+                    <ComboBoxItem Content="Одеса"/>
+                    <ComboBoxItem Content="Дніпро"/>
+                    <ComboBoxItem Content="Харків"/>
+                    <ComboBoxItem Content="Черкаси"/>
+                </ComboBox>
+
+                <Border Background="{StaticResource CreamBrush}"
+                        CornerRadius="8"
+                        Padding="12,8"
+                        Margin="0,0,0,10">
+                    <StackPanel Orientation="Horizontal"
+                                HorizontalAlignment="Center">
+                        <TextBlock Text="Всього ділянок: "
+                                   FontFamily="Segoe UI"
+                                   FontSize="14"
+                                   Foreground="{StaticResource MutedGreenBrush}"/>
+                        <TextBlock x:Name="CountText"
+                                   Text="0"
+                                   FontFamily="Segoe UI Semibold"
+                                   FontSize="14"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource BrightGreenBrush}"/>
+                    </StackPanel>
+                </Border>
+
+                <Separator Background="{StaticResource LightGreenBrush}"
+                           Margin="10,0,10,20"/>
+
+                <Button x:Name="BtnAddLandPlot"
+                        Style="{StaticResource PrimaryButton}"
+                        Margin="0,0,0,15"
+                        Click="BtnAddLandPlot_Click">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="+ " FontSize="20" FontWeight="Bold" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Додати ділянку" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+                <Button x:Name="BtnView"
+                        Style="{StaticResource AccentButton}"
+                        Margin="0,0,0,10"
+                        Click="BtnView_Click">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <TextBlock Text="🔍 " FontSize="16" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Переглянути ділянки" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+            </StackPanel>
+        </Border>
+
+        <TextBlock Grid.Row="2"
+                   Text="© Система земельного реєстру"
+                   FontFamily="Segoe UI"
+                   FontSize="12"
+                   Foreground="{StaticResource MutedGreenBrush}"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"/>
+    </Grid>
+</Window>

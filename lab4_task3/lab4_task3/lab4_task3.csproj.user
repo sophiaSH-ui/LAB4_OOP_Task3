@@ -10,6 +10,12 @@
     <Compile Update="views\AddEditWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="views\CreatingAccountOwner.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="views\LandRegistry.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="views\ViewWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -22,6 +28,12 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="views\AddEditWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="views\CreatingAccountOwner.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="views\LandRegistry.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="views\ViewWindow.xaml">

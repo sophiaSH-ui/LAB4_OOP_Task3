@@ -72,7 +72,7 @@ namespace lab4_task3.DTO
 
     class Owner
     {
-        
+
     }
 
     class Property

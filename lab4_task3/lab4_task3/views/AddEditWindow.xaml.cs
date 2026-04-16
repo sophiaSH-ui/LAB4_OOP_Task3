@@ -1,75 +1,199 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.ComponentModel;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using System.ComponentModel;
+using lab4_task3.views;
 
 namespace lab4_task3
 {
+    public class OwnerMock
+    {
+        public int Id { get; set; }
+        public string FullName { get; set; }
+    }
+
     public partial class AddEditWindow : Window
     {
-        private bool unsaved = true;
+        private bool unsaved = false;
+        private Random random = new Random();
 
         public AddEditWindow()
         {
             InitializeComponent();
+
+            LoadOwnersFromDatabase();
+
+            TxtMarketValue.TextChanged += NumericInput_TextChanged;
+            TxtGroundWater.TextChanged += NumericInput_TextChanged;
         }
 
-        private void BtnSave_Click(object sender, RoutedEventArgs e)
+        private void LoadOwnersFromDatabase()
         {
-            // заглушка треба дописувати 
+            var owners = new List<OwnerMock>
+            {
+                new OwnerMock { Id = 1, FullName = "Іваненко І.І." },
+                new OwnerMock { Id = 2, FullName = "Петренко П.П." },
+                new OwnerMock { Id = 3, FullName = "Сидоренко С.С." }
+            };
+            CbOwner.ItemsSource = owners;
+        }
+
+        private void SavePlotToDatabase(int ownerId, string purpose, double marketValue, double groundWater, string soilType, bool river, bool flat, bool fertile, bool forest, bool road, List<string> coordinates)
+        {
+
+        }
+
+        private bool CheckForOverlapMock(List<string> coordinates)
+        {
+            return random.Next(100) < 30;
+        }
+
+        private void NumericInput_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (sender is TextBox textBox)
+            {
+                string text = textBox.Text;
+                string cleanText = Regex.Replace(text, @"[^\d,.-]", "");
+                if (text != cleanText)
+                {
+                    int caret = textBox.CaretIndex > 0 ? textBox.CaretIndex - 1 : 0;
+                    textBox.Text = cleanText;
+                    textBox.CaretIndex = caret;
+                }
+            }
+        }
+
+        private void BtnBack_Click(object sender, RoutedEventArgs e)
+        {
+            AppUtils.GoBack(this);
+        }
+
+        private async void BtnSave_Click(object sender, RoutedEventArgs e)
+        {
+            if (CbOwner.SelectedIndex == -1 ||
+                CbPryznachennya.SelectedIndex == -1 ||
+                CbSoilType.SelectedIndex == -1 ||
+                string.IsNullOrWhiteSpace(TxtMarketValue.Text) ||
+                string.IsNullOrWhiteSpace(TxtGroundWater.Text))
+            {
+                AppUtils.ShowWarning("Будь ласка, заповніть всі основні поля (Власник, Призначення, Вартість, Рівень вод, Тип ґрунту).");
+                return;
+            }
+
+            if (!double.TryParse(TxtMarketValue.Text, out double marketValue) || marketValue < 0)
+            {
+                AppUtils.ShowWarning("Введіть коректну ринкову вартість.");
+                return;
+            }
+
+            if (!double.TryParse(TxtGroundWater.Text, out double groundWater))
+            {
+                AppUtils.ShowWarning("Введіть коректний рівень ґрунтових вод.");
+                return;
+            }
+
+            if (LbCoordinates.Items.Count < 3)
+            {
+                AppUtils.ShowWarning("Земельна ділянка повинна мати щонайменше 3 координати (вершини).");
+                return;
+            }
+
+            Button btnSave = sender as Button;
+            string originalContent = btnSave.Content?.ToString();
+            btnSave.IsEnabled = false;
+            btnSave.Content = "⏳ Перевірка меж...";
+
+            await Task.Delay(2000);
+
+            List<string> coordinates = new List<string>();
+            foreach (var item in LbCoordinates.Items)
+            {
+                coordinates.Add(item.ToString());
+            }
+
+            bool isOverlapping = CheckForOverlapMock(coordinates);
+
+            if (isOverlapping)
+            {
+                btnSave.IsEnabled = true;
+                btnSave.Content = originalContent;
+                AppUtils.ShowWarning("Збій збереження! Виявлено накладання меж на іншу зареєстровану ділянку в цій місцевості.");
+                return;
+            }
+
+            int ownerId = (int)CbOwner.SelectedValue;
+            string purpose = (CbPryznachennya.SelectedItem as ComboBoxItem)?.Content.ToString();
+            string soilType = (CbSoilType.SelectedItem as ComboBoxItem)?.Content.ToString();
+
+            bool hasRiver = ChkRiver.IsChecked == true;
+            bool isFlat = ChkFlat.IsChecked == true;
+            bool isFertile = ChkFertile.IsChecked == true;
+            bool nearForest = ChkForest.IsChecked == true;
+            bool nearRoad = ChkRoad.IsChecked == true;
+
+            SavePlotToDatabase(ownerId, purpose, marketValue, groundWater, soilType, hasRiver, isFlat, isFertile, nearForest, nearRoad, coordinates);
+
             unsaved = false;
-            MessageBox.Show("Дані збережено!", "Успіх", MessageBoxButton.OK, MessageBoxImage.Information);
+            AppUtils.ShowInfo("Дані земельної ділянки успішно збережено!");
+            this.Close();
         }
 
-        private void BtnReset_Click(object sender, RoutedEventArgs e)
-        {
-
-            TxtLastName.Clear();
-            TxtFirstName.Clear();
-            DpBirthDate.SelectedDate = null;
-
-            CbPryznachennya.SelectedIndex = -1;
-            TxtMarketValue.Clear();
-            TxtLength.Clear();
-            TxtWidth.Clear();
-
-            TxtGroundWater.Clear();
-            CbSoilType.SelectedIndex = -1;
-            ChkRiver.IsChecked = ChkFlat.IsChecked = ChkFertile.IsChecked =
-            ChkForest.IsChecked = ChkRoad.IsChecked = false;
-
-            TxtCoordX.Clear();
-            TxtCoordY.Clear(); 
-            LbCoordinates.Items.Clear(); 
-
-            unsaved = true;
-        }
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             if (!unsaved) return;
 
-            var res = MessageBox.Show("Закрити без збереження?", "Увага", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-            if (res == MessageBoxResult.No) e.Cancel = true;
+            if (!AppUtils.AskConfirmation("Закрити без збереження?", "Увага"))
+            {
+                e.Cancel = true;
+            }
+        }
+
+        private void BtnVisualize_Click(object sender, RoutedEventArgs e)
+        {
+            AppUtils.ShowDialog(this, new VisualizationWindow());
+        }
+
+        private void BtnAddNewOwner_Click(object sender, RoutedEventArgs e)
+        {
+            AppUtils.NavigateTo(this, new CreatingAccountOwner());
         }
 
         private void BtnAddCoord_Click(object sender, RoutedEventArgs e)
         {
+            string xStr = TxtCoordX.Text.Trim();
+            string yStr = TxtCoordY.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(xStr) || string.IsNullOrWhiteSpace(yStr))
+            {
+                AppUtils.ShowWarning("Будь ласка, введіть значення X та Y для нової точки.");
+                return;
+            }
+
+            if (!double.TryParse(xStr, out double x) || !double.TryParse(yStr, out double y))
+            {
+                AppUtils.ShowWarning("Координати повинні бути числовими значеннями.");
+                return;
+            }
+
+            LbCoordinates.Items.Add($"X: {x}  |  Y: {y}");
+
+            TxtCoordX.Clear();
+            TxtCoordY.Clear();
+            TxtCoordX.Focus();
+
             unsaved = true;
         }
 
         private void BtnRemoveCoord_Click(object sender, RoutedEventArgs e)
         {
-            unsaved = true;
+            if (LbCoordinates.SelectedIndex != -1)
+            {
+                LbCoordinates.Items.RemoveAt(LbCoordinates.SelectedIndex);
+                unsaved = true;
+            }
         }
 
         private void LbCoordinates_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -77,16 +201,26 @@ namespace lab4_task3
             BtnRemoveCoord.IsEnabled = LbCoordinates.SelectedItem != null;
         }
 
-        private void BtnVisualize_Click(object sender, RoutedEventArgs e)
+        private void BtnReset_Click(object sender, RoutedEventArgs e)
         {
-            var win = new VisualizationWindow();
-            win.Owner = this;
-            win.ShowDialog();
-        }
+            CbOwner.SelectedIndex = -1;
+            CbPryznachennya.SelectedIndex = -1;
+            CbSoilType.SelectedIndex = -1;
 
-        private void BtnBack_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
+            TxtMarketValue.Clear();
+            TxtGroundWater.Clear();
+            TxtCoordX.Clear();
+            TxtCoordY.Clear();
+
+            LbCoordinates.Items.Clear();
+
+            ChkRiver.IsChecked = false;
+            ChkFlat.IsChecked = false;
+            ChkFertile.IsChecked = false;
+            ChkForest.IsChecked = false;
+            ChkRoad.IsChecked = false;
+
+            unsaved = true;
         }
     }
 }

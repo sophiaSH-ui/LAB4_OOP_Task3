@@ -9,6 +9,7 @@
         <SolidColorBrush x:Key="LightGreenBrush"  Color="#C7DA91"/>
         <SolidColorBrush x:Key="MutedGreenBrush"  Color="#6A804F"/>
         <SolidColorBrush x:Key="CreamBrush"       Color="#F4F7ED"/>
+        <SolidColorBrush x:Key="ExitBrush"        Color="#ed2d73"/>
 
         <Style x:Key="PrimaryButton" TargetType="Button">
             <Setter Property="Background"      Value="{StaticResource DarkGreenBrush}"/>
@@ -48,9 +49,39 @@
             <Setter Property="Foreground" Value="White"/>
         </Style>
 
-        <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
-            <Setter Property="Background" Value="#8B3A3A"/>
-            <Setter Property="Foreground" Value="#F7D0D0"/>
+        <Style x:Key="DangerButton" TargetType="Button">
+            <Setter Property="Background"      Value="#8B3A3A"/>
+            <Setter Property="Foreground"      Value="#F7D0D0"/>
+            <Setter Property="FontFamily"      Value="Segoe UI Semibold"/>
+            <Setter Property="FontSize"        Value="15"/>
+            <Setter Property="Height"          Value="52"/>
+            <Setter Property="Cursor"          Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="10"
+                                Padding="24,0">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background"
+                                        Value="{StaticResource ExitBrush}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background"
+                                        Value="#C2185B"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
         <Style x:Key="InputBox" TargetType="TextBox">
@@ -147,6 +178,40 @@
                             <Trigger Property="IsSelected" Value="True">
                                 <Setter Property="Background"  Value="{StaticResource LightGreenBrush}"/>
                                 <Setter Property="BorderBrush" Value="{StaticResource BrightGreenBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <Style x:Key="OwnerButton" TargetType="Button">
+            <Setter Property="Background"      Value="{StaticResource MutedGreenBrush}"/>
+            <Setter Property="Foreground"      Value="{StaticResource CreamBrush}"/>
+            <Setter Property="FontFamily"      Value="Segoe UI Semibold"/>
+            <Setter Property="FontSize"        Value="15"/>
+            <Setter Property="Height"          Value="52"/>
+            <Setter Property="Cursor"          Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="10"
+                                Padding="24,0">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Background"
+                                        Value="{StaticResource BrightGreenBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Background"
+                                        Value="{StaticResource LightGreenBrush}"/>
+                                <Setter Property="Foreground" Value="{StaticResource DarkGreenBrush}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>

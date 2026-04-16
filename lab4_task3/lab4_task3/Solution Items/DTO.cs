@@ -121,9 +121,6 @@ namespace lab4_task3.DTO
 
     class Owner
     {
-<<<<<<< HEAD
-
-=======
         private string firstName;
         private string lastName;
         private DateTime birthDate;

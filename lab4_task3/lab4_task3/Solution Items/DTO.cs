@@ -202,7 +202,6 @@ namespace lab4_task3.DTO
 
             id = (int)command.ExecuteScalar();
         }
->>>>>>> origin/artiktheonlyone
     }
 
     class Property

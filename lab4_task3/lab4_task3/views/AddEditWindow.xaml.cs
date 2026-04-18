@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using lab4_task3.DTO;
 using lab4_task3.views;
 
 namespace lab4_task3
@@ -20,6 +21,9 @@ namespace lab4_task3
         private bool unsaved = false;
         private Random random = new Random();
 
+        // Зберігаємо список локально, щоб легко додавати
+        private List<OwnerMock> ownersList = new List<OwnerMock>();
+
         public AddEditWindow()
         {
             InitializeComponent();
@@ -32,18 +36,43 @@ namespace lab4_task3
 
         private void LoadOwnersFromDatabase()
         {
-            var owners = new List<OwnerMock>
+            // Тут можна замінити на реальний запит до БД
+            ownersList = new List<OwnerMock>
             {
                 new OwnerMock { Id = 1, FullName = "Іваненко І.І." },
                 new OwnerMock { Id = 2, FullName = "Петренко П.П." },
                 new OwnerMock { Id = 3, FullName = "Сидоренко С.С." }
             };
-            CbOwner.ItemsSource = owners;
+
+            RefreshOwnerComboBox();
         }
 
-        private void SavePlotToDatabase(int ownerId, string purpose, double marketValue, double groundWater, string soilType, bool river, bool flat, bool fertile, bool forest, bool road, List<string> coordinates)
+        // Окремий метод щоб не дублювати код оновлення ComboBox
+        private void RefreshOwnerComboBox()
         {
+            int selectedId = CbOwner.SelectedValue is int id ? id : -1;
 
+            CbOwner.ItemsSource = null;
+            CbOwner.ItemsSource = ownersList;
+
+            // Відновлюємо вибір якщо був
+            if (selectedId != -1)
+            {
+                foreach (var owner in ownersList)
+                {
+                    if (owner.Id == selectedId)
+                    {
+                        CbOwner.SelectedValue = selectedId;
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void SavePlotToDatabase(int ownerId, string purpose, double marketValue, double groundWater,
+            string soilType, bool river, bool flat, bool fertile, bool forest, bool road, List<string> coordinates)
+        {
+            // логіка збереження
         }
 
         private bool CheckForOverlapMock(List<string> coordinates)
@@ -134,7 +163,8 @@ namespace lab4_task3
             bool nearForest = ChkForest.IsChecked == true;
             bool nearRoad = ChkRoad.IsChecked == true;
 
-            SavePlotToDatabase(ownerId, purpose, marketValue, groundWater, soilType, hasRiver, isFlat, isFertile, nearForest, nearRoad, coordinates);
+            SavePlotToDatabase(ownerId, purpose, marketValue, groundWater, soilType,
+                hasRiver, isFlat, isFertile, nearForest, nearRoad, coordinates);
 
             unsaved = false;
             AppUtils.ShowInfo("Дані земельної ділянки успішно збережено!");
@@ -158,7 +188,27 @@ namespace lab4_task3
 
         private void BtnAddNewOwner_Click(object sender, RoutedEventArgs e)
         {
-            AppUtils.NavigateTo(this, new CreatingAccountOwner());
+            // ShowDialog — чекаємо поки вікно закриється і тоді читаємо результат
+            var window = new CreatingAccountOwner();
+            window.ShowDialog();
+
+            if (window.CreatedOwner != null)
+            {
+                Owner created = window.CreatedOwner;
+
+                // Додаємо нового власника в локальний список і оновлюємо ComboBox
+                var newOwner = new OwnerMock
+                {
+                    Id = created.ID,
+                    FullName = $"{created.LastName} {created.FirstName}"
+                };
+
+                ownersList.Add(newOwner);
+                RefreshOwnerComboBox();
+
+                // Одразу вибираємо щойно створеного власника
+                CbOwner.SelectedValue = newOwner.Id;
+            }
         }
 
         private void BtnAddCoord_Click(object sender, RoutedEventArgs e)

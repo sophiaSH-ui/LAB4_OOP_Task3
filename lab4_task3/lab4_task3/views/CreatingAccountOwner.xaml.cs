@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using System.Windows;
+using lab4_task3.DTO;
 
 namespace lab4_task3.views
 {
     public partial class CreatingAccountOwner : Window
     {
+        internal Owner CreatedOwner { get; private set; }
+
         public CreatingAccountOwner()
         {
             InitializeComponent();
@@ -74,9 +77,6 @@ namespace lab4_task3.views
             TxtFirstName.Text = firstName;
 
             SaveOwnerToDatabase(firstName, lastName, birthDate);
-
-            AppUtils.ShowInfo("Нового власника успішно додано!");
-            this.Close();
         }
 
         private void BtnReset_Click(object sender, RoutedEventArgs e)
@@ -88,7 +88,26 @@ namespace lab4_task3.views
 
         private void SaveOwnerToDatabase(string firstName, string lastName, DateTime birthDate)
         {
-            // метод під зберігання в БД
+            try
+            {
+                CreatedOwner = new Owner(firstName, lastName, birthDate);
+
+                LocalStorage.SaveOwner(new OwnerJson
+                {
+                    Id = CreatedOwner.ID,
+                    FirstName = firstName,
+                    LastName = lastName,
+                    BirthDate = birthDate
+                });
+
+                AppUtils.ShowInfo("Нового власника успішно додано!");
+                this.Close();
+            }
+            catch (Exception ex)
+            {
+                CreatedOwner = null;
+                AppUtils.ShowWarning($"Помилка при збереженні: {ex.Message}");
+            }
         }
     }
 }

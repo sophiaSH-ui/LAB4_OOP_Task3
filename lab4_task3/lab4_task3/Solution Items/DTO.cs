@@ -57,7 +57,7 @@ namespace lab4_task3.DTO
 
                 int localityID = reader.GetInt32(reader.GetOrdinal("locality"));
 
-                command.CommandText = "SELECT first_name, last_name, birth_date FROM users WHERE id = @ownerId;";
+                command.CommandText = "SELECT first_name, last_name, birth_day FROM owners WHERE id = @ownerId;";
                 command.Parameters.Clear();
                 command.Parameters.AddWithValue("ownerId", ownerID);
 
@@ -67,7 +67,7 @@ namespace lab4_task3.DTO
                 {
                     string firstName = ownerReader.GetString(ownerReader.GetOrdinal("first_name"));
                     string lastName = ownerReader.GetString(ownerReader.GetOrdinal("last_name"));
-                    DateTime birthDate = ownerReader.GetDateTime(ownerReader.GetOrdinal("birth_date"));
+                    DateTime birthDate = ownerReader.GetDateTime(ownerReader.GetOrdinal("birth_day"));
                     if (!owners.ContainsKey(ownerID))
                     {
                         owners[ownerID] = new Owner(firstName, lastName, birthDate);
@@ -172,6 +172,7 @@ namespace lab4_task3.DTO
                 {
                     throw new ArgumentException("Birthdays can not be in future");
                 }
+                birthDate = value;
             }
         }
 
@@ -192,7 +193,7 @@ namespace lab4_task3.DTO
             using var connection = new NpgsqlConnection(DB.connectionString);
             connection.Open();
 
-            string sql = "INSERT INTO users (first_name, last_name, birth_date) VALUES (@fn, @ln, @bd) RETURNING id;";
+            string sql = "INSERT INTO owners (first_name, last_name, birth_day) VALUES (@fn, @ln, @bd) RETURNING id;";
 
             using var command = new NpgsqlCommand(sql, connection);
 

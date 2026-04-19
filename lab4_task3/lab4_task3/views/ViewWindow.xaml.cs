@@ -3,6 +3,7 @@ using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -92,14 +93,15 @@ namespace lab4_task3
             {
                 conn.Open();
 
-                // SQL-запит з JOIN для отримання всіх пов'язаних даних
                 string sql = @"
-            SELECT p.id, p.usage, p.price, o.first_name, o.last_name, l.title as locality, d.water, d.soil
-            FROM properties p
-            JOIN owners o ON p.owner = o.id
-            JOIN localities l ON p.locality = l.id
-            JOIN descriptions d ON p.description = d.id
-            WHERE 1=1";
+                SELECT p.id, p.usage, p.price, o.first_name, o.last_name, o.id as owner_id,
+                       l.title as locality, d.water, d.soil, d.coordinates
+                FROM properties p
+                JOIN owners o ON p.owner = o.id
+                JOIN localities l ON p.locality = l.id
+                JOIN descriptions d ON p.description = d.id
+                WHERE 1=1";
+
 
                 if (!string.IsNullOrWhiteSpace(location)) sql += " AND l.title ILIKE @loc";
                 if (!string.IsNullOrWhiteSpace(purpose)) sql += " AND p.usage = @usage";
@@ -118,15 +120,31 @@ namespace lab4_task3
                 using var reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
+                    var jsonCoords = reader.GetString(reader.GetOrdinal("coordinates"));
+                    var points = new List<Point>();
+
+                    var matches = Regex.Matches(jsonCoords, @"\d+");
+                    for (int i = 0; i < matches.Count; i += 2)
+                    {
+                        if (i + 1 < matches.Count)
+                        {
+                            points.Add(new Point(double.Parse(matches[i].Value), double.Parse(matches[i + 1].Value)));
+                        }
+                    }
+
                     plots.Add(new LandPlotModel
                     {
                         Id = reader.GetInt32(0),
                         Pryznachennya = reader.GetString(1),
                         MarketValueFormatted = reader.GetDecimal(2).ToString("F2") + " грн",
                         OwnerName = reader.GetString(3) + " " + reader.GetString(4),
-                        Location = reader.GetString(5)
-                      
+                        OwnerId = reader.GetInt32(reader.GetOrdinal("owner_id")),
+                        Location = reader.GetString(reader.GetOrdinal("locality")),
+                        GroundWater = reader.GetDouble(reader.GetOrdinal("water")),
+                        SoilType = reader.GetString(reader.GetOrdinal("soil")),
+                        Coordinates = points
                     });
+
                 }
             }
             return plots;
@@ -178,12 +196,23 @@ namespace lab4_task3
 
         private void BtnDetails_Click(object sender, RoutedEventArgs e)
         {
-            AppUtils.ShowInfo("Відкриття деталей...");
+            if (LbDilyanky.SelectedItem is LandPlotModel selectedPlot)
+            {
+                string info = $"Власник: {selectedPlot.OwnerName}\n" +
+                              $"Розташування: {selectedPlot.Location}\n" +
+                              $"Призначення: {selectedPlot.Pryznachennya}\n" +
+                              $"Тип ґрунту: {selectedPlot.SoilType}\n" +
+                              $"Ринкова вартість: {selectedPlot.MarketValueFormatted}";
+                MessageBox.Show(info, "Деталі ділянки", MessageBoxButton.OK, MessageBoxImage.None);
+            }
         }
 
         private void BtnEdit_Click(object sender, RoutedEventArgs e)
         {
-            AppUtils.NavigateTo(this, new AddEditWindow());
+            if (LbDilyanky.SelectedItem is LandPlotModel selectedPlot)
+            {
+                AppUtils.NavigateTo(this, new AddEditWindow(selectedPlot));
+            }
         }
 
         private void BtnMap_Click(object sender, RoutedEventArgs e)

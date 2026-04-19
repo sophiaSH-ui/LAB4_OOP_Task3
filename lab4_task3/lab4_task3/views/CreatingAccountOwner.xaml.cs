@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Windows;
 using lab4_task3.DTO;
@@ -101,7 +102,7 @@ namespace lab4_task3.views
                 });
 
                 AppUtils.ShowInfo("Нового власника успішно додано!");
-                this.Close();
+                AppUtils.GoBack(this);
             }
             catch (Exception ex)
             {

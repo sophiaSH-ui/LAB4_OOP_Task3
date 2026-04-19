@@ -29,6 +29,12 @@ namespace lab4_task3
             return JsonSerializer.Deserialize<List<Plot>>(json) ?? new List<Plot>();
         }
 
+        public static void UpdatePlot(int id, Plot plot)
+        {
+            plot.Id = id;
+            SavePlot(plot); 
+        }
+
         public static void SavePlot(Plot plot)
         {
             var plots = LoadPlots();

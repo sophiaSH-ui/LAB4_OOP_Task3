@@ -13,15 +13,34 @@ namespace lab4_task3.views
         {
             InitializeComponent();
             UpdatePlotsCount();
+            CbLocation.AddHandler(System.Windows.Controls.Primitives.TextBoxBase.TextChangedEvent,
+                                  new TextChangedEventHandler(CbLocation_TextChanged)); // підписуємось на зміну тексту
+        }
+
+        private void CbLocation_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            UpdatePlotsCount();
         }
 
         private void UpdatePlotsCount()
         {
-            if (CountText == null || CbLocation == null) return;
+            if (CountText == null) return;
+
+            string locationText = CbLocation?.Text?.Trim();
+            bool hasLocation = !string.IsNullOrWhiteSpace(locationText)
+                               && locationText != "Почніть вводити назву...";
 
             DB db = new DB();
-            CountText.Text = db.GetPropertiesCount().ToString();
+            if (hasLocation)
+            {
+                CountText.Text = db.GetPropertiesCountByLocation(locationText).ToString();
+            }
+            else
+            {
+                CountText.Text = db.GetPropertiesCount().ToString(); // загальна кількість
+            }
         }
+
 
         private bool IsLocationValid()
         {
@@ -33,31 +52,29 @@ namespace lab4_task3.views
                 return false;
             }
 
-            if (locationText.Length < 2 || locationText.Length > 50)
-            {
-                AppUtils.ShowWarning("Назва населеного пункту має містити від 2 до 50 символів.");
-                return false;
-            }
-
             string pattern = @"^[а-яА-ЯіІїЇєЄґҐa-zA-Z\s\-']+$";
             if (!Regex.IsMatch(locationText, pattern))
             {
-                AppUtils.ShowWarning("Назва містить недопустимі символи. Використовуйте лише літери, пробіли, дефіси або апостроф.");
+                AppUtils.ShowWarning("Назва містить недопустимі символи.");
                 return false;
             }
 
-            CbLocation.Text = locationText;
             return true;
         }
 
         private void BtnAddLandPlot_Click(object sender, RoutedEventArgs e)
         {
-            if (!IsLocationValid()) return;
-            AppUtils.NavigateTo(this, new AddEditWindow(CbLocation.Text));
+            if (!IsLocationValid()) return; // Для додавання — місто обов'язкове
+            AppUtils.NavigateTo(this, new AddEditWindow(CbLocation.Text.Trim()));
         }
+
         private void BtnView_Click(object sender, RoutedEventArgs e)
         {
-            if (IsLocationValid()) AppUtils.NavigateTo(this, new ViewWindow(CbLocation.Text));
+            string locationText = CbLocation.Text?.Trim();
+            bool hasLocation = !string.IsNullOrWhiteSpace(locationText)
+                               && locationText != "Почніть вводити назву...";
+
+            AppUtils.NavigateTo(this, new ViewWindow(hasLocation ? locationText : ""));
         }
 
         private void BtnBack_Click(object sender, RoutedEventArgs e) => AppUtils.GoBack(this);

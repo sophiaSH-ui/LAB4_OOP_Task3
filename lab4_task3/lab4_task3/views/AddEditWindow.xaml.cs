@@ -17,7 +17,46 @@ namespace lab4_task3
         private Random random = new Random();
         private List<OwnerJson> ownersList = new List<OwnerJson>();
         private string _location;
+        private int _editId = -1;
 
+        public AddEditWindow(LandPlotModel plot) : this(plot.Location)
+        {
+            _editId = plot.Id;
+            TxtLocation.IsReadOnly = true;
+            TxtLocation.Opacity = 0.6;
+
+            TxtMarketValue.Text = plot.MarketValueFormatted.Replace(" грн", "").Replace(".", ",");
+            TxtGroundWater.Text = plot.GroundWater.ToString();
+
+            // Власник по OwnerId — надійніше ніж по імені
+            CbOwner.SelectedValue = plot.OwnerId;
+
+            // Призначення
+            foreach (ComboBoxItem item in CbPryznachennya.Items)
+                if (item.Content?.ToString() == plot.Pryznachennya) { CbPryznachennya.SelectedItem = item; break; }
+
+            // Тип ґрунту
+            foreach (ComboBoxItem item in CbSoilType.Items)
+                if (item.Content?.ToString() == plot.SoilType) { CbSoilType.SelectedItem = item; break; }
+
+            // Географічна ознака
+            foreach (ComboBoxItem item in CbGeoFeature.Items)
+                if (item.Content?.ToString() == plot.GeoFeature) { CbGeoFeature.SelectedItem = item; break; }
+
+            // Чекбокси
+            ChkRiver.IsChecked = plot.HasRiver;
+            ChkFlat.IsChecked = plot.IsFlat;
+            ChkFertile.IsChecked = plot.IsFertile;
+            ChkForest.IsChecked = plot.NearForest;
+            ChkRoad.IsChecked = plot.NearRoad;
+
+            // Координати
+            LbCoordinates.Items.Clear();
+            foreach (var p in plot.Coordinates)
+                LbCoordinates.Items.Add($"X: {p.X}  |  Y: {p.Y}");
+
+            unsaved = false;
+        }
         public AddEditWindow(string location = "Не вказано")
         {
             InitializeComponent();
@@ -53,6 +92,31 @@ namespace lab4_task3
             CbOwner.SelectedValuePath = "Id";
 
             if (selectedId != -1) CbOwner.SelectedValue = selectedId;
+        }
+
+        private void UpdatePlotInDatabase(int id, int ownerId, string purpose, double marketValue, double groundWater,
+    string soilType, bool river, bool flat, bool fertile, bool forest, bool road,
+    List<string> coordinates, string description)
+        {
+            Plot updatedPlot = new Plot
+            {
+                OwnerId = ownerId,
+                Location = _location,
+                Purpose = purpose,
+                MarketValue = marketValue,
+                GroundWater = groundWater,
+                SoilType = soilType,
+                Description = description,
+                Coordinates = coordinates,
+                HasRiver = river,
+                IsFlat = flat,
+                IsFertile = fertile,
+                NearForest = forest,
+                NearRoad = road
+            };
+
+            LocalStorage.UpdatePlot(id, updatedPlot);
+            DatabaseSyncService.UpdateInDatabase(id, updatedPlot);
         }
 
         private void SavePlotToDatabase(int ownerId, string purpose, double marketValue, double groundWater,
@@ -172,13 +236,22 @@ namespace lab4_task3
 
             string description = $"Населений пункт: {_location}. Географічна ознака: {geoFeature}.";
 
-            SavePlotToDatabase(ownerId, purpose, marketValue, groundWater, soilType,
-                ChkRiver.IsChecked == true, ChkFlat.IsChecked == true, ChkFertile.IsChecked == true,
-                ChkForest.IsChecked == true, ChkRoad.IsChecked == true, coordinates, description);
+            if (_editId == -1)
+            {
+                SavePlotToDatabase(ownerId, purpose, marketValue, groundWater, soilType,
+                    ChkRiver.IsChecked == true, ChkFlat.IsChecked == true, ChkFertile.IsChecked == true,
+                    ChkForest.IsChecked == true, ChkRoad.IsChecked == true, coordinates, description);
+            }
+            else
+            {
+                UpdatePlotInDatabase(_editId, ownerId, purpose, marketValue, groundWater, soilType,
+                    ChkRiver.IsChecked == true, ChkFlat.IsChecked == true, ChkFertile.IsChecked == true,
+                    ChkForest.IsChecked == true, ChkRoad.IsChecked == true, coordinates, description);
+            }
 
             unsaved = false;
             AppUtils.ShowInfo("Дані успішно збережено!");
-            this.Close();
+            AppUtils.GoBack(this);
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)

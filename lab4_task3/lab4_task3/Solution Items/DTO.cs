@@ -92,6 +92,20 @@ namespace lab4_task3.DTO
             }
 
             return properties;
+
+
+        }
+
+        public int GetPropertiesCountByLocation(string location)
+        {
+            using var conn = new NpgsqlConnection(connectionString);
+            conn.Open();
+            string sql = @"SELECT COUNT(*) FROM properties p
+                   JOIN localities l ON p.locality = l.id
+                   WHERE l.title ILIKE @loc";
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("loc", "%" + location + "%");
+            return Convert.ToInt32(cmd.ExecuteScalar());
         }
 
         public long GetPropertiesCount(Locality locality = null)

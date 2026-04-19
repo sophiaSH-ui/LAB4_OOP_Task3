@@ -14,7 +14,7 @@ namespace lab4_task3.views
             InitializeComponent();
             UpdatePlotsCount();
             CbLocation.AddHandler(System.Windows.Controls.Primitives.TextBoxBase.TextChangedEvent,
-                                  new TextChangedEventHandler(CbLocation_TextChanged)); // підписуємось на зміну тексту
+                                  new TextChangedEventHandler(CbLocation_TextChanged)); 
         }
 
         private void CbLocation_TextChanged(object sender, TextChangedEventArgs e)
@@ -37,7 +37,7 @@ namespace lab4_task3.views
             }
             else
             {
-                CountText.Text = db.GetPropertiesCount().ToString(); // загальна кількість
+                CountText.Text = db.GetPropertiesCount().ToString(); 
             }
         }
 
@@ -64,7 +64,7 @@ namespace lab4_task3.views
 
         private void BtnAddLandPlot_Click(object sender, RoutedEventArgs e)
         {
-            if (!IsLocationValid()) return; // Для додавання — місто обов'язкове
+            if (!IsLocationValid()) return; 
             AppUtils.NavigateTo(this, new AddEditWindow(CbLocation.Text.Trim()));
         }
 

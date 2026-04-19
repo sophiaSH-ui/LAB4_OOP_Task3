@@ -28,29 +28,23 @@ namespace lab4_task3
             TxtMarketValue.Text = plot.MarketValueFormatted.Replace(" грн", "").Replace(".", ",");
             TxtGroundWater.Text = plot.GroundWater.ToString();
 
-            // Власник по OwnerId — надійніше ніж по імені
             CbOwner.SelectedValue = plot.OwnerId;
 
-            // Призначення
             foreach (ComboBoxItem item in CbPryznachennya.Items)
                 if (item.Content?.ToString() == plot.Pryznachennya) { CbPryznachennya.SelectedItem = item; break; }
 
-            // Тип ґрунту
             foreach (ComboBoxItem item in CbSoilType.Items)
                 if (item.Content?.ToString() == plot.SoilType) { CbSoilType.SelectedItem = item; break; }
 
-            // Географічна ознака
             foreach (ComboBoxItem item in CbGeoFeature.Items)
                 if (item.Content?.ToString() == plot.GeoFeature) { CbGeoFeature.SelectedItem = item; break; }
 
-            // Чекбокси
             ChkRiver.IsChecked = plot.HasRiver;
             ChkFlat.IsChecked = plot.IsFlat;
             ChkFertile.IsChecked = plot.IsFertile;
             ChkForest.IsChecked = plot.NearForest;
             ChkRoad.IsChecked = plot.NearRoad;
 
-            // Координати
             LbCoordinates.Items.Clear();
             foreach (var p in plot.Coordinates)
                 LbCoordinates.Items.Add($"X: {p.X}  |  Y: {p.Y}");

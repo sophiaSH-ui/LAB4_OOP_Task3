@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
@@ -10,69 +11,74 @@ using lab4_task3.views;
 
 namespace lab4_task3
 {
-    public class OwnerMock
-    {
-        public int Id { get; set; }
-        public string FullName { get; set; }
-    }
-
     public partial class AddEditWindow : Window
     {
         private bool unsaved = false;
         private Random random = new Random();
+        private List<OwnerJson> ownersList = new List<OwnerJson>();
+        private string _location;
 
-        // Зберігаємо список локально, щоб легко додавати
-        private List<OwnerMock> ownersList = new List<OwnerMock>();
-
-        public AddEditWindow()
+        public AddEditWindow(string location = "Не вказано")
         {
             InitializeComponent();
+            _location = location;
+            TxtLocation.Text = _location;
 
             LoadOwnersFromDatabase();
 
             TxtMarketValue.TextChanged += NumericInput_TextChanged;
             TxtGroundWater.TextChanged += NumericInput_TextChanged;
+            TxtCoordX.TextChanged += NumericInput_TextChanged;
+            TxtCoordY.TextChanged += NumericInput_TextChanged;
         }
 
         private void LoadOwnersFromDatabase()
         {
-            // Тут можна замінити на реальний запит до БД
-            ownersList = new List<OwnerMock>
-            {
-                new OwnerMock { Id = 1, FullName = "Іваненко І.І." },
-                new OwnerMock { Id = 2, FullName = "Петренко П.П." },
-                new OwnerMock { Id = 3, FullName = "Сидоренко С.С." }
-            };
-
+            ownersList = LocalStorage.LoadOwners();
             RefreshOwnerComboBox();
         }
 
-        // Окремий метод щоб не дублювати код оновлення ComboBox
         private void RefreshOwnerComboBox()
         {
             int selectedId = CbOwner.SelectedValue is int id ? id : -1;
 
             CbOwner.ItemsSource = null;
-            CbOwner.ItemsSource = ownersList;
-
-            // Відновлюємо вибір якщо був
-            if (selectedId != -1)
+            CbOwner.ItemsSource = ownersList.Select(o => new
             {
-                foreach (var owner in ownersList)
-                {
-                    if (owner.Id == selectedId)
-                    {
-                        CbOwner.SelectedValue = selectedId;
-                        break;
-                    }
-                }
-            }
+                Id = o.Id,
+                FullName = $"{o.LastName} {o.FirstName}"
+            }).ToList();
+
+            CbOwner.DisplayMemberPath = "FullName";
+            CbOwner.SelectedValuePath = "Id";
+
+            if (selectedId != -1) CbOwner.SelectedValue = selectedId;
         }
 
         private void SavePlotToDatabase(int ownerId, string purpose, double marketValue, double groundWater,
-            string soilType, bool river, bool flat, bool fertile, bool forest, bool road, List<string> coordinates)
+    string soilType, bool river, bool flat, bool fertile, bool forest, bool road, List<string> coordinates, string description)
         {
-            // логіка збереження
+            Plot newPlot = new Plot
+            {
+                OwnerId = ownerId,
+                Location = _location,
+                Purpose = purpose,
+                MarketValue = marketValue,
+                GroundWater = groundWater,
+                SoilType = soilType,
+                Description = description,
+                Coordinates = coordinates,
+                HasRiver = river,
+                IsFlat = flat,
+                IsFertile = fertile,
+                NearForest = forest,
+                NearRoad = road
+            };
+
+            LocalStorage.SavePlot(newPlot);
+            DatabaseSyncService.PushToDatabase(newPlot);
+
+            
         }
 
         private bool CheckForOverlapMock(List<string> coordinates)
@@ -108,7 +114,7 @@ namespace lab4_task3
                 string.IsNullOrWhiteSpace(TxtMarketValue.Text) ||
                 string.IsNullOrWhiteSpace(TxtGroundWater.Text))
             {
-                AppUtils.ShowWarning("Будь ласка, заповніть всі основні поля (Власник, Призначення, Вартість, Рівень вод, Тип ґрунту).");
+                AppUtils.ShowWarning("Будь ласка, заповніть всі основні поля.");
                 return;
             }
 
@@ -118,15 +124,21 @@ namespace lab4_task3
                 return;
             }
 
+            if (LbCoordinates.Items.Count < 3)
+            {
+                AppUtils.ShowWarning("Земельна ділянка повинна мати щонайменше 3 координати.");
+                return;
+            }
+
             if (!double.TryParse(TxtGroundWater.Text, out double groundWater))
             {
                 AppUtils.ShowWarning("Введіть коректний рівень ґрунтових вод.");
                 return;
             }
 
-            if (LbCoordinates.Items.Count < 3)
+            if (groundWater < 0 || groundWater > 1000)
             {
-                AppUtils.ShowWarning("Земельна ділянка повинна мати щонайменше 3 координати (вершини).");
+                AppUtils.ShowWarning("Значення грунтових вод виходить за межі допустимого діапазону для збереження (0-1000).");
                 return;
             }
 
@@ -149,101 +161,60 @@ namespace lab4_task3
             {
                 btnSave.IsEnabled = true;
                 btnSave.Content = originalContent;
-                AppUtils.ShowWarning("Збій збереження! Виявлено накладання меж на іншу зареєстровану ділянку в цій місцевості.");
+                AppUtils.ShowWarning("Збій збереження! Виявлено накладання меж.");
                 return;
             }
 
             int ownerId = (int)CbOwner.SelectedValue;
             string purpose = (CbPryznachennya.SelectedItem as ComboBoxItem)?.Content.ToString();
             string soilType = (CbSoilType.SelectedItem as ComboBoxItem)?.Content.ToString();
+            string geoFeature = (CbGeoFeature.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "Рівнинна";
 
-            bool hasRiver = ChkRiver.IsChecked == true;
-            bool isFlat = ChkFlat.IsChecked == true;
-            bool isFertile = ChkFertile.IsChecked == true;
-            bool nearForest = ChkForest.IsChecked == true;
-            bool nearRoad = ChkRoad.IsChecked == true;
+            string description = $"Населений пункт: {_location}. Географічна ознака: {geoFeature}.";
 
             SavePlotToDatabase(ownerId, purpose, marketValue, groundWater, soilType,
-                hasRiver, isFlat, isFertile, nearForest, nearRoad, coordinates);
+                ChkRiver.IsChecked == true, ChkFlat.IsChecked == true, ChkFertile.IsChecked == true,
+                ChkForest.IsChecked == true, ChkRoad.IsChecked == true, coordinates, description);
 
             unsaved = false;
-            AppUtils.ShowInfo("Дані земельної ділянки успішно збережено!");
+            AppUtils.ShowInfo("Дані успішно збережено!");
             this.Close();
         }
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
             if (!unsaved) return;
-
-            if (!AppUtils.AskConfirmation("Закрити без збереження?", "Увага"))
-            {
-                e.Cancel = true;
-            }
+            if (!AppUtils.AskConfirmation("Закрити без збереження?", "Увага")) e.Cancel = true;
         }
 
-        private void BtnVisualize_Click(object sender, RoutedEventArgs e)
-        {
-            AppUtils.ShowDialog(this, new VisualizationWindow());
-        }
+        //private void BtnVisualize_Click(object sender, RoutedEventArgs e)
+        //{
+        //    AppUtils.ShowDialog(this, new VisualizationWindow());
+        //}
 
         private void BtnAddNewOwner_Click(object sender, RoutedEventArgs e)
         {
-            // ShowDialog — чекаємо поки вікно закриється і тоді читаємо результат
             var window = new CreatingAccountOwner();
             window.ShowDialog();
 
             if (window.CreatedOwner != null)
             {
-                Owner created = window.CreatedOwner;
-
-                // Додаємо нового власника в локальний список і оновлюємо ComboBox
-                var newOwner = new OwnerMock
-                {
-                    Id = created.ID,
-                    FullName = $"{created.LastName} {created.FirstName}"
-                };
-
-                ownersList.Add(newOwner);
-                RefreshOwnerComboBox();
-
-                // Одразу вибираємо щойно створеного власника
-                CbOwner.SelectedValue = newOwner.Id;
+                LoadOwnersFromDatabase();
+                CbOwner.SelectedValue = window.CreatedOwner.ID;
             }
         }
 
         private void BtnAddCoord_Click(object sender, RoutedEventArgs e)
         {
-            string xStr = TxtCoordX.Text.Trim();
-            string yStr = TxtCoordY.Text.Trim();
-
-            if (string.IsNullOrWhiteSpace(xStr) || string.IsNullOrWhiteSpace(yStr))
-            {
-                AppUtils.ShowWarning("Будь ласка, введіть значення X та Y для нової точки.");
-                return;
-            }
-
-            if (!double.TryParse(xStr, out double x) || !double.TryParse(yStr, out double y))
-            {
-                AppUtils.ShowWarning("Координати повинні бути числовими значеннями.");
-                return;
-            }
-
-            LbCoordinates.Items.Add($"X: {x}  |  Y: {y}");
-
-            TxtCoordX.Clear();
-            TxtCoordY.Clear();
-            TxtCoordX.Focus();
-
+            if (string.IsNullOrWhiteSpace(TxtCoordX.Text) || string.IsNullOrWhiteSpace(TxtCoordY.Text)) return;
+            LbCoordinates.Items.Add($"X: {TxtCoordX.Text}  |  Y: {TxtCoordY.Text}");
+            TxtCoordX.Clear(); TxtCoordY.Clear();
             unsaved = true;
         }
 
         private void BtnRemoveCoord_Click(object sender, RoutedEventArgs e)
         {
-            if (LbCoordinates.SelectedIndex != -1)
-            {
-                LbCoordinates.Items.RemoveAt(LbCoordinates.SelectedIndex);
-                unsaved = true;
-            }
+            if (LbCoordinates.SelectedIndex != -1) { LbCoordinates.Items.RemoveAt(LbCoordinates.SelectedIndex); unsaved = true; }
         }
 
         private void LbCoordinates_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -256,20 +227,9 @@ namespace lab4_task3
             CbOwner.SelectedIndex = -1;
             CbPryznachennya.SelectedIndex = -1;
             CbSoilType.SelectedIndex = -1;
-
-            TxtMarketValue.Clear();
-            TxtGroundWater.Clear();
-            TxtCoordX.Clear();
-            TxtCoordY.Clear();
-
+            CbGeoFeature.SelectedIndex = -1;
+            TxtMarketValue.Clear(); TxtGroundWater.Clear();
             LbCoordinates.Items.Clear();
-
-            ChkRiver.IsChecked = false;
-            ChkFlat.IsChecked = false;
-            ChkFertile.IsChecked = false;
-            ChkForest.IsChecked = false;
-            ChkRoad.IsChecked = false;
-
             unsaved = true;
         }
     }

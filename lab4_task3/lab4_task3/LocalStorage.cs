@@ -4,6 +4,7 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
+using lab4_task3.DTO;
 
 namespace lab4_task3
 {
@@ -15,8 +16,39 @@ namespace lab4_task3
         public DateTime BirthDate { get; set; }
     }
 
+
+
     public static class LocalStorage
     {
+        private static readonly string PlotsPath = "plots.json";
+
+        public static List<Plot> LoadPlots()
+        {
+            if (!File.Exists(PlotsPath)) return new List<Plot>();
+            string json = File.ReadAllText(PlotsPath);
+            return JsonSerializer.Deserialize<List<Plot>>(json) ?? new List<Plot>();
+        }
+
+        public static void SavePlot(Plot plot)
+        {
+            var plots = LoadPlots();
+
+            if (plot.Id == 0) plot.Id = plots.Count > 0 ? plots.Max(p => p.Id) + 1 : 1;
+
+            int index = plots.FindIndex(p => p.Id == plot.Id);
+            if (index >= 0) plots[index] = plot;
+            else plots.Add(plot);
+
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
+            };
+
+            string json = JsonSerializer.Serialize(plots, options);
+            File.WriteAllText(PlotsPath, json);
+        }
+
         private static readonly string FilePath = "owners.json";
 
         public static List<OwnerJson> LoadOwners()

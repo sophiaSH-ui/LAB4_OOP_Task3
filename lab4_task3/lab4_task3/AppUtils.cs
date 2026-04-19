@@ -12,11 +12,8 @@ namespace lab4_task3
             currentWindow.Hide();
             targetWindow.Show();
 
-            // Розумний обробник закриття
             targetWindow.Closed += (s, e) =>
             {
-                // Якщо вікно закрилося, а його Owner (попереднє вікно) досі сховане, 
-                // це означає, що натиснули "Хрестик". Тому закриваємо всю програму.
                 if (!currentWindow.IsVisible)
                 {
                     Application.Current.Shutdown();
@@ -31,15 +28,12 @@ namespace lab4_task3
             targetWindow.ShowDialog();
         }
 
-        // НОВИЙ МЕТОД ДЛЯ КНОПКИ "НАЗАД"
         public static void GoBack(Window currentWindow)
         {
-            // Спочатку примусово показуємо попереднє вікно
             if (currentWindow.Owner != null)
             {
                 currentWindow.Owner.Show();
             }
-            // Тепер безпечно закриваємо поточне
             currentWindow.Close();
         }
 

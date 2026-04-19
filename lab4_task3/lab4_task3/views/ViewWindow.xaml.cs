@@ -1,4 +1,6 @@
-﻿using System;
+﻿using lab4_task3.DTO;
+using Npgsql;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -84,36 +86,49 @@ namespace lab4_task3
 
         private List<LandPlotModel> GetPlotsFromDatabase(string location, string purpose, string owner, int minPrice, int maxPrice)
         {
+            List<LandPlotModel> plots = new List<LandPlotModel>();
 
-            //зараз працює з тестовими даним, сюдти додати sql запит в БД
-            var plots = TestDataStore.GetTestPlots();
-
-            if (!string.IsNullOrWhiteSpace(location))
+            using (var conn = new NpgsqlConnection(DB.connectionString))
             {
-                plots = plots.Where(p => !string.IsNullOrWhiteSpace(p.Location) &&
-                                         p.Location.IndexOf(location, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
-            }
+                conn.Open();
 
-            if (!string.IsNullOrWhiteSpace(purpose))
-            {
-                plots = plots.Where(p => p.Pryznachennya == purpose).ToList();
-            }
+                // SQL-запит з JOIN для отримання всіх пов'язаних даних
+                string sql = @"
+            SELECT p.id, p.usage, p.price, o.first_name, o.last_name, l.title as locality, d.water, d.soil
+            FROM properties p
+            JOIN owners o ON p.owner = o.id
+            JOIN localities l ON p.locality = l.id
+            JOIN descriptions d ON p.description = d.id
+            WHERE 1=1";
 
-            if (!string.IsNullOrWhiteSpace(owner))
-            {
-                plots = plots.Where(p => p.OwnerName.IndexOf(owner, StringComparison.OrdinalIgnoreCase) >= 0).ToList();
-            }
+                if (!string.IsNullOrWhiteSpace(location)) sql += " AND l.title ILIKE @loc";
+                if (!string.IsNullOrWhiteSpace(purpose)) sql += " AND p.usage = @usage";
+                if (!string.IsNullOrWhiteSpace(owner)) sql += " AND (o.first_name ILIKE @owner OR o.last_name ILIKE @owner)";
+                if (minPrice > 0) sql += " AND p.price >= @minP";
+                if (maxPrice > 0) sql += " AND p.price <= @maxP";
 
-            if (minPrice > 0)
-            {
-                plots = plots.Where(p => ParsePrice(p.MarketValueFormatted) >= minPrice).ToList();
-            }
+                using var cmd = new NpgsqlCommand(sql, conn);
 
-            if (maxPrice > 0)
-            {
-                plots = plots.Where(p => ParsePrice(p.MarketValueFormatted) <= maxPrice).ToList();
-            }
+                if (!string.IsNullOrWhiteSpace(location)) cmd.Parameters.AddWithValue("loc", "%" + location + "%");
+                if (!string.IsNullOrWhiteSpace(purpose)) cmd.Parameters.AddWithValue("usage", purpose);
+                if (!string.IsNullOrWhiteSpace(owner)) cmd.Parameters.AddWithValue("owner", "%" + owner + "%");
+                if (minPrice > 0) cmd.Parameters.AddWithValue("minP", (decimal)minPrice);
+                if (maxPrice > 0) cmd.Parameters.AddWithValue("maxP", (decimal)maxPrice);
 
+                using var reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    plots.Add(new LandPlotModel
+                    {
+                        Id = reader.GetInt32(0),
+                        Pryznachennya = reader.GetString(1),
+                        MarketValueFormatted = reader.GetDecimal(2).ToString("F2") + " грн",
+                        OwnerName = reader.GetString(3) + " " + reader.GetString(4),
+                        Location = reader.GetString(5)
+                      
+                    });
+                }
+            }
             return plots;
         }
 

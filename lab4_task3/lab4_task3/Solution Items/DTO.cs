@@ -325,4 +325,22 @@ namespace lab4_task3.DTO
             }
         }
     }
+
+    public class Plot
+    {
+        public int Id { get; set; }
+        public int OwnerId { get; set; }
+        public string Location { get; set; }
+        public string Purpose { get; set; }
+        public double MarketValue { get; set; }
+        public double GroundWater { get; set; }
+        public string SoilType { get; set; }
+        public string Description { get; set; }
+        public List<string> Coordinates { get; set; }
+        public bool HasRiver { get; set; }
+        public bool IsFlat { get; set; }
+        public bool IsFertile { get; set; }
+        public bool NearForest { get; set; }
+        public bool NearRoad { get; set; }
+    }
 }

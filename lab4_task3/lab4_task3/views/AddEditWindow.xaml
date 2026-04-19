@@ -1,144 +1,117 @@
 ﻿<Window x:Class="lab4_task3.AddEditWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Земельна ділянка" Height="580" Width="460"
+        Title="Земельна ділянка" Height="680" Width="460"
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource CreamBrush}"
         Closing="Window_Closing">
-
-  
-        <Grid >
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-
-            <Border Grid.Row="0" Background="{StaticResource DarkGreenBrush}" Padding="24,20">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-
-                    <Button Grid.Column="0" 
-                            Background="Transparent" BorderThickness="0"
-                            Foreground="{StaticResource LightGreenBrush}" FontSize="22"
-                            Cursor="Hand" Click="BtnBack_Click" Margin="0,0,16,0" Content="←" Height="48" VerticalAlignment="Top"/>
-
-                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                        <TextBlock x:Name="WindowTitleText"
-                                   Text="НОВА ДІЛЯНКА"
-                                   FontFamily="Segoe UI Semibold"
-                                   FontSize="20"
-                                   FontWeight="Bold"
-                                   Foreground="{StaticResource LightGreenBrush}"/>
-                        <TextBlock Text="Заповніть інформацію про ділянку"
-                                   FontFamily="Segoe UI" FontSize="12"
-                                   Foreground="{StaticResource MutedGreenBrush}"
-                                   Margin="0,4,0,0"/>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Border Grid.Row="0" Background="{StaticResource DarkGreenBrush}" Padding="24,20">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Background="Transparent" BorderThickness="0" Foreground="{StaticResource LightGreenBrush}" FontSize="22" Cursor="Hand" Click="BtnBack_Click" Margin="0,0,16,0" Content="←" Height="48" VerticalAlignment="Top"/>
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock x:Name="WindowTitleText" Text="НОВА ДІЛЯНКА" FontFamily="Segoe UI Semibold" FontSize="20" FontWeight="Bold" Foreground="{StaticResource LightGreenBrush}"/>
+                    <TextBlock Text="Заповніть інформацію про ділянку" FontFamily="Segoe UI" FontSize="12" Foreground="{StaticResource MutedGreenBrush}" Margin="0,4,0,0"/>
+                </StackPanel>
+                <TextBlock Grid.Column="2" Text="🌱" FontSize="36" VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="24,16,24,16">
+            <StackPanel>
+                <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+                    <StackPanel>
+                        <TextBlock Text="📍 НАСЕЛЕНИЙ ПУНКТ" Style="{StaticResource SectionHeader}" Margin="0,0,0,8"/>
+                        <TextBox x:Name="TxtLocation" 
+                 Style="{StaticResource InputBox}" 
+                 IsReadOnly="True" 
+                 IsReadOnlyCaretVisible="False"
+                 Focusable="False" 
+                 Background="#F5F5F5" 
+                 Foreground="Gray"/>
                     </StackPanel>
-
-                    <TextBlock Grid.Column="2" Text="🌱" FontSize="36" VerticalAlignment="Center"/>
-                </Grid>
-            </Border>
-
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="24,16,24,16">
-                <StackPanel>
-
-                    <Border Style="{StaticResource Card}" Margin="0,0,0,16">
-                        <StackPanel>
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                                <TextBlock Text="👤 " FontSize="18" VerticalAlignment="Center"/>
-                                <TextBlock Text="ВЛАСНИК" Style="{StaticResource SectionHeader}" VerticalAlignment="Center"/>
-                            </StackPanel>
-
-                            <TextBlock Text="Оберіть власника" Style="{StaticResource FieldLabel}"/>
-
-                            <ComboBox x:Name="CbOwner" 
-                                      Style="{StaticResource InputCombo}" 
-                                      DisplayMemberPath="FullName" 
-                                      SelectedValuePath="Id"
-                                      Text="Оберіть власника зі списку..."
-                                      Margin="0,0,0,16"/>
-
-                            <TextBlock Text="Не має потрібного власника?" 
-                                       FontFamily="Segoe UI" 
-                                       FontSize="12"
-                                       Foreground="{StaticResource MutedGreenBrush}"
-                                       HorizontalAlignment="Center"
-                                       Margin="0,0,0,8"/>
-
-                            <Button x:Name="BtnAddNewOwner" 
-                                    Style="{StaticResource OwnerButton}" 
-                                    Height="40"
-                                    Click="BtnAddNewOwner_Click">
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <TextBlock Text="+ " FontSize="16" FontWeight="Bold" Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Додати власника" VerticalAlignment="Center"/>
-                                </StackPanel>
-                            </Button>
-
+                </Border>
+                <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                            <TextBlock Text="👤 " FontSize="18" VerticalAlignment="Center"/>
+                            <TextBlock Text="ВЛАСНИК" Style="{StaticResource SectionHeader}" VerticalAlignment="Center"/>
                         </StackPanel>
-                    </Border>
-
-                    <Border Style="{StaticResource Card}" Margin="0,0,0,16">
-                        <StackPanel>
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                                <TextBlock Text="📋 " FontSize="18" VerticalAlignment="Center"/>
-                                <TextBlock Text="ДІЛЯНКА" Style="{StaticResource SectionHeader}" VerticalAlignment="Center"/>
+                        <TextBlock Text="Оберіть власника" Style="{StaticResource FieldLabel}"/>
+                        <ComboBox x:Name="CbOwner" Style="{StaticResource InputCombo}" DisplayMemberPath="FullName" SelectedValuePath="Id" Text="Оберіть власника зі списку..." Margin="0,0,0,16"/>
+                        <Button x:Name="BtnAddNewOwner" Style="{StaticResource OwnerButton}" Height="40" Click="BtnAddNewOwner_Click">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBlock Text="+ " FontSize="16" FontWeight="Bold" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Додати власника" VerticalAlignment="Center"/>
                             </StackPanel>
-
-                            <TextBlock Text="Призначення" Style="{StaticResource FieldLabel}"/>
-                            <ComboBox x:Name="CbPryznachennya" Style="{StaticResource InputCombo}" Margin="0,0,0,12">
-                                <ComboBoxItem Content="Під забудову"/>
-                                <ComboBoxItem Content="Сільськогосподарського призначення"/>
-                                <ComboBoxItem Content="Зарезервована"/>
-                            </ComboBox>
-
-                            <TextBlock Text="Ринкова вартість (грн)" Style="{StaticResource FieldLabel}"/>
-                            <TextBox x:Name="TxtMarketValue" Style="{StaticResource InputBox}" Margin="0,0,0,12"/>
+                        </Button>
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                            <TextBlock Text="📋 " FontSize="18" VerticalAlignment="Center"/>
+                            <TextBlock Text="ДІЛЯНКА" Style="{StaticResource SectionHeader}" VerticalAlignment="Center"/>
                         </StackPanel>
-                    </Border>
-
-                    <Border Style="{StaticResource Card}" Margin="0,0,0,16">
-                        <StackPanel>
-                            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                                <TextBlock Text="🌍 " FontSize="18" VerticalAlignment="Center"/>
-                                <TextBlock Text="ОПИС ҐРУНТУ" Style="{StaticResource SectionHeader}" VerticalAlignment="Center"/>
-                            </StackPanel>
-                            <TextBlock Text="Рівень ґрунтових вод (м)" Style="{StaticResource FieldLabel}"/>
-                            <TextBox x:Name="TxtGroundWater" Style="{StaticResource InputBox}" Margin="0,0,0,12"/>
-                            <TextBlock Text="Тип ґрунту" Style="{StaticResource FieldLabel}"/>
-                            <ComboBox x:Name="CbSoilType" Style="{StaticResource InputCombo}" Margin="0,0,0,12">
-                                <ComboBoxItem Content="Чорнозем"/>
-                                <ComboBoxItem Content="Суглинок"/>
-                                <ComboBoxItem Content="Супісок"/>
-                                <ComboBoxItem Content="Глина"/>
-                                <ComboBoxItem Content="Торф"/>
-                                <ComboBoxItem Content="Пісок"/>
-                            </ComboBox>
-                            <TextBlock Text="Характеристики" Style="{StaticResource FieldLabel}"/>
-                            <WrapPanel Margin="0,0,0,4">
-                                <CheckBox x:Name="ChkRiver" Content="Біля річки" Margin="0,4,12,4"/>
-                                <CheckBox x:Name="ChkFlat" Content="Рівний рельєф" Margin="0,4,12,4"/>
-                                <CheckBox x:Name="ChkFertile" Content="Родючий ґрунт" Margin="0,4,12,4"/>
-                                <CheckBox x:Name="ChkForest" Content="Поряд ліс" Margin="0,4,12,4"/>
-                                <CheckBox x:Name="ChkRoad" Content="Дорога поруч" Margin="0,4,0,4"/>
-                            </WrapPanel>
+                        <TextBlock Text="Призначення" Style="{StaticResource FieldLabel}"/>
+                        <ComboBox x:Name="CbPryznachennya" Style="{StaticResource InputCombo}" Margin="0,0,0,12">
+                            <ComboBoxItem Content="Під забудову"/>
+                            <ComboBoxItem Content="Сільськогосподарського призначення"/>
+                            <ComboBoxItem Content="Зарезервована"/>
+                        </ComboBox>
+                        <TextBlock Text="Ринкова вартість (грн)" Style="{StaticResource FieldLabel}"/>
+                        <TextBox x:Name="TxtMarketValue" Style="{StaticResource InputBox}" Margin="0,0,0,12"/>
+                    </StackPanel>
+                </Border>
+                <Border Style="{StaticResource Card}" Margin="0,0,0,16">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                            <TextBlock Text="🌍 " FontSize="18" VerticalAlignment="Center"/>
+                            <TextBlock Text="ОПИС ҐРУНТУ" Style="{StaticResource SectionHeader}" VerticalAlignment="Center"/>
                         </StackPanel>
-                    </Border>
-
+                        <TextBlock Text="Рівень ґрунтових вод (м)" Style="{StaticResource FieldLabel}"/>
+                        <TextBox x:Name="TxtGroundWater" Style="{StaticResource InputBox}" Margin="0,0,0,12"/>
+                        <TextBlock Text="Тип ґрунту" Style="{StaticResource FieldLabel}"/>
+                        <ComboBox x:Name="CbSoilType" Style="{StaticResource InputCombo}" Margin="0,0,0,12">
+                            <ComboBoxItem Content="Чорнозем"/>
+                            <ComboBoxItem Content="Суглинок"/>
+                            <ComboBoxItem Content="Супісок"/>
+                            <ComboBoxItem Content="Глина"/>
+                            <ComboBoxItem Content="Торф"/>
+                            <ComboBoxItem Content="Пісок"/>
+                        </ComboBox>
+                        <TextBlock Text="Географічна ознака" Style="{StaticResource FieldLabel}"/>
+                        <ComboBox x:Name="CbGeoFeature" Style="{StaticResource InputCombo}" Margin="0,0,0,12">
+                            <ComboBoxItem Content="Рівнинна"/>
+                            <ComboBoxItem Content="Гірська"/>
+                            <ComboBoxItem Content="Горбиста"/>
+                            <ComboBoxItem Content="Низинна"/>
+                        </ComboBox>
+                        <TextBlock Text="Характеристики" Style="{StaticResource FieldLabel}"/>
+                        <WrapPanel Margin="0,0,0,4">
+                            <CheckBox x:Name="ChkRiver" Content="Біля річки" Margin="0,4,12,4"/>
+                            <CheckBox x:Name="ChkFlat" Content="Рівний рельєф" Margin="0,4,12,4"/>
+                            <CheckBox x:Name="ChkFertile" Content="Родючий ґрунт" Margin="0,4,12,4"/>
+                            <CheckBox x:Name="ChkForest" Content="Поряд ліс" Margin="0,4,12,4"/>
+                            <CheckBox x:Name="ChkRoad" Content="Дорога поруч" Margin="0,4,0,4"/>
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
                 <Border Style="{StaticResource Card}" Margin="0,0,0,8">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
                             <TextBlock Text="📐 " FontSize="18" VerticalAlignment="Center"/>
-                            <TextBlock Text="ВЕРШИНИ ДІЛЯНКИ (БАГАТОКУТНИК)" Style="{StaticResource SectionHeader}" VerticalAlignment="Center"/>
+                            <TextBlock Text="ВЕРШИНИ ДІЛЯНКИ" Style="{StaticResource SectionHeader}" VerticalAlignment="Center"/>
                         </StackPanel>
-
-                        <TextBlock Text="Додайте координати вершин (мінімум 3 точки)" Style="{StaticResource FieldLabel}" Margin="0,0,0,10" Foreground="{StaticResource DarkGreenBrush}"/>
-
                         <Grid Margin="0,0,0,12">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -154,44 +127,26 @@
                                 <TextBox x:Name="TxtCoordY" Style="{StaticResource InputBox}"/>
                             </StackPanel>
                         </Grid>
-
-                        <Button x:Name="BtnAddCoord" 
-                                    Style="{StaticResource AccentButton}" 
-                                    Height="42" 
-                                    Margin="0,0,0,12" 
-                                    Click="BtnAddCoord_Click">
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <TextBlock Text="+ " FontSize="18" FontWeight="Bold" Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="Додати координату" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-
-                        <ListBox x:Name="LbCoordinates" ItemContainerStyle="{StaticResource ListItem}" 
-                                     Height="110" Background="Transparent" BorderThickness="0"
-                                     SelectionChanged="LbCoordinates_SelectionChanged"/>
-
+                        <Button x:Name="BtnAddCoord" Style="{StaticResource AccentButton}" Height="42" Margin="0,0,0,12" Click="BtnAddCoord_Click" Content="+ Додати координату"/>
+                        <ListBox x:Name="LbCoordinates" ItemContainerStyle="{StaticResource ListItem}" Height="110" Background="Transparent" BorderThickness="0" SelectionChanged="LbCoordinates_SelectionChanged"/>
                         <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                            <Button x:Name="BtnRemoveCoord" Style="{StaticResource DangerButton}" Height="36" Padding="12,0"
-                                        IsEnabled="False" Margin="0,0,8,0" Click="BtnRemoveCoord_Click" Content="🗑 Видалити"/>
-                            <Button x:Name="BtnVisualize" Style="{StaticResource PrimaryButton}" Height="36" Padding="12,0"
-                                        Click="BtnVisualize_Click" Content="👁 Перегляд"/>
+                            <Button x:Name="BtnRemoveCoord" Style="{StaticResource DangerButton}" Height="36" Padding="12,0" IsEnabled="False" Margin="0,0,8,0" Click="BtnRemoveCoord_Click" Content="🗑 Видалити"/>
+                           
                         </StackPanel>
                     </StackPanel>
                 </Border>
             </StackPanel>
-            </ScrollViewer>
-
-            <Border Grid.Row="2" Background="White" Padding="24,14" BorderBrush="{StaticResource LightGreenBrush}" BorderThickness="0,1,0,0">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="12"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0" Style="{StaticResource PrimaryButton}" Click="BtnSave_Click" Content="✓ Зберегти"/>
-                    <Button Grid.Column="2" Style="{StaticResource DangerButton}" Click="BtnReset_Click" Content="↺ Скинути дані"/>
-                </Grid>
-            </Border>
-        </Grid>
-
+        </ScrollViewer>
+        <Border Grid.Row="2" Background="White" Padding="24,14" BorderBrush="{StaticResource LightGreenBrush}" BorderThickness="0,1,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="12"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Style="{StaticResource PrimaryButton}" Click="BtnSave_Click" Content="✓ Зберегти"/>
+                <Button Grid.Column="2" Style="{StaticResource DangerButton}" Click="BtnReset_Click" Content="↺ Скинути"/>
+            </Grid>
+        </Border>
+    </Grid>
 </Window>

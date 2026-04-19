@@ -5,6 +5,7 @@ namespace lab4_task3
 {
     public class LandPlotModel
     {
+        public int Id { get; set; }
         public string OwnerName { get; set; }
         public string Pryznachennya { get; set; }
         public string SoilType { get; set; }

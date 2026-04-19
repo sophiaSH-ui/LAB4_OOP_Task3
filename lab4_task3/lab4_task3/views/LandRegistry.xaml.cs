@@ -1,4 +1,5 @@
-﻿using System;
+﻿using lab4_task3.DTO;
+using System;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -11,32 +12,15 @@ namespace lab4_task3.views
         public LandRegistry()
         {
             InitializeComponent();
-
             UpdatePlotsCount();
-
-            CbLocation.SelectionChanged += (s, e) => UpdatePlotsCount();
-            CbLocation.AddHandler(System.Windows.Controls.Primitives.TextBoxBase.TextChangedEvent, new TextChangedEventHandler((s, e) => UpdatePlotsCount()));
         }
 
         private void UpdatePlotsCount()
         {
             if (CountText == null || CbLocation == null) return;
 
-            var allPlots = TestDataStore.GetTestPlots();
-            string loc = CbLocation.Text?.Trim();
-
-            if (string.IsNullOrWhiteSpace(loc) || loc == "Почніть вводити назву...")
-            {
-                CountText.Text = allPlots.Count.ToString();
-            }
-            else
-            {
-                int count = allPlots.Count(p =>
-                    !string.IsNullOrWhiteSpace(p.Location) &&
-                    p.Location.IndexOf(loc, StringComparison.OrdinalIgnoreCase) >= 0);
-
-                CountText.Text = count.ToString();
-            }
+            DB db = new DB();
+            CountText.Text = db.GetPropertiesCount().ToString();
         }
 
         private bool IsLocationValid()
@@ -56,7 +40,6 @@ namespace lab4_task3.views
             }
 
             string pattern = @"^[а-яА-ЯіІїЇєЄґҐa-zA-Z\s\-']+$";
-
             if (!Regex.IsMatch(locationText, pattern))
             {
                 AppUtils.ShowWarning("Назва містить недопустимі символи. Використовуйте лише літери, пробіли, дефіси або апостроф.");
@@ -64,35 +47,19 @@ namespace lab4_task3.views
             }
 
             CbLocation.Text = locationText;
-
             return true;
         }
 
         private void BtnAddLandPlot_Click(object sender, RoutedEventArgs e)
         {
             if (!IsLocationValid()) return;
-
-            AppUtils.NavigateTo(this, new AddEditWindow());
+            AppUtils.NavigateTo(this, new AddEditWindow(CbLocation.Text));
         }
-
         private void BtnView_Click(object sender, RoutedEventArgs e)
         {
-            string loc = CbLocation.Text?.Trim();
-
-            if (string.IsNullOrWhiteSpace(loc) || loc == "Почніть вводити назву...")
-            {
-                loc = "";
-            }
-            else
-            {
-                if (!IsLocationValid()) return;
-            }
- AppUtils.NavigateTo(this, new ViewWindow(loc));
+            if (IsLocationValid()) AppUtils.NavigateTo(this, new ViewWindow(CbLocation.Text));
         }
 
-        private void BtnBack_Click(object sender, RoutedEventArgs e)
-        {
-            AppUtils.GoBack(this);
-        }
+        private void BtnBack_Click(object sender, RoutedEventArgs e) => AppUtils.GoBack(this);
     }
 }

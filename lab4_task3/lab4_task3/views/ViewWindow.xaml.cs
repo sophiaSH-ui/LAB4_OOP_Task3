@@ -17,6 +17,10 @@ namespace lab4_task3
         public ViewWindow(string locationFilter = "")
         {
             InitializeComponent();
+            InputValidator.AttachTextOnly(FilterTxtOwner);
+            InputValidator.AttachIntOnly(FilterTxtMinValue);
+            InputValidator.AttachIntOnly(FilterTxtMaxValue);
+
             _locationFilter = locationFilter;
 
             ApplyFilters();
@@ -24,8 +28,6 @@ namespace lab4_task3
 
         private void ApplyFilters()
         {
-            ValidateInputs();
-
             string purpose = "";
             if (FilterCbPryznachennya != null && FilterCbPryznachennya.SelectedItem is ComboBoxItem selectedComboItem)
             {
@@ -46,44 +48,6 @@ namespace lab4_task3
             }
         }
 
-        private void ValidateInputs()
-        {
-            if (FilterTxtOwner != null && !string.IsNullOrWhiteSpace(FilterTxtOwner.Text))
-            {
-                string text = FilterTxtOwner.Text;
-                string cleanText = Regex.Replace(text, @"[^а-яА-ЯіІїЇєЄґҐa-zA-Z\s\-']", "");
-                if (text != cleanText)
-                {
-                    int caret = FilterTxtOwner.CaretIndex > 0 ? FilterTxtOwner.CaretIndex - 1 : 0;
-                    FilterTxtOwner.Text = cleanText;
-                    FilterTxtOwner.CaretIndex = caret;
-                }
-            }
-
-            if (FilterTxtMinValue != null && !string.IsNullOrWhiteSpace(FilterTxtMinValue.Text))
-            {
-                string text = FilterTxtMinValue.Text;
-                string cleanText = Regex.Replace(text, @"[^\d]", "");
-                if (text != cleanText)
-                {
-                    int caret = FilterTxtMinValue.CaretIndex > 0 ? FilterTxtMinValue.CaretIndex - 1 : 0;
-                    FilterTxtMinValue.Text = cleanText;
-                    FilterTxtMinValue.CaretIndex = caret;
-                }
-            }
-
-            if (FilterTxtMaxValue != null && !string.IsNullOrWhiteSpace(FilterTxtMaxValue.Text))
-            {
-                string text = FilterTxtMaxValue.Text;
-                string cleanText = Regex.Replace(text, @"[^\d]", "");
-                if (text != cleanText)
-                {
-                    int caret = FilterTxtMaxValue.CaretIndex > 0 ? FilterTxtMaxValue.CaretIndex - 1 : 0;
-                    FilterTxtMaxValue.Text = cleanText;
-                    FilterTxtMaxValue.CaretIndex = caret;
-                }
-            }
-        }
 
         private List<LandPlotModel> GetPlotsFromDatabase(string location, string purpose, string owner, int minPrice, int maxPrice)
         {
@@ -122,12 +86,14 @@ namespace lab4_task3
                     var jsonCoords = reader.GetString(reader.GetOrdinal("coordinates"));
                     var points = new List<Point>();
 
-                    var matches = Regex.Matches(jsonCoords, @"\d+");
+                    var matches = Regex.Matches(jsonCoords, @"[0-9]+(?:\.[0-9]+)?");
                     for (int i = 0; i < matches.Count; i += 2)
                     {
                         if (i + 1 < matches.Count)
                         {
-                            points.Add(new Point(double.Parse(matches[i].Value), double.Parse(matches[i + 1].Value)));
+                            double x = double.Parse(matches[i].Value, System.Globalization.CultureInfo.InvariantCulture);
+                            double y = double.Parse(matches[i + 1].Value, System.Globalization.CultureInfo.InvariantCulture);
+                            points.Add(new Point(x, y));
                         }
                     }
 

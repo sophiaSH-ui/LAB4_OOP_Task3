@@ -12,6 +12,7 @@ namespace lab4_task3.views
         public LandRegistry()
         {
             InitializeComponent();
+            InputValidator.AttachTextOnly(CbLocation);
             UpdatePlotsCount();
             CbLocation.AddHandler(System.Windows.Controls.Primitives.TextBoxBase.TextChangedEvent,
                                   new TextChangedEventHandler(CbLocation_TextChanged)); 
@@ -49,13 +50,6 @@ namespace lab4_task3.views
             if (string.IsNullOrWhiteSpace(locationText) || locationText == "Почніть вводити назву...")
             {
                 AppUtils.ShowWarning("Будь ласка, спочатку оберіть або введіть населений пункт!");
-                return false;
-            }
-
-            string pattern = @"^[а-яА-ЯіІїЇєЄґҐa-zA-Z\s\-']+$";
-            if (!Regex.IsMatch(locationText, pattern))
-            {
-                AppUtils.ShowWarning("Назва містить недопустимі символи.");
                 return false;
             }
 

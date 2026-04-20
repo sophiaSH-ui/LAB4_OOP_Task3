@@ -46,15 +46,16 @@ namespace lab4_task3
         public AddEditWindow(string location = "Не вказано")
         {
             InitializeComponent();
+
+            InputValidator.AttachDecimalOnly(TxtMarketValue);
+            InputValidator.AttachDecimalOnly(TxtGroundWater);
+            InputValidator.AttachDecimalOnly(TxtCoordX);
+            InputValidator.AttachDecimalOnly(TxtCoordY);
+
             _location = location;
             TxtLocation.Text = _location;
 
             LoadOwnersFromDatabase();
-
-            TxtMarketValue.TextChanged += NumericInput_TextChanged;
-            TxtGroundWater.TextChanged += NumericInput_TextChanged;
-            TxtCoordX.TextChanged += NumericInput_TextChanged;
-            TxtCoordY.TextChanged += NumericInput_TextChanged;
         }
 
         private void LoadOwnersFromDatabase()
@@ -144,21 +145,6 @@ namespace lab4_task3
         private bool CheckForOverlapMock(List<string> coordinates)
         {
             return random.Next(100) < 30;
-        }
-
-        private void NumericInput_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (sender is TextBox textBox)
-            {
-                string text = textBox.Text;
-                string cleanText = Regex.Replace(text, @"[^\d,.-]", "");
-                if (text != cleanText)
-                {
-                    int caret = textBox.CaretIndex > 0 ? textBox.CaretIndex - 1 : 0;
-                    textBox.Text = cleanText;
-                    textBox.CaretIndex = caret;
-                }
-            }
         }
 
         private void BtnBack_Click(object sender, RoutedEventArgs e)
@@ -252,11 +238,6 @@ namespace lab4_task3
             if (!unsaved) return;
             if (!AppUtils.AskConfirmation("Закрити без збереження?", "Увага")) e.Cancel = true;
         }
-
-        //private void BtnVisualize_Click(object sender, RoutedEventArgs e)
-        //{
-        //    AppUtils.ShowDialog(this, new VisualizationWindow());
-        //}
 
         private void BtnAddNewOwner_Click(object sender, RoutedEventArgs e)
         {

@@ -13,6 +13,11 @@ namespace lab4_task3.views
         public CreatingAccountOwner()
         {
             InitializeComponent();
+            if (!InputValidator.HasAtLeastOneLetter(TxtFirstName.Text) || !InputValidator.HasAtLeastOneLetter(TxtLastName.Text))
+            {
+                AppUtils.ShowWarning("Прізвище та ім'я повинні містити хоча б одну літеру.");
+                return;
+            }
         }
 
         private void BtnBack_Click(object sender, RoutedEventArgs e)
@@ -37,14 +42,6 @@ namespace lab4_task3.views
                 firstName.Length < 2 || firstName.Length > 50)
             {
                 AppUtils.ShowWarning("Ім'я та прізвище повинні містити від 2 до 50 символів.");
-                return;
-            }
-
-            string namePattern = @"^[а-яА-ЯіІїЇєЄґҐa-zA-Z\-']+$";
-
-            if (!Regex.IsMatch(lastName, namePattern) || !Regex.IsMatch(firstName, namePattern))
-            {
-                AppUtils.ShowWarning("Ім'я та прізвище можуть містити лише літери, дефіс або апостроф.");
                 return;
             }
 

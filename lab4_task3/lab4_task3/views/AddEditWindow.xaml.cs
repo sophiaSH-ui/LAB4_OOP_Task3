@@ -142,11 +142,6 @@ namespace lab4_task3
             
         }
 
-        private bool CheckForOverlapMock(List<string> coordinates)
-        {
-            return random.Next(100) < 30;
-        }
-
         private void BtnBack_Click(object sender, RoutedEventArgs e)
         {
             AppUtils.GoBack(this);

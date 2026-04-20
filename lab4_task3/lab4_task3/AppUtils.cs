@@ -21,13 +21,6 @@ namespace lab4_task3
             };
         }
 
-        public static void ShowDialog(Window currentWindow, Window targetWindow)
-        {
-            targetWindow.Owner = currentWindow;
-            targetWindow.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-            targetWindow.ShowDialog();
-        }
-
         public static void GoBack(Window currentWindow)
         {
             if (currentWindow.Owner != null)

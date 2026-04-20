@@ -532,10 +532,5 @@ namespace lab4_task3.DTO
         public string SoilType { get; set; }
         public string Description { get; set; }
         public List<string> Coordinates { get; set; }
-        public bool HasRiver { get; set; }
-        public bool IsFlat { get; set; }
-        public bool IsFertile { get; set; }
-        public bool NearForest { get; set; }
-        public bool NearRoad { get; set; }
     }
 }

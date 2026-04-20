@@ -16,9 +16,9 @@ namespace lab4_task3
         }
 
         private void BtnAddOwner_Click(object sender, RoutedEventArgs e)
-        {            
-            var window = new CreatingAccountOwner();
-            window.ShowDialog();
+        {
+            AppUtils.NavigateTo(this, new CreatingAccountOwner());
+
         }
 
         private void BtnExit_Click(object sender, RoutedEventArgs e)

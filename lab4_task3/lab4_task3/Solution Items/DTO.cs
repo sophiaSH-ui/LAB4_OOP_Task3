@@ -1,6 +1,7 @@
 ﻿using System;
 using Npgsql;
 using System.Collections.ObjectModel;
+using System.Text.RegularExpressions;
 
 namespace lab4_task3.DTO
 {
@@ -132,6 +133,38 @@ namespace lab4_task3.DTO
 
             return owners;
         }
+        public List<List<int>>? IsOverlapping(List<List<int>> currentCoords, string locality, int excludeId = -1)
+        {
+            using var conn = new NpgsqlConnection(connectionString);
+            conn.Open();
+
+            string sql = @"SELECT d.coordinates, p.id FROM properties p
+                   JOIN localities l ON p.locality = l.id
+                   JOIN descriptions d ON p.description = d.id
+                   WHERE l.title = @loc";
+
+            if (excludeId != -1) sql += " AND p.id != @excludeId";
+
+            using var cmd = new NpgsqlCommand(sql, conn);
+            cmd.Parameters.AddWithValue("loc", locality);
+            if (excludeId != -1) cmd.Parameters.AddWithValue("excludeId", excludeId);
+
+            var currentPoly = ToPoints(currentCoords);
+
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read())
+            {
+                var jsonCoords = reader.GetString(0);
+                var otherCoords = new List<List<int>>();
+                var matches = Regex.Matches(jsonCoords, @"\d+");
+                for (int i = 0; i + 1 < matches.Count; i += 2)
+                    otherCoords.Add(new List<int> { int.Parse(matches[i].Value), int.Parse(matches[i + 1].Value) });
+
+                if (AabbOverlaps(currentCoords, otherCoords) && PolygonsOverlap(currentPoly, ToPoints(otherCoords)))
+                    return otherCoords; 
+            }
+            return null; 
+        }
 
         public long GetPropertiesCount(Locality locality = null)
         {
@@ -156,6 +189,7 @@ namespace lab4_task3.DTO
 
             return count;
         }
+
 
         public Property? CheckOverlapping(Property property, List<Property> properties)
         {

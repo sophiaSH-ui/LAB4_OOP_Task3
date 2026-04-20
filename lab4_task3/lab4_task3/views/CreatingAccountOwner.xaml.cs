@@ -13,11 +13,6 @@ namespace lab4_task3.views
         public CreatingAccountOwner()
         {
             InitializeComponent();
-            if (!InputValidator.HasAtLeastOneLetter(TxtFirstName.Text) || !InputValidator.HasAtLeastOneLetter(TxtLastName.Text))
-            {
-                AppUtils.ShowWarning("Прізвище та ім'я повинні містити хоча б одну літеру.");
-                return;
-            }
         }
 
         private void BtnBack_Click(object sender, RoutedEventArgs e)
@@ -35,6 +30,12 @@ namespace lab4_task3.views
                 DpBirthDate.SelectedDate == null)
             {
                 AppUtils.ShowWarning("Будь ласка, заповніть всі поля.");
+                return;
+            }
+
+            if (!InputValidator.HasAtLeastOneLetter(firstName) || !InputValidator.HasAtLeastOneLetter(lastName))
+            {
+                AppUtils.ShowWarning("Прізвище та ім'я повинні містити хоча б одну літеру.");
                 return;
             }
 

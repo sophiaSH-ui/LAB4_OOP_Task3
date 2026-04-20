@@ -196,18 +196,24 @@ namespace lab4_task3
             await Task.Delay(2000);
 
             List<string> coordinates = new List<string>();
+            var coordsList = new List<List<int>>();
+
             foreach (var item in LbCoordinates.Items)
             {
                 coordinates.Add(item.ToString());
+                var matches = Regex.Matches(item.ToString(), @"[\d.]+");
+                if (matches.Count >= 2)
+                    coordsList.Add(new List<int> { (int)double.Parse(matches[0].Value), (int)double.Parse(matches[1].Value) });
             }
 
-            bool isOverlapping = CheckForOverlapMock(coordinates);
+            var overlappingCoords = new DB().IsOverlapping(coordsList, _location, _editId);
 
-            if (isOverlapping)
+            if (overlappingCoords != null)
             {
                 btnSave.IsEnabled = true;
                 btnSave.Content = originalContent;
-                AppUtils.ShowWarning("Збій збереження! Виявлено накладання меж.");
+                string coordsText = string.Join("\n", overlappingCoords.Select(c => $"X: {c[0]}  |  Y: {c[1]}"));
+                AppUtils.ShowWarning($"Виявлено накладання меж з ділянкою:\n{coordsText}");
                 return;
             }
 

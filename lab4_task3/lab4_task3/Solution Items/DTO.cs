@@ -156,6 +156,96 @@ namespace lab4_task3.DTO
 
             return count;
         }
+
+        public Property? CheckOverlapping(Property property, List<Property> properties)
+        {
+            var currentPoly = ToPoints(property.Description.Coordinates);
+
+            return properties
+                .Where(p => p.Locality.ID == property.Locality.ID)
+                .Where(p => p.ID != property.ID)
+                .FirstOrDefault(p =>
+                    AabbOverlaps(property.Description.Coordinates, p.Description.Coordinates)
+                    && PolygonsOverlap(currentPoly, ToPoints(p.Description.Coordinates)));
+        }
+
+        static bool SegmentsIntersect(
+    (long X, long Y) a1, (long X, long Y) a2,
+    (long X, long Y) b1, (long X, long Y) b2)
+        {
+            long Cross((long X, long Y) o, (long X, long Y) a, (long X, long Y) b) =>
+                (a.X - o.X) * (b.Y - o.Y) - (a.Y - o.Y) * (b.X - o.X);
+
+            bool OnSegment((long X, long Y) p, (long X, long Y) a, (long X, long Y) b) =>
+                Math.Min(a.X, b.X) <= p.X && p.X <= Math.Max(a.X, b.X) &&
+                Math.Min(a.Y, b.Y) <= p.Y && p.Y <= Math.Max(a.Y, b.Y);
+
+            long d1 = Cross(b1, b2, a1), d2 = Cross(b1, b2, a2);
+            long d3 = Cross(a1, a2, b1), d4 = Cross(a1, a2, b2);
+
+            if (((d1 > 0 && d2 < 0) || (d1 < 0 && d2 > 0)) &&
+                ((d3 > 0 && d4 < 0) || (d3 < 0 && d4 > 0)))
+                return true;
+
+            if (d1 == 0 && OnSegment(a1, b1, b2)) return true;
+            if (d2 == 0 && OnSegment(a2, b1, b2)) return true;
+            if (d3 == 0 && OnSegment(b1, a1, a2)) return true;
+            if (d4 == 0 && OnSegment(b2, a1, a2)) return true;
+
+            return false;
+        }
+
+        static bool PointInPolygon(
+            (long X, long Y) p,
+            List<(long X, long Y)> polygon)
+        {
+            bool inside = false;
+            int n = polygon.Count;
+            for (int i = 0, j = n - 1; i < n; j = i++)
+            {
+                var a = polygon[i];
+                var b = polygon[j];
+                if ((a.Y > p.Y) != (b.Y > p.Y))
+                {
+                    long lhs = (b.X - a.X) * (p.Y - a.Y);
+                    long rhs = (b.Y - a.Y) * (p.X - a.X);
+                    if ((lhs > rhs) == (a.Y < b.Y))
+                        inside = !inside;
+                }
+            }
+            return inside;
+        }
+
+        static bool PolygonsOverlap(
+            List<(long X, long Y)> a,
+            List<(long X, long Y)> b)
+        {
+            for (int i = 0; i < a.Count; i++)
+                for (int j = 0; j < b.Count; j++)
+                    if (SegmentsIntersect(
+                        a[i], a[(i + 1) % a.Count],
+                        b[j], b[(j + 1) % b.Count]))
+                        return true;
+
+            if (PointInPolygon(a[0], b)) return true;
+            if (PointInPolygon(b[0], a)) return true;
+
+            return false;
+        }
+
+        static bool AabbOverlaps(List<List<int>> a, List<List<int>> b)
+        {
+            int aMinX = a.Min(p => p[0]), aMaxX = a.Max(p => p[0]);
+            int aMinY = a.Min(p => p[1]), aMaxY = a.Max(p => p[1]);
+            int bMinX = b.Min(p => p[0]), bMaxX = b.Max(p => p[0]);
+            int bMinY = b.Min(p => p[1]), bMaxY = b.Max(p => p[1]);
+
+            return aMinX <= bMaxX && aMaxX >= bMinX &&
+                   aMinY <= bMaxY && aMaxY >= bMinY;
+        }
+
+        static List<(long X, long Y)> ToPoints(List<List<int>> coords) =>
+            coords.ConvertAll(p => ((long)p[0], (long)p[1]));
     }
 
     class Owner
@@ -297,6 +387,22 @@ namespace lab4_task3.DTO
                 return owner;
             }
         }
+
+        public Description Description
+        {
+            get
+            {
+                return description;
+            }
+        }
+
+        public Locality Locality
+        {
+            get
+            {
+                return locality;
+            }
+        }
     }
 
     class Description
@@ -333,6 +439,14 @@ namespace lab4_task3.DTO
             get
             {
                 return id;
+            }
+        }
+
+        public List<List<int>> Coordinates
+        {
+            get
+            {
+                return coordinates;
             }
         }
     }

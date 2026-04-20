@@ -108,6 +108,31 @@ namespace lab4_task3.DTO
             return Convert.ToInt32(cmd.ExecuteScalar());
         }
 
+        public List<Owner> GetOwners()
+        {
+            using var connection = new NpgsqlConnection(connectionString);
+            connection.Open();
+
+            using var command = new NpgsqlCommand();
+            command.Connection = connection;
+            command.CommandText = "SELECT * FROM owners;";
+
+            List<Owner> owners = new List<Owner>();
+
+            using var reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                int ownerID = reader.GetInt32(reader.GetOrdinal("id"));
+                string firstName = reader.GetString(reader.GetOrdinal("first_name"));
+                string lastName = reader.GetString(reader.GetOrdinal("last_name"));
+                DateTime birthDate = reader.GetDateTime(reader.GetOrdinal("birth_day"));
+                owners.Add(new Owner(firstName, lastName, birthDate));
+            }
+
+            return owners;
+        }
+
         public long GetPropertiesCount(Locality locality = null)
         {
             using var connection = new NpgsqlConnection(connectionString);
@@ -262,6 +287,14 @@ namespace lab4_task3.DTO
             get
             {
                 return id;
+            }
+        }
+
+        public Owner Owner
+        {
+            get
+            {
+                return owner;
             }
         }
     }

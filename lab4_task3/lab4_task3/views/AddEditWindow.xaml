@@ -89,21 +89,6 @@
                             <ComboBoxItem Content="Торф"/>
                             <ComboBoxItem Content="Пісок"/>
                         </ComboBox>
-                        <TextBlock Text="Географічна ознака" Style="{StaticResource FieldLabel}"/>
-                        <ComboBox x:Name="CbGeoFeature" Style="{StaticResource InputCombo}" Margin="0,0,0,12">
-                            <ComboBoxItem Content="Рівнинна"/>
-                            <ComboBoxItem Content="Гірська"/>
-                            <ComboBoxItem Content="Горбиста"/>
-                            <ComboBoxItem Content="Низинна"/>
-                        </ComboBox>
-                        <TextBlock Text="Характеристики" Style="{StaticResource FieldLabel}"/>
-                        <WrapPanel Margin="0,0,0,4">
-                            <CheckBox x:Name="ChkRiver" Content="Біля річки" Margin="0,4,12,4"/>
-                            <CheckBox x:Name="ChkFlat" Content="Рівний рельєф" Margin="0,4,12,4"/>
-                            <CheckBox x:Name="ChkFertile" Content="Родючий ґрунт" Margin="0,4,12,4"/>
-                            <CheckBox x:Name="ChkForest" Content="Поряд ліс" Margin="0,4,12,4"/>
-                            <CheckBox x:Name="ChkRoad" Content="Дорога поруч" Margin="0,4,0,4"/>
-                        </WrapPanel>
                     </StackPanel>
                 </Border>
                 <Border Style="{StaticResource Card}" Margin="0,0,0,8">

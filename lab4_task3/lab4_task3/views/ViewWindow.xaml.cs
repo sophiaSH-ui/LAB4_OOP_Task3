@@ -99,15 +99,14 @@ namespace lab4_task3
                 FROM properties p
                 JOIN owners o ON p.owner = o.id
                 JOIN localities l ON p.locality = l.id
-                JOIN descriptions d ON p.description = d.id
-                WHERE 1=1";
+                JOIN descriptions d ON p.description = d.id";
 
 
                 if (!string.IsNullOrWhiteSpace(location)) sql += " AND l.title ILIKE @loc";
                 if (!string.IsNullOrWhiteSpace(purpose)) sql += " AND p.usage = @usage";
                 if (!string.IsNullOrWhiteSpace(owner)) sql += " AND (o.first_name ILIKE @owner OR o.last_name ILIKE @owner)";
-                if (minPrice > 0) sql += " AND p.price >= @minP";
-                if (maxPrice > 0) sql += " AND p.price <= @maxP";
+                if (minPrice > 0) sql += " AND p.price::numeric >= @minP";
+                if (maxPrice > 0) sql += " AND p.price::numeric <= @maxP";
 
                 using var cmd = new NpgsqlCommand(sql, conn);
 

@@ -36,15 +36,6 @@ namespace lab4_task3
             foreach (ComboBoxItem item in CbSoilType.Items)
                 if (item.Content?.ToString() == plot.SoilType) { CbSoilType.SelectedItem = item; break; }
 
-            foreach (ComboBoxItem item in CbGeoFeature.Items)
-                if (item.Content?.ToString() == plot.GeoFeature) { CbGeoFeature.SelectedItem = item; break; }
-
-            ChkRiver.IsChecked = plot.HasRiver;
-            ChkFlat.IsChecked = plot.IsFlat;
-            ChkFertile.IsChecked = plot.IsFertile;
-            ChkForest.IsChecked = plot.NearForest;
-            ChkRoad.IsChecked = plot.NearRoad;
-
             LbCoordinates.Items.Clear();
             foreach (var p in plot.Coordinates)
                 LbCoordinates.Items.Add($"X: {p.X}  |  Y: {p.Y}");
@@ -89,7 +80,7 @@ namespace lab4_task3
         }
 
         private void UpdatePlotInDatabase(int id, int ownerId, string purpose, double marketValue, double groundWater,
-    string soilType, bool river, bool flat, bool fertile, bool forest, bool road,
+    string soilType,
     List<string> coordinates, string description)
         {
             Plot updatedPlot = new Plot
@@ -101,12 +92,7 @@ namespace lab4_task3
                 GroundWater = groundWater,
                 SoilType = soilType,
                 Description = description,
-                Coordinates = coordinates,
-                HasRiver = river,
-                IsFlat = flat,
-                IsFertile = fertile,
-                NearForest = forest,
-                NearRoad = road
+                Coordinates = coordinates
             };
 
             LocalStorage.UpdatePlot(id, updatedPlot);
@@ -114,7 +100,7 @@ namespace lab4_task3
         }
 
         private void SavePlotToDatabase(int ownerId, string purpose, double marketValue, double groundWater,
-    string soilType, bool river, bool flat, bool fertile, bool forest, bool road, List<string> coordinates, string description)
+    string soilType, List<string> coordinates, string description)
         {
             Plot newPlot = new Plot
             {
@@ -125,12 +111,7 @@ namespace lab4_task3
                 GroundWater = groundWater,
                 SoilType = soilType,
                 Description = description,
-                Coordinates = coordinates,
-                HasRiver = river,
-                IsFlat = flat,
-                IsFertile = fertile,
-                NearForest = forest,
-                NearRoad = road
+                Coordinates = coordinates
             };
 
             LocalStorage.SavePlot(newPlot);
@@ -226,21 +207,18 @@ namespace lab4_task3
             int ownerId = (int)CbOwner.SelectedValue;
             string purpose = (CbPryznachennya.SelectedItem as ComboBoxItem)?.Content.ToString();
             string soilType = (CbSoilType.SelectedItem as ComboBoxItem)?.Content.ToString();
-            string geoFeature = (CbGeoFeature.SelectedItem as ComboBoxItem)?.Content.ToString() ?? "Рівнинна";
 
-            string description = $"Населений пункт: {_location}. Географічна ознака: {geoFeature}.";
+            string description = $"Населений пункт: {_location}.";
 
             if (_editId == -1)
             {
                 SavePlotToDatabase(ownerId, purpose, marketValue, groundWater, soilType,
-                    ChkRiver.IsChecked == true, ChkFlat.IsChecked == true, ChkFertile.IsChecked == true,
-                    ChkForest.IsChecked == true, ChkRoad.IsChecked == true, coordinates, description);
+                    coordinates, description);
             }
             else
             {
                 UpdatePlotInDatabase(_editId, ownerId, purpose, marketValue, groundWater, soilType,
-                    ChkRiver.IsChecked == true, ChkFlat.IsChecked == true, ChkFertile.IsChecked == true,
-                    ChkForest.IsChecked == true, ChkRoad.IsChecked == true, coordinates, description);
+                    coordinates, description);
             }
 
             unsaved = false;
@@ -294,7 +272,6 @@ namespace lab4_task3
             CbOwner.SelectedIndex = -1;
             CbPryznachennya.SelectedIndex = -1;
             CbSoilType.SelectedIndex = -1;
-            CbGeoFeature.SelectedIndex = -1;
             TxtMarketValue.Clear(); TxtGroundWater.Clear();
             LbCoordinates.Items.Clear();
             unsaved = true;

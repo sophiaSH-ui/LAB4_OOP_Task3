@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using lab4_task3.DTO;
 using lab4_task3.views;
+using Npgsql;
 
 namespace lab4_task3
 {
@@ -58,10 +59,30 @@ namespace lab4_task3
 
         private void LoadOwnersFromDatabase()
         {
-            ownersList = LocalStorage.LoadOwners();
+            ownersList.Clear();
+
+            using (var conn = new NpgsqlConnection(DB.connectionString))
+            {
+                conn.Open();
+
+                string sql = "SELECT id, first_name, last_name FROM owners ORDER BY last_name, first_name;";
+
+                using var cmd = new NpgsqlCommand(sql, conn);
+                using var reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    ownersList.Add(new OwnerJson
+                    {
+                        Id = reader.GetInt32(reader.GetOrdinal("id")),
+                        FirstName = reader.GetString(reader.GetOrdinal("first_name")),
+                        LastName = reader.GetString(reader.GetOrdinal("last_name"))
+                    });
+                }
+            }
+
             RefreshOwnerComboBox();
         }
-
         private void RefreshOwnerComboBox()
         {
             int selectedId = CbOwner.SelectedValue is int id ? id : -1;

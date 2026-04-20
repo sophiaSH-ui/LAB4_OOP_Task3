@@ -15,7 +15,6 @@ namespace lab4_task3
     public partial class AddEditWindow : Window
     {
         private bool unsaved = false;
-        private Random random = new Random();
         private List<OwnerJson> ownersList = new List<OwnerJson>();
         private string _location;
         private int _editId = -1;

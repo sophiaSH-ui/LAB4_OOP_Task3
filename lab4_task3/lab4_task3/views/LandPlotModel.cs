@@ -6,7 +6,6 @@ public class LandPlotModel
     public int OwnerId { get; set; }       
     public string Pryznachennya { get; set; }
     public string SoilType { get; set; }
-    public string GeoFeature { get; set; }  
     public double GroundWater { get; set; }   
     public string MarketValueFormatted { get; set; }
     public string Location { get; set; }

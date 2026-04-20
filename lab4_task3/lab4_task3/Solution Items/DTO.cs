@@ -533,4 +533,6 @@ namespace lab4_task3.DTO
         public string Description { get; set; }
         public List<string> Coordinates { get; set; }
     }
+
+
 }

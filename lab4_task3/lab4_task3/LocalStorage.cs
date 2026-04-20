@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Encodings.Web;
 using System.Text.Unicode;
@@ -16,11 +17,16 @@ namespace lab4_task3
         public DateTime BirthDate { get; set; }
     }
 
-
-
     public static class LocalStorage
     {
         private static readonly string PlotsPath = "plots.json";
+        private static readonly string FilePath = "owners.json";
+
+        private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
+        };
 
         public static List<Plot> LoadPlots()
         {
@@ -45,17 +51,9 @@ namespace lab4_task3
             if (index >= 0) plots[index] = plot;
             else plots.Add(plot);
 
-            var options = new JsonSerializerOptions
-            {
-                WriteIndented = true,
-                Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
-            };
-
-            string json = JsonSerializer.Serialize(plots, options);
+            string json = JsonSerializer.Serialize(plots, JsonOptions);
             File.WriteAllText(PlotsPath, json);
         }
-
-        private static readonly string FilePath = "owners.json";
 
         public static List<OwnerJson> LoadOwners()
         {
@@ -76,12 +74,7 @@ namespace lab4_task3
             else
                 owners.Add(owner);
 
-            string json = JsonSerializer.Serialize(owners, new JsonSerializerOptions
-            {
-                WriteIndented = true,
-                Encoder = JavaScriptEncoder.Create(UnicodeRanges.All)
-            });
-
+            string json = JsonSerializer.Serialize(owners, JsonOptions);
             File.WriteAllText(FilePath, json);
         }
     }

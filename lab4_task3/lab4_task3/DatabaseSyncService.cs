@@ -69,7 +69,7 @@ namespace lab4_task3
                 using (var cmdDesc = CreateCommand(conn, "UPDATE descriptions SET water = @w, soil = @s, coordinates = @c::json WHERE id = @id", p => {
                     p.AddWithValue("w", (int)plot.GroundWater);
                     p.AddWithValue("s", plot.SoilType);
-                    p.AddWithValue("c", JsonSerializer.Serialize(plot.Coordinates));
+                    p.AddWithValue("c", JsonSerializer.Serialize(plot.CoordinatePoints));
                     p.AddWithValue("id", descId);
                 })) { cmdDesc.ExecuteNonQuery(); }
 
@@ -96,7 +96,7 @@ namespace lab4_task3
                 using var cmdDesc = CreateCommand(conn, "INSERT INTO descriptions (water, soil, coordinates) VALUES (@w, @s, @c::json) RETURNING id", p => {
                     p.AddWithValue("w", (int)plot.GroundWater);
                     p.AddWithValue("s", plot.SoilType);
-                    p.AddWithValue("c", JsonSerializer.Serialize(plot.Coordinates));
+                    p.AddWithValue("c", JsonSerializer.Serialize(plot.CoordinatePoints));
                 });
                 int descId = (int)cmdDesc.ExecuteScalar();
 

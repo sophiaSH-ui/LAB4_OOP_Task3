@@ -9,6 +9,8 @@ namespace lab4_task3.views
 {
     public partial class LandRegistry : Window
     {
+        private const string LocationPlaceholder = "Почніть вводити назву...";
+
         public LandRegistry()
         {
             InitializeComponent();
@@ -27,32 +29,26 @@ namespace lab4_task3.views
         {
             if (CountText == null) return;
 
-            string locationText = CbLocation?.Text?.Trim();
-            bool hasLocation = !string.IsNullOrWhiteSpace(locationText)
-                               && locationText != "Почніть вводити назву...";
-
             DB db = new DB();
-            if (hasLocation)
-            {
-                CountText.Text = db.GetPropertiesCountByLocation(locationText).ToString();
-            }
-            else
-            {
-                CountText.Text = db.GetPropertiesCount().ToString(); 
-            }
+            string location = GetValidLocation();
+
+            CountText.Text = location != null
+                ? db.GetPropertiesCountByLocation(location).ToString()
+                : db.GetPropertiesCount().ToString();
         }
 
+        private void BtnView_Click(object sender, RoutedEventArgs e)
+        {
+            AppUtils.NavigateTo(this, new ViewWindow(GetValidLocation() ?? ""));
+        }
 
         private bool IsLocationValid()
         {
-            string locationText = CbLocation.Text?.Trim();
-
-            if (string.IsNullOrWhiteSpace(locationText) || locationText == "Почніть вводити назву...")
+            if (GetValidLocation() == null)
             {
                 AppUtils.ShowWarning("Будь ласка, спочатку оберіть або введіть населений пункт!");
                 return false;
             }
-
             return true;
         }
 
@@ -62,15 +58,13 @@ namespace lab4_task3.views
             AppUtils.NavigateTo(this, new AddEditWindow(CbLocation.Text.Trim()));
         }
 
-        private void BtnView_Click(object sender, RoutedEventArgs e)
+        private string GetValidLocation()
         {
-            string locationText = CbLocation.Text?.Trim();
+            string locationText = CbLocation?.Text?.Trim();
             bool hasLocation = !string.IsNullOrWhiteSpace(locationText)
-                               && locationText != "Почніть вводити назву...";
-
-            AppUtils.NavigateTo(this, new ViewWindow(hasLocation ? locationText : ""));
+                               && locationText != LocationPlaceholder;
+            return hasLocation ? locationText : null;
         }
-
         private void BtnBack_Click(object sender, RoutedEventArgs e) => AppUtils.GoBack(this);
     }
 }

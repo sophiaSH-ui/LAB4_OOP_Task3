@@ -19,7 +19,7 @@ namespace lab4_task3
         private string _location;
         private int _editId = -1;
 
-        public AddEditWindow(LandPlotModel plot) : this(plot.Location)
+        public AddEditWindow(Plot plot) : this(plot.Location)
         {
             _editId = plot.Id;
             TxtLocation.IsReadOnly = true;
@@ -37,7 +37,7 @@ namespace lab4_task3
                 if (item.Content?.ToString() == plot.SoilType) { CbSoilType.SelectedItem = item; break; }
 
             LbCoordinates.Items.Clear();
-            foreach (var p in plot.Coordinates)
+            foreach (var p in plot.CoordinatePoints)
                 LbCoordinates.Items.Add($"X: {p.X}  |  Y: {p.Y}");
 
             unsaved = false;
@@ -100,11 +100,23 @@ namespace lab4_task3
             if (selectedId != -1) CbOwner.SelectedValue = selectedId;
         }
 
-        private void UpdatePlotInDatabase(int id, int ownerId, string purpose, double marketValue, double groundWater,
-    string soilType,
-    List<string> coordinates, string description)
+        private Plot BuildPlot(int ownerId, string purpose, double marketValue,
+                           double groundWater, string soilType,
+                           List<string> coordinates, string description)
         {
-            Plot updatedPlot = new Plot
+            var points = new List<System.Windows.Point>();
+            foreach (var coord in coordinates)
+            {
+                var matches = Regex.Matches(coord, @"[\d.]+");
+                if (matches.Count >= 2)
+                {
+                    double x = double.Parse(matches[0].Value);
+                    double y = double.Parse(matches[1].Value);
+                    points.Add(new System.Windows.Point(x, y));
+                }
+            }
+
+            return new Plot
             {
                 OwnerId = ownerId,
                 Location = _location,
@@ -113,32 +125,27 @@ namespace lab4_task3
                 GroundWater = groundWater,
                 SoilType = soilType,
                 Description = description,
-                Coordinates = coordinates
+                Coordinates = coordinates,
+                CoordinatePoints = points
             };
+        }
 
+        private void UpdatePlotInDatabase(int id, int ownerId, string purpose, double marketValue,
+            double groundWater, string soilType, List<string> coordinates, string description)
+        {
+            Plot updatedPlot = BuildPlot(ownerId, purpose, marketValue, groundWater,
+                                         soilType, coordinates, description);
             LocalStorage.UpdatePlot(id, updatedPlot);
             DatabaseSyncService.UpdateInDatabase(id, updatedPlot);
         }
 
-        private void SavePlotToDatabase(int ownerId, string purpose, double marketValue, double groundWater,
-    string soilType, List<string> coordinates, string description)
+        private void SavePlotToDatabase(int ownerId, string purpose, double marketValue,
+            double groundWater, string soilType, List<string> coordinates, string description)
         {
-            Plot newPlot = new Plot
-            {
-                OwnerId = ownerId,
-                Location = _location,
-                Purpose = purpose,
-                MarketValue = marketValue,
-                GroundWater = groundWater,
-                SoilType = soilType,
-                Description = description,
-                Coordinates = coordinates
-            };
-
+            Plot newPlot = BuildPlot(ownerId, purpose, marketValue, groundWater,
+                                     soilType, coordinates, description);
             LocalStorage.SavePlot(newPlot);
             DatabaseSyncService.PushToDatabase(newPlot);
-
-            
         }
 
         private void BtnBack_Click(object sender, RoutedEventArgs e)

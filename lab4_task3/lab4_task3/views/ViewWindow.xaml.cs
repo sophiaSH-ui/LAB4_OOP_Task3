@@ -49,9 +49,9 @@ namespace lab4_task3
         }
 
 
-        private List<LandPlotModel> GetPlotsFromDatabase(string location, string purpose, string owner, int minPrice, int maxPrice)
+        private List<Plot> GetPlotsFromDatabase(string location, string purpose, string owner, int minPrice, int maxPrice)
         {
-            List<LandPlotModel> plots = new List<LandPlotModel>();
+            List<Plot> plots = new List<Plot>();
 
             using (var conn = new NpgsqlConnection(DB.connectionString))
             {
@@ -97,7 +97,7 @@ namespace lab4_task3
                         }
                     }
 
-                    plots.Add(new LandPlotModel
+                    plots.Add(new Plot
                     {
                         Id = reader.GetInt32(0),
                         Pryznachennya = reader.GetString(1),
@@ -107,7 +107,8 @@ namespace lab4_task3
                         Location = reader.GetString(reader.GetOrdinal("locality")),
                         GroundWater = reader.GetDouble(reader.GetOrdinal("water")),
                         SoilType = reader.GetString(reader.GetOrdinal("soil")),
-                        Coordinates = points
+                        CoordinatePoints = points,
+                        Coordinates = new List<string>()
                     });
 
                 }
@@ -161,7 +162,7 @@ namespace lab4_task3
 
         private void BtnDetails_Click(object sender, RoutedEventArgs e)
         {
-            if (LbDilyanky.SelectedItem is LandPlotModel selectedPlot)
+            if (LbDilyanky.SelectedItem is Plot selectedPlot)
             {
                 string info = $"Власник: {selectedPlot.OwnerName}\n" +
                               $"Розташування: {selectedPlot.Location}\n" +
@@ -174,7 +175,7 @@ namespace lab4_task3
 
         private void BtnEdit_Click(object sender, RoutedEventArgs e)
         {
-            if (LbDilyanky.SelectedItem is LandPlotModel selectedPlot)
+            if (LbDilyanky.SelectedItem is Plot selectedPlot)
             {
                 AppUtils.NavigateTo(this, new AddEditWindow(selectedPlot));
             }
@@ -182,7 +183,7 @@ namespace lab4_task3
 
         private void BtnMap_Click(object sender, RoutedEventArgs e)
         {
-            if (LbDilyanky.SelectedItem is LandPlotModel selectedPlot)
+            if (LbDilyanky.SelectedItem is Plot selectedPlot)
             {
                 var mapWin = new VisualizationWindow();
                 mapWin.LoadPlotData(selectedPlot);

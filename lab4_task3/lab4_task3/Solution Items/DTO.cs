@@ -1,7 +1,10 @@
 ﻿using System;
 using Npgsql;
+using System.Collections.Generic;
+using System.Windows;
 using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
+using System.Text.Json.Serialization;
 
 namespace lab4_task3.DTO
 {
@@ -269,6 +272,8 @@ namespace lab4_task3.DTO
 
         static bool AabbOverlaps(List<List<int>> a, List<List<int>> b)
         {
+            if (a.Count == 0 || b.Count == 0) return false;
+
             int aMinX = a.Min(p => p[0]), aMaxX = a.Max(p => p[0]);
             int aMinY = a.Min(p => p[1]), aMaxY = a.Max(p => p[1]);
             int bMinX = b.Min(p => p[0]), bMaxX = b.Max(p => p[0]);
@@ -524,15 +529,26 @@ namespace lab4_task3.DTO
     public class Plot
     {
         public int Id { get; set; }
+        public string OwnerName { get; set; }
         public int OwnerId { get; set; }
         public string Location { get; set; }
         public string Purpose { get; set; }
+        public string Pryznachennya  
+        {
+            get => Purpose;
+            set => Purpose = value;
+        }
         public double MarketValue { get; set; }
+        public string MarketValueFormatted { get; set; }
         public double GroundWater { get; set; }
         public string SoilType { get; set; }
-        public string Description { get; set; }
+        public string Description { get; set; }    
         public List<string> Coordinates { get; set; }
+
+        [JsonIgnore]
+        public List<Point> CoordinatePoints { get; set; }
     }
+
 
 
 }

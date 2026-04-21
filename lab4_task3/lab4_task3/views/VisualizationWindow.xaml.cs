@@ -4,6 +4,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Controls;
+using lab4_task3.DTO;
 
 namespace lab4_task3
 {
@@ -17,7 +18,7 @@ namespace lab4_task3
             InitializeComponent();
         }
 
-        public void LoadPlotData(LandPlotModel plot)
+        public void LoadPlotData(Plot plot)
         {
             TxtOwner.Text = plot.OwnerName;
             TxtLocation.Text = plot.Location;
@@ -25,7 +26,8 @@ namespace lab4_task3
             TxtSoil.Text = plot.SoilType;
             TxtPrice.Text = plot.MarketValueFormatted;
 
-            DrawPolygon(plot.Coordinates);
+            DrawPolygon(plot.CoordinatePoints);
+            MapCanvas.Loaded += (s, e) => CenterPolygon(plot.CoordinatePoints);
         }
 
         private void BtnBack_Click(object sender, RoutedEventArgs e)
@@ -74,6 +76,34 @@ namespace lab4_task3
                 Canvas.SetTop(textBlock, point.Y - 20);
                 MapCanvas.Children.Add(textBlock);
             }
+        }
+
+        private void CenterPolygon(List<Point> coordinates)
+        {
+            if (coordinates == null || coordinates.Count == 0) return;
+
+            double minX = double.MaxValue, maxX = double.MinValue;
+            double minY = double.MaxValue, maxY = double.MinValue;
+
+            foreach (var p in coordinates)
+            {
+                if (p.X < minX) minX = p.X;
+                if (p.X > maxX) maxX = p.X;
+                if (p.Y < minY) minY = p.Y;
+                if (p.Y > maxY) maxY = p.Y;
+            }
+
+            double centerX = (minX + maxX) / 2;
+            double centerY = (minY + maxY) / 2;
+
+            double canvasCenterX = MapCanvas.ActualWidth / 2;
+            double canvasCenterY = MapCanvas.ActualHeight / 2;
+
+            MapTranslate.X = canvasCenterX - centerX;
+            MapTranslate.Y = canvasCenterY - centerY;
+
+            MapScale.ScaleX = 1;
+            MapScale.ScaleY = 1;
         }
 
         private void MapCanvas_MouseWheel(object sender, MouseWheelEventArgs e)

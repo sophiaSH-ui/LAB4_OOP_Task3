@@ -15,7 +15,7 @@ namespace lab4_task3
     public partial class AddEditWindow : Window
     {
         private bool unsaved = false;
-        private List<OwnerJson> ownersList = new List<OwnerJson>();
+        private List<Owner> ownersList = new List<Owner>();
         private string _location;
         private int _editId = -1;
 
@@ -65,19 +65,14 @@ namespace lab4_task3
             {
                 conn.Open();
 
-                string sql = "SELECT id, first_name, last_name FROM owners ORDER BY last_name, first_name;";
+                string sql = "SELECT id FROM owners ORDER BY last_name, first_name;";
 
                 using var cmd = new NpgsqlCommand(sql, conn);
                 using var reader = cmd.ExecuteReader();
 
                 while (reader.Read())
                 {
-                    ownersList.Add(new OwnerJson
-                    {
-                        Id = reader.GetInt32(reader.GetOrdinal("id")),
-                        FirstName = reader.GetString(reader.GetOrdinal("first_name")),
-                        LastName = reader.GetString(reader.GetOrdinal("last_name"))
-                    });
+                    ownersList.Add(new Owner(reader.GetInt32(0)));
                 }
             }
 
@@ -90,7 +85,7 @@ namespace lab4_task3
             CbOwner.ItemsSource = null;
             CbOwner.ItemsSource = ownersList.Select(o => new
             {
-                Id = o.Id,
+                Id = o.ID,
                 FullName = $"{o.LastName} {o.FirstName}"
             }).ToList();
 

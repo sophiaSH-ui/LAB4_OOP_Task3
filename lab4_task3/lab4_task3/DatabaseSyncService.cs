@@ -84,34 +84,5 @@ namespace lab4_task3
 
             }, "оновлення");
         }
-
-        public static void PushToDatabase(Plot plot)
-        {
-            ExecuteDbAction(conn =>
-            {
-                using var cmdLoc = CreateCommand(conn, "INSERT INTO localities (title) VALUES (@t) RETURNING id",
-                    p => p.AddWithValue("t", plot.Location));
-                int locId = (int)cmdLoc.ExecuteScalar();
-
-                using var cmdDesc = CreateCommand(conn, "INSERT INTO descriptions (water, soil, coordinates) VALUES (@w, @s, @c::json) RETURNING id", p => {
-                    p.AddWithValue("w", (int)plot.GroundWater);
-                    p.AddWithValue("s", plot.SoilType);
-                    p.AddWithValue("c", JsonSerializer.Serialize(plot.CoordinatePoints));
-                });
-                int descId = (int)cmdDesc.ExecuteScalar();
-
-                using var cmdProp = CreateCommand(conn, "INSERT INTO properties (owner, locality, description, usage, price) VALUES (@o, @l, @d, @u, @p::money)", p => {
-                    p.AddWithValue("o", plot.OwnerId);
-                    p.AddWithValue("l", locId);
-                    p.AddWithValue("d", descId);
-                    p.AddWithValue("u", plot.Purpose);
-                    p.AddWithValue("p", (decimal)plot.MarketValue);
-                });
-                cmdProp.ExecuteNonQuery();
-
-                Console.WriteLine("Запис успішно додано!");
-
-            }, "синхронізації");
-        }
     }
 }

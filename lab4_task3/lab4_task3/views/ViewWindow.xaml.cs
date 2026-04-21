@@ -105,7 +105,7 @@ namespace lab4_task3
                         OwnerName = reader.GetString(3) + " " + reader.GetString(4),
                         OwnerId = reader.GetInt32(reader.GetOrdinal("owner_id")),
                         Location = reader.GetString(reader.GetOrdinal("locality")),
-                        GroundWater = reader.GetDouble(reader.GetOrdinal("water")),
+                        GroundWater = reader.GetInt32(reader.GetOrdinal("water")),
                         SoilType = reader.GetString(reader.GetOrdinal("soil")),
                         CoordinatePoints = points,
                         Coordinates = new List<string>()

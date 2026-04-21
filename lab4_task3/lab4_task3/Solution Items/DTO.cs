@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Collections.ObjectModel;
 using System.Text.RegularExpressions;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace lab4_task3.DTO
@@ -28,21 +29,21 @@ namespace lab4_task3.DTO
 
             if (locality is null)
             {
-                command.CommandText = "SELECT id, title FROM localities;";
+                command.CommandText = "SELECT id FROM localities;";
                 using var localityReader = command.ExecuteReader();
 
                 while (localityReader.Read())
                 {
                     int localityID = localityReader.GetInt32(localityReader.GetOrdinal("id"));
-                    string title = localityReader.GetString(localityReader.GetOrdinal("title"));
-                    localities[localityID] = new Locality(title);
+
+                    localities[localityID] = new Locality(localityID);
                 }
 
-                command.CommandText = "SELECT id, owner, description, usage, price, locality FROM properties;";
+                command.CommandText = "SELECT id, owner, description, locality FROM properties;";
             }
             else
             {
-                command.CommandText = "SELECT id, owner, description, usage, price, locality FROM properties WHERE locality = @localityId;";
+                command.CommandText = "SELECT id, owner, description, locality FROM properties WHERE locality = @localityId;";
 
                 command.Parameters.AddWithValue("localityId", locality.ID);
 
@@ -56,41 +57,17 @@ namespace lab4_task3.DTO
                 int propertyID = reader.GetInt32(reader.GetOrdinal("id"));
                 int ownerID = reader.GetInt32(reader.GetOrdinal("owner"));
                 int descriptionID = reader.GetInt32(reader.GetOrdinal("description"));
-                string usage = reader.GetString(reader.GetOrdinal("usage"));
-                double price = reader.GetDouble(reader.GetOrdinal("price"));
 
                 int localityID = reader.GetInt32(reader.GetOrdinal("locality"));
 
-                command.CommandText = "SELECT first_name, last_name, birth_day FROM owners WHERE id = @ownerId;";
-                command.Parameters.Clear();
-                command.Parameters.AddWithValue("ownerId", ownerID);
-
-                using var ownerReader = command.ExecuteReader();
-
-                if (ownerReader.Read())
+                if (!owners.ContainsKey(ownerID))
                 {
-                    string firstName = ownerReader.GetString(ownerReader.GetOrdinal("first_name"));
-                    string lastName = ownerReader.GetString(ownerReader.GetOrdinal("last_name"));
-                    DateTime birthDate = ownerReader.GetDateTime(ownerReader.GetOrdinal("birth_day"));
-                    if (!owners.ContainsKey(ownerID))
-                    {
-                        owners[ownerID] = new Owner(firstName, lastName, birthDate);
-                    }
+                    owners[ownerID] = new Owner(ownerID);
                 }
 
-                command.CommandText = "SELECT water, soil, coordinates FROM descriptions WHERE id = @descriptionId;";
-                command.Parameters.Clear();
-                command.Parameters.AddWithValue("descriptionId", descriptionID);
+                var description = new Description(descriptionID);
 
-                using var descriptionReader = command.ExecuteReader();
-
-                int water = descriptionReader.GetInt32(descriptionReader.GetOrdinal("water"));
-                string soil = descriptionReader.GetString(descriptionReader.GetOrdinal("soil"));
-                var coordinates = descriptionReader.GetFieldValue<List<List<int>>>(descriptionReader.GetOrdinal("coordinates"));
-
-                var description = new Description(water, soil, coordinates);
-
-                var property = new Property(owners[ownerID], description, localities[localityID], usage, price);
+                var property = new Property(owners[ownerID], description, localities[localityID], propertyID);
 
                 properties.Add(property);
             }
@@ -135,38 +112,6 @@ namespace lab4_task3.DTO
             }
 
             return owners;
-        }
-        public List<List<int>>? IsOverlapping(List<List<int>> currentCoords, string locality, int excludeId = -1)
-        {
-            using var conn = new NpgsqlConnection(connectionString);
-            conn.Open();
-
-            string sql = @"SELECT d.coordinates, p.id FROM properties p
-                   JOIN localities l ON p.locality = l.id
-                   JOIN descriptions d ON p.description = d.id
-                   WHERE l.title = @loc";
-
-            if (excludeId != -1) sql += " AND p.id != @excludeId";
-
-            using var cmd = new NpgsqlCommand(sql, conn);
-            cmd.Parameters.AddWithValue("loc", locality);
-            if (excludeId != -1) cmd.Parameters.AddWithValue("excludeId", excludeId);
-
-            var currentPoly = ToPoints(currentCoords);
-
-            using var reader = cmd.ExecuteReader();
-            while (reader.Read())
-            {
-                var jsonCoords = reader.GetString(0);
-                var otherCoords = new List<List<int>>();
-                var matches = Regex.Matches(jsonCoords, @"\d+");
-                for (int i = 0; i + 1 < matches.Count; i += 2)
-                    otherCoords.Add(new List<int> { int.Parse(matches[i].Value), int.Parse(matches[i + 1].Value) });
-
-                if (AabbOverlaps(currentCoords, otherCoords) && PolygonsOverlap(currentPoly, ToPoints(otherCoords)))
-                    return otherCoords; 
-            }
-            return null; 
         }
 
         public long GetPropertiesCount(Locality locality = null)
@@ -371,6 +316,27 @@ namespace lab4_task3.DTO
 
             id = (int)command.ExecuteScalar();
         }
+
+        public Owner(int ownerID)
+        {
+            using var connection = new NpgsqlConnection(DB.connectionString);
+            connection.Open();
+
+            string sql = "SELECT first_name, last_name, birth_date FROM owners WHERE id = @id;";
+
+            using var command = new NpgsqlCommand( sql, connection);
+
+            command.Parameters[0].Value = ownerID;
+
+            var reader = command.ExecuteReader();
+
+            reader.Read();
+
+            FirstName = reader.GetString(0);
+            LastName = reader.GetString(1);
+            BirthDate = DateTime.Parse(reader.GetString(2));
+            this.id = ownerID;
+        }
     }
 
     class Property
@@ -405,6 +371,32 @@ namespace lab4_task3.DTO
 
             id = (int)command.ExecuteScalar();
         }
+
+        public Property(Owner owner, Description description, Locality locality, int propertyId)
+        {
+            this.owner = owner;
+            this.description = description;
+            this.locality = locality;
+
+            using var connection = new NpgsqlConnection(DB.connectionString);
+            connection.Open();
+
+            string sql = "SELECT usage, price FROM properties WHERE id = @id;";
+
+            using var command = new NpgsqlCommand(sql, connection);
+
+            command.Parameters[0].Value = propertyId;
+
+            var reader = command.ExecuteReader();
+
+            reader.Read();
+
+            this.usage = reader.GetString(0);
+            this.price = reader.GetInt32(1);
+            this.id = propertyId;
+        }
+
+        //додати в інформації про ділянку
 
         public override string ToString()
         {
@@ -473,6 +465,27 @@ namespace lab4_task3.DTO
             id = (int)command.ExecuteScalar();
         }
 
+        public Description(int descriptionId)
+        {
+            using var connection = new NpgsqlConnection(DB.connectionString);
+            connection.Open();
+
+            string sql = "SELECT water, soil, coordinates FROM descriptions WHERE id = @id;";
+
+            using var command = new NpgsqlCommand(sql, connection);
+
+            command.Parameters[0].Value = descriptionId;
+
+            var reader = command.ExecuteReader();
+
+            reader.Read();
+
+            this.water = reader.GetInt32(0);
+            this.soil = reader.GetString(1);
+            this.coordinates = JsonSerializer.Deserialize<List<List<int>>>(reader.GetString(reader.GetOrdinal("coordinates")));
+            this.id = descriptionId;
+        }
+
         public int ID
         {
             get
@@ -509,6 +522,25 @@ namespace lab4_task3.DTO
             id = (int)command.ExecuteScalar();
         }
 
+        public Locality(int localityID)
+        {
+            using var connection = new NpgsqlConnection(DB.connectionString);
+            connection.Open();
+
+            string sql = "SELECT title FROM localities WHERE id = @id;";
+
+            using var command = new NpgsqlCommand(sql, connection);
+
+            command.Parameters[0].Value = localityID;
+
+            var reader = command.ExecuteReader();
+
+            reader.Read();
+
+            this.title = reader.GetString(0);
+            this.id = localityID;
+        }
+
         public int ID
         {
             get
@@ -540,7 +572,7 @@ namespace lab4_task3.DTO
         }
         public double MarketValue { get; set; }
         public string MarketValueFormatted { get; set; }
-        public double GroundWater { get; set; }
+        public int GroundWater { get; set; }
         public string SoilType { get; set; }
         public string Description { get; set; }    
         public List<string> Coordinates { get; set; }
@@ -548,7 +580,4 @@ namespace lab4_task3.DTO
         [JsonIgnore]
         public List<Point> CoordinatePoints { get; set; }
     }
-
-
-
 }

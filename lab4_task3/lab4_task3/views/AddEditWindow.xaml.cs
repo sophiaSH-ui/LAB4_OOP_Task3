@@ -96,7 +96,7 @@ namespace lab4_task3
         }
 
         private Plot BuildPlot(int ownerId, string purpose, double marketValue,
-                           double groundWater, string soilType,
+                           int groundWater, string soilType,
                            List<string> coordinates, string description)
         {
             var points = new List<System.Windows.Point>();
@@ -126,7 +126,7 @@ namespace lab4_task3
         }
 
         private void UpdatePlotInDatabase(int id, int ownerId, string purpose, double marketValue,
-            double groundWater, string soilType, List<string> coordinates, string description)
+            int groundWater, string soilType, List<string> coordinates, string description)
         {
             Plot updatedPlot = BuildPlot(ownerId, purpose, marketValue, groundWater,
                                          soilType, coordinates, description);
@@ -135,12 +135,30 @@ namespace lab4_task3
         }
 
         private void SavePlotToDatabase(int ownerId, string purpose, double marketValue,
-            double groundWater, string soilType, List<string> coordinates, string description)
+            int groundWater, string soilType, List<string> coordinates, string description)
         {
             Plot newPlot = BuildPlot(ownerId, purpose, marketValue, groundWater,
                                      soilType, coordinates, description);
             LocalStorage.SavePlot(newPlot);
-            DatabaseSyncService.PushToDatabase(newPlot);
+            //DatabaseSyncService.PushToDatabase(newPlot);
+
+            Locality locality = new Locality(newPlot.Location);
+
+            List<List<int>> coords = new List<List<int>>();
+
+            foreach (Point point in newPlot.CoordinatePoints)
+            {
+                int x = (int)point.X;
+                int y = (int)point.Y;
+
+                coords.Add(new List<int>() { x, y });
+            }
+
+            Description desc = new Description(newPlot.GroundWater, newPlot.SoilType, coords);
+
+            Owner owner = new Owner(newPlot.OwnerId);
+
+            new Property(owner, desc, locality, newPlot.Purpose, newPlot.MarketValue);
         }
 
         private void BtnBack_Click(object sender, RoutedEventArgs e)
@@ -172,7 +190,7 @@ namespace lab4_task3
                 return;
             }
 
-            if (!double.TryParse(TxtGroundWater.Text, out double groundWater))
+            if (!int.TryParse(TxtGroundWater.Text, out int groundWater))
             {
                 AppUtils.ShowWarning("Введіть коректний рівень ґрунтових вод.");
                 return;
@@ -202,14 +220,16 @@ namespace lab4_task3
                     coordsList.Add(new List<int> { (int)double.Parse(matches[0].Value), (int)double.Parse(matches[1].Value) });
             }
 
-            var overlappingCoords = new DB().IsOverlapping(coordsList, _location, _editId);
+            var properties = new DB().GetProperties();
 
-            if (overlappingCoords != null)
+            var overlappingProperty = new DB().CheckOverlapping();
+
+            if (overlappingProperty != null)
             {
                 btnSave.IsEnabled = true;
                 btnSave.Content = originalContent;
-                string coordsText = string.Join("\n", overlappingCoords.Select(c => $"X: {c[0]}  |  Y: {c[1]}"));
-                AppUtils.ShowWarning($"Виявлено накладання меж з ділянкою:\n{coordsText}");
+                
+                AppUtils.ShowWarning($"Виявлено накладання меж з ділянкою № {overlappingProperty.ID}");
                 return;
             }
 

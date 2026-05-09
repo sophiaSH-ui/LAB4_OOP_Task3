@@ -94,7 +94,7 @@ namespace lab4_task3.DTO
 
             using var command = new NpgsqlCommand();
             command.Connection = connection;
-            command.CommandText = "SELECT * FROM owners;";
+            command.CommandText = "SELECT id FROM owners;";
 
             ObservableCollection<Owner> owners = new ObservableCollection<Owner>();
 
@@ -103,10 +103,8 @@ namespace lab4_task3.DTO
             while (reader.Read())
             {
                 int ownerID = reader.GetInt32(reader.GetOrdinal("id"));
-                string firstName = reader.GetString(reader.GetOrdinal("first_name"));
-                string lastName = reader.GetString(reader.GetOrdinal("last_name"));
-                DateTime birthDate = reader.GetDateTime(reader.GetOrdinal("birth_day"));
-                owners.Add(new Owner(firstName, lastName, birthDate));
+
+                owners.Add(new Owner(ownerID));
             }
 
             return owners;

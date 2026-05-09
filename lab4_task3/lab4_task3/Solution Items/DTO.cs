@@ -318,7 +318,7 @@ namespace lab4_task3.DTO
             using var connection = new NpgsqlConnection(DB.ConnectionString);
             connection.Open();
 
-            string sql = "SELECT first_name, last_name, birth_date FROM owners WHERE id = @id;";
+            string sql = "SELECT first_name, last_name, birth_day FROM owners WHERE id = @id;";
 
             using var command = new NpgsqlCommand( sql, connection);
 
@@ -330,7 +330,7 @@ namespace lab4_task3.DTO
 
             FirstName = reader.GetString(0);
             LastName = reader.GetString(1);
-            BirthDate = DateTime.Parse(reader.GetString(2));
+            BirthDate = reader.GetDateTime(2);
             this.id = ownerID;
         }
 
@@ -423,7 +423,7 @@ namespace lab4_task3.DTO
             reader.Read();
 
             this.usage = reader.GetString(0);
-            this.price = reader.GetInt32(1);
+            this.price = reader.GetDouble(1);
             this.id = propertyId;
         }
 
@@ -540,9 +540,9 @@ namespace lab4_task3.DTO
 
             using var command = new NpgsqlCommand("INSERT INTO descriptions (water, soil, coordinates) VALUES (@w, @s, @c) RETURNING id;", connection);
 
-            command.Parameters.Add(new NpgsqlParameter("c", NpgsqlTypes.NpgsqlDbType.Jsonb)
+            command.Parameters.Add(new NpgsqlParameter("c", NpgsqlTypes.NpgsqlDbType.Json)
             {
-                Value = coordinates
+                Value = JsonSerializer.Serialize(coordinates)
             });
 
             command.Parameters.AddWithValue("w", water);

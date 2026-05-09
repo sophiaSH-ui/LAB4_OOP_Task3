@@ -51,12 +51,11 @@ namespace lab4_task3.DTO
                     localities[localityID] = new Locality(localityID);
                 }
 
-                command.CommandText = "SELECT id, owner, description, locality FROM properties;";
+                command.CommandText = "SELECT id, owner, description, locality, usage FROM properties;";
             }
             else
             {
-                command.CommandText = "SELECT id, owner, description, locality FROM properties WHERE locality = @localityId;";
-
+                command.CommandText = "SELECT id, owner, description, locality, usage FROM properties WHERE locality = @localityId;";
                 command.Parameters.AddWithValue("localityId", locality.ID);
 
                 localities[locality.ID] = locality;
@@ -72,14 +71,17 @@ namespace lab4_task3.DTO
 
                 int localityID = reader.GetInt32(reader.GetOrdinal("locality"));
 
+                int usageID = reader.GetInt32(reader.GetOrdinal("usage"));
+
                 if (!owners.ContainsKey(ownerID))
                 {
                     owners[ownerID] = new Owner(ownerID);
                 }
 
                 var description = new Description(descriptionID);
+                var usage = new Usage(usageID);
 
-                var property = new Property(owners[ownerID], description, localities[localityID], propertyID);
+                var property = new Property(owners[ownerID], description, localities[localityID], usage, propertyID);
 
                 properties.Add(property);
             }

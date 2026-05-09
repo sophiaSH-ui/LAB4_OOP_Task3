@@ -18,22 +18,25 @@ namespace lab4_task3
             InitializeComponent();
         }
 
-        public void LoadPlotData(Plot plot)
+        public void LoadPlotData(Property property)
         {
-            TxtOwner.Text = plot.OwnerName;
-            TxtLocation.Text = plot.Location;
-            TxtPurpose.Text = plot.Pryznachennya;
-            TxtSoil.Text = plot.SoilType;
-            TxtPrice.Text = plot.MarketValueFormatted;
+            TxtOwner.Text = $"{property.Owner.LastName} {property.Owner.FirstName}";
+            TxtLocation.Text = property.Locality.Title;
+            TxtPurpose.Text = property.Usage;
+            TxtSoil.Text = property.Description.Soil;
+            TxtPrice.Text = $"{property.Price:F2} грн";
 
-            DrawPolygon(plot.CoordinatePoints);
-            MapCanvas.Loaded += (s, e) => CenterPolygon(plot.CoordinatePoints);
+            List<Point> points = new List<Point>();
+            foreach (var coord in property.Description.Coordinates)
+            {
+                points.Add(new Point(coord[0], coord[1]));
+            }
+
+            DrawPolygon(points);
+            MapCanvas.Loaded += (s, e) => CenterPolygon(points);
         }
 
-        private void BtnBack_Click(object sender, RoutedEventArgs e)
-        {
-            AppUtils.GoBack(this);
-        }
+        private void BtnBack_Click(object sender, RoutedEventArgs e) => AppUtils.GoBack(this);
 
         private void DrawPolygon(List<Point> coordinates)
         {
@@ -140,13 +143,10 @@ namespace lab4_task3
             if (_isDragging)
             {
                 Point currentPosition = e.GetPosition(this);
-
                 double deltaX = currentPosition.X - _lastMousePosition.X;
                 double deltaY = currentPosition.Y - _lastMousePosition.Y;
-
                 MapTranslate.X += deltaX;
                 MapTranslate.Y += deltaY;
-
                 _lastMousePosition = currentPosition;
             }
         }

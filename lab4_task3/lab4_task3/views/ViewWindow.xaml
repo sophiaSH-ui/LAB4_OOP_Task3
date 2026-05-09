@@ -6,138 +6,122 @@
         MaxHeight="680" MaxWidth="460"
         WindowStartupLocation="CenterScreen"
         Background="{StaticResource CreamBrush}">
-  
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-
-            <Border Grid.Row="0" Background="{StaticResource DarkGreenBrush}" Padding="24,18">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-
-                    <Button Grid.Column="0" Background="Transparent" BorderThickness="0"
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Border Grid.Row="0" Background="{StaticResource DarkGreenBrush}" Padding="24,18">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Background="Transparent" BorderThickness="0"
                         Foreground="{StaticResource LightGreenBrush}" FontSize="22"
                         Cursor="Hand" Click="BtnBack_Click" Margin="0,0,16,0" Content="←"/>
-
-                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                        <TextBlock Text="ПЕРЕГЛЯД ДІЛЯНОК" FontFamily="Segoe UI Semibold"
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <TextBlock Text="ПЕРЕГЛЯД ДІЛЯНОК" FontFamily="Segoe UI Semibold"
                                FontSize="18" FontWeight="Bold" Foreground="{StaticResource LightGreenBrush}"/>
-                        <TextBlock x:Name="ResultCountText" Text="Знайдено: 0" FontSize="12"
+                    <TextBlock x:Name="ResultCountText" Text="Знайдено: 0" FontSize="12"
                                Foreground="{StaticResource MutedGreenBrush}" Margin="0,3,0,0"/>
-                    </StackPanel>
-
-                    <TextBlock Grid.Column="2" Text="🔍" FontSize="32" VerticalAlignment="Center"/>
-                </Grid>
-            </Border>
-
-            <Border Grid.Row="1" Background="White" Padding="20,16" 
+                </StackPanel>
+                <TextBlock Grid.Column="2" Text="🔍" FontSize="32" VerticalAlignment="Center"/>
+            </Grid>
+        </Border>
+        <Border Grid.Row="1" Background="White" Padding="20,16" 
                 BorderBrush="{StaticResource LightGreenBrush}" BorderThickness="0,0,0,1">
-                <StackPanel>
-                    <TextBlock Text="ФІЛЬТРИ" Style="{StaticResource SectionHeader}" Margin="0,0,0,10"/>
-
-                    <Grid Margin="0,0,0,10">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="16"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-
-                        <StackPanel Grid.Column="0">
-                            <TextBlock Text="Призначення" Style="{StaticResource FieldLabel}"/>
-                            <ComboBox x:Name="FilterCbPryznachennya" Style="{StaticResource InputCombo}"
+            <StackPanel>
+                <TextBlock Text="ФІЛЬТРИ" Style="{StaticResource SectionHeader}" Margin="0,0,0,10"/>
+                <Grid Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="16"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Призначення" Style="{StaticResource FieldLabel}"/>
+                        <ComboBox x:Name="FilterCbPryznachennya" Style="{StaticResource InputCombo}"
                                   SelectionChanged="Filter_Changed">
-                                <ComboBoxItem Content="Всі" IsSelected="True"/>
-                                <ComboBoxItem Content="Під забудову"/>
-                                <ComboBoxItem Content="Сільськогосподарського призначення"/>
-                                <ComboBoxItem Content="Зарезервована"/>
-                            </ComboBox>
-                        </StackPanel>
-
-                        <StackPanel Grid.Column="2">
-                            <TextBlock Text="Прізвище власника" Style="{StaticResource FieldLabel}"/>
-                            <TextBox x:Name="FilterTxtOwner" Style="{StaticResource InputBox}"
+                            <ComboBoxItem Content="Всі" IsSelected="True"/>
+                            <ComboBoxItem Content="Під забудову"/>
+                            <ComboBoxItem Content="Сільськогосподарського призначення"/>
+                            <ComboBoxItem Content="Зарезервована"/>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Прізвище власника" Style="{StaticResource FieldLabel}"/>
+                        <TextBox x:Name="FilterTxtOwner" Style="{StaticResource InputBox}"
                                  TextChanged="Filter_Changed"/>
-                        </StackPanel>
-                    </Grid>
-
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="16"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="16"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-
-                        <StackPanel Grid.Column="0">
-                            <TextBlock Text="Вартість від (грн)" Style="{StaticResource FieldLabel}"/>
-                            <TextBox x:Name="FilterTxtMinValue" Style="{StaticResource InputBox}"
+                    </StackPanel>
+                </Grid>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="16"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="16"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Вартість від (грн)" Style="{StaticResource FieldLabel}"/>
+                        <TextBox x:Name="FilterTxtMinValue" Style="{StaticResource InputBox}"
                                  TextChanged="Filter_Changed"/>
-                        </StackPanel>
-
-                        <StackPanel Grid.Column="2">
-                            <TextBlock Text="Вартість до (грн)" Style="{StaticResource FieldLabel}"/>
-                            <TextBox x:Name="FilterTxtMaxValue" Style="{StaticResource InputBox}"
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Вартість до (грн)" Style="{StaticResource FieldLabel}"/>
+                        <TextBox x:Name="FilterTxtMaxValue" Style="{StaticResource InputBox}"
                                  TextChanged="Filter_Changed"/>
-                        </StackPanel>
-
-                        <Button Grid.Column="4" Style="{StaticResource DangerButton}"
+                    </StackPanel>
+                    <Button Grid.Column="4" Style="{StaticResource DangerButton}"
                             Height="40" Padding="14,0" FontSize="12" Margin="0,20,0,0"
                             Click="BtnResetFilters_Click" Content="↺ Скинути"/>
-                    </Grid>
-                </StackPanel>
-            </Border>
-
-            <ListBox Grid.Row="2" x:Name="LbDilyanky" Background="Transparent" BorderThickness="0"
-                 ItemContainerStyle="{StaticResource ListItem}" Margin="20,12"
-                 SelectionChanged="LbDilyanky_SelectionChanged">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <StackPanel Grid.Column="0">
-                                <TextBlock Text="{Binding OwnerName}" FontFamily="Segoe UI Semibold" 
-                                       FontSize="15" Foreground="{StaticResource DarkGreenBrush}"/>
-                                <StackPanel Orientation="Horizontal" Margin="0,3,0,0">
-                                    <TextBlock Text="{Binding Pryznachennya}" FontSize="12" Foreground="{StaticResource MutedGreenBrush}"/>
-                                    <TextBlock Text="  •  " FontSize="12" Foreground="{StaticResource LightGreenBrush}"/>
-                                    <TextBlock Text="{Binding SoilType}" FontSize="12" Foreground="{StaticResource MutedGreenBrush}"/>
-                                </StackPanel>
-                            </StackPanel>
-                            <Border Grid.Column="1" Background="{StaticResource LightGreenBrush}" 
-                                CornerRadius="8" Padding="10,4" VerticalAlignment="Center">
-                                <TextBlock Text="{Binding MarketValueFormatted}" FontWeight="Bold" Foreground="{StaticResource DarkGreenBrush}"/>
-                            </Border>
-                        </Grid>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-
-            <Border Grid.Row="3" Background="White" Padding="10,14" BorderBrush="{StaticResource LightGreenBrush}" BorderThickness="0,1,0,0">
-                <Viewbox Stretch="Uniform" StretchDirection="DownOnly" HorizontalAlignment="Center">
-                    <StackPanel Orientation="Horizontal">
-                        <Button x:Name="BtnDetails" Style="{StaticResource AccentButton}" Content="📄 Деталі"
+                </Grid>
+            </StackPanel>
+        </Border>
+        <DataGrid Grid.Row="2" x:Name="DgDilyanky" Background="White" BorderThickness="0"
+                  Margin="20,12" AutoGenerateColumns="False" IsReadOnly="True"
+                  SelectionMode="Single" SelectionChanged="DgDilyanky_SelectionChanged"
+                  HeadersVisibility="Column" GridLinesVisibility="Horizontal"
+                  HorizontalGridLinesBrush="{StaticResource LightGreenBrush}"
+                  RowBackground="White" AlternatingRowBackground="{StaticResource CreamBrush}">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="№" Binding="{Binding ID}" Width="40"/>
+                <DataGridTemplateColumn Header="Власник" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock>
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="{}{0} {1}">
+                                        <Binding Path="Owner.LastName"/>
+                                        <Binding Path="Owner.FirstName"/>
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                            </TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Розташ." Binding="{Binding Locality.Title}" Width="80"/>
+                <DataGridTextColumn Header="Призначення" Binding="{Binding Usage}" Width="*"/>
+                <DataGridTextColumn Header="Вартість" Binding="{Binding Price, StringFormat={}{0:F2} грн}" Width="100"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Border Grid.Row="3" Background="White" Padding="10,14" BorderBrush="{StaticResource LightGreenBrush}" BorderThickness="0,1,0,0">
+            <Viewbox Stretch="Uniform" StretchDirection="DownOnly" HorizontalAlignment="Center">
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="BtnDetails" Style="{StaticResource AccentButton}" Content="📄 Деталі"
                             Height="40" Padding="16,0" Margin="0,0,10,0" IsEnabled="False" Click="BtnDetails_Click"/>
-
-                        <Button x:Name="BtnEdit" Style="{StaticResource PrimaryButton}" Content="✏ Редагувати"
+                    <Button x:Name="BtnEdit" Style="{StaticResource PrimaryButton}" Content="✏ Редагувати"
                             Height="40" Padding="16,0" Margin="0,0,10,0" IsEnabled="False" Click="BtnEdit_Click"/>
-
-                        <Button x:Name="BtnMap" Style="{StaticResource PrimaryButton}" Content="🗺 Мапа ділянки"
-                            Height="40" Padding="16,0" IsEnabled="False" Click="BtnMap_Click"/>
-                    </StackPanel>
-                </Viewbox>
-            </Border>
-        </Grid>
-
+                    <Button x:Name="BtnMap" Style="{StaticResource PrimaryButton}" Content="🗺 Мапа"
+                            Height="40" Padding="16,0" Margin="0,0,10,0" IsEnabled="False" Click="BtnMap_Click"/>
+                    <Button x:Name="BtnDelete" Style="{StaticResource DangerButton}" Content="🗑 Видалити"
+                            Height="40" Padding="16,0" IsEnabled="False" Click="BtnDelete_Click"/>
+                </StackPanel>
+            </Viewbox>
+        </Border>
+    </Grid>
 </Window>

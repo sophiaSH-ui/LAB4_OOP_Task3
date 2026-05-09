@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -8,7 +7,6 @@ using System.Windows;
 using System.Windows.Controls;
 using lab4_task3.DTO;
 using lab4_task3.views;
-using Npgsql;
 
 namespace lab4_task3
 {
@@ -17,24 +15,24 @@ namespace lab4_task3
         private bool unsaved = false;
         private List<Owner> ownersList = new List<Owner>();
         private string _location;
-        private int _editId = -1;
+        private Property _editProperty;
 
-        public AddEditWindow(Plot plot) : this(plot.Location)
+        public AddEditWindow(Property property) : this(property.Locality.Title)
         {
-            _editId = plot.Id;
-            TxtMarketValue.Text = plot.MarketValueFormatted.Replace(" грн", "").Replace(".", ",");
-            TxtGroundWater.Text = plot.GroundWater.ToString();
-            CbOwner.SelectedValue = plot.OwnerId;
+            _editProperty = property;
+            TxtMarketValue.Text = property.Price.ToString().Replace(".", ",");
+            TxtGroundWater.Text = property.Description.Water.ToString();
+            CbOwner.SelectedValue = property.Owner.ID;
 
             foreach (ComboBoxItem item in CbPryznachennya.Items)
-                if (item.Content?.ToString() == plot.Pryznachennya) { CbPryznachennya.SelectedItem = item; break; }
+                if (item.Content?.ToString() == property.Usage) { CbPryznachennya.SelectedItem = item; break; }
 
             foreach (ComboBoxItem item in CbSoilType.Items)
-                if (item.Content?.ToString() == plot.SoilType) { CbSoilType.SelectedItem = item; break; }
+                if (item.Content?.ToString() == property.Description.Soil) { CbSoilType.SelectedItem = item; break; }
 
             LbCoordinates.Items.Clear();
-            foreach (var p in plot.CoordinatePoints)
-                LbCoordinates.Items.Add($"X: {p.X}  |  Y: {p.Y}");
+            foreach (var p in property.Description.Coordinates)
+                LbCoordinates.Items.Add($"X: {p[0]}  |  Y: {p[1]}");
 
             unsaved = false;
         }
@@ -54,14 +52,7 @@ namespace lab4_task3
 
         private void LoadOwnersFromDatabase()
         {
-            ownersList.Clear();
-            using (var conn = new NpgsqlConnection(DB.connectionString))
-            {
-                conn.Open();
-                using var cmd = new NpgsqlCommand("SELECT id FROM owners ORDER BY last_name, first_name;", conn);
-                using var reader = cmd.ExecuteReader();
-                while (reader.Read()) ownersList.Add(new Owner(reader.GetInt32(0)));
-            }
+            ownersList = new DB().GetOwners().ToList();
             RefreshOwnerComboBox();
         }
 
@@ -89,6 +80,13 @@ namespace lab4_task3
                 return;
             }
 
+            Button btnSave = sender as Button;
+            string originalContent = btnSave.Content?.ToString();
+            btnSave.IsEnabled = false;
+            btnSave.Content = "⏳ Збереження...";
+
+            await Task.Delay(500);
+
             double marketValue = double.Parse(TxtMarketValue.Text);
             int groundWater = int.Parse(TxtGroundWater.Text);
             int ownerId = (int)CbOwner.SelectedValue;
@@ -102,7 +100,7 @@ namespace lab4_task3
                 coords.Add(new List<int> { (int)double.Parse(matches[0].Value), (int)double.Parse(matches[1].Value) });
             }
 
-            if (_editId == -1)
+            if (_editProperty == null)
             {
                 Locality locality = new Locality(_location);
                 Description desc = new Description(groundWater, soilType, coords);
@@ -111,33 +109,16 @@ namespace lab4_task3
             }
             else
             {
-                UpdateExistingPlot(_editId, ownerId, purpose, marketValue, groundWater, soilType, coords);
+                _editProperty.Description.Update(_editProperty.Description.ID, groundWater, soilType, coords);
+                Owner owner = new Owner(ownerId);
+                _editProperty.Update(owner, _editProperty.Description, _editProperty.Locality, purpose, marketValue);
             }
 
+            btnSave.IsEnabled = true;
+            btnSave.Content = originalContent;
             unsaved = false;
             AppUtils.ShowInfo("Дані успішно збережено!");
             AppUtils.GoBack(this);
-        }
-
-        private void UpdateExistingPlot(int propertyId, int ownerId, string purpose, double marketValue, int water, string soil, List<List<int>> coords)
-        {
-            using var conn = new NpgsqlConnection(DB.connectionString);
-            conn.Open();
-            
-            using var cmd = new NpgsqlCommand("SELECT description, locality FROM properties WHERE id = @id", conn);
-            cmd.Parameters.AddWithValue("id", propertyId);
-            using var reader = cmd.ExecuteReader();
-            reader.Read();
-            int descId = reader.GetInt32(0);
-            int locId = reader.GetInt32(1);
-            reader.Close();
-
-            Description desc = new Description(descId);
-            // Тут викликається метод Update(), який буде в DTO
-            // desc.Update(water, soil, coords); 
-
-            Property prop = new Property(new Owner(ownerId), desc, new Locality(locId), propertyId);
-            // prop.Update(ownerId, locId, descId, purpose, marketValue);
         }
 
         private void BtnBack_Click(object sender, RoutedEventArgs e) => AppUtils.GoBack(this);
@@ -151,11 +132,7 @@ namespace lab4_task3
         {
             var window = new CreatingAccountOwner();
             window.ShowDialog();
-            if (window.CreatedOwner != null)
-            {
-                LoadOwnersFromDatabase();
-                CbOwner.SelectedValue = window.CreatedOwner.ID;
-            }
+            LoadOwnersFromDatabase();
         }
 
         private void BtnAddCoord_Click(object sender, RoutedEventArgs e)

@@ -458,16 +458,17 @@ namespace lab4_task3.DTO
             id = (int)command.ExecuteScalar();
         }
 
-        public Property(Owner owner, Description description, Locality locality, int propertyId)
+        public Property(Owner owner, Description description, Locality locality, Usage usage, int propertyId)
         {
             this.owner = owner;
             this.description = description;
             this.locality = locality;
+            this.usage = usage;
 
             using var connection = new NpgsqlConnection(DB.ConnectionString);
             connection.Open();
 
-            string sql = "SELECT usage, price FROM properties WHERE id = @id;";
+            string sql = "SELECT price FROM properties WHERE id = @id;";
 
             using var command = new NpgsqlCommand(sql, connection);
 
@@ -477,8 +478,7 @@ namespace lab4_task3.DTO
 
             reader.Read();
 
-            this.usage = new Usage(reader.GetInt32(0));
-            this.price = reader.GetDouble(1);
+            this.price = reader.GetDouble(0);
             this.id = propertyId;
         }
 
@@ -521,7 +521,7 @@ namespace lab4_task3.DTO
             }
         }
 
-        public string Usage
+        public Usage Usage
         {
             get
             {
@@ -537,7 +537,7 @@ namespace lab4_task3.DTO
             }
         }
 
-        public void Update(Owner owner, Description description, Locality locality, string usage, double price)
+        public void Update(Owner owner, Description description, Locality locality, Usage usage, double price)
         {
             this.owner = owner;
             this.description = description;
@@ -555,7 +555,7 @@ namespace lab4_task3.DTO
             command.Parameters.AddWithValue("o", owner.ID);
             command.Parameters.AddWithValue("l", locality.ID);
             command.Parameters.AddWithValue("d", description.ID);
-            command.Parameters.AddWithValue("u", usage);
+            command.Parameters.AddWithValue("u", usage.ID);
             command.Parameters.AddWithValue("p", price);
             command.Parameters.AddWithValue("id", id);
 

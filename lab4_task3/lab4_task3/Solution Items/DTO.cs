@@ -38,8 +38,11 @@ namespace lab4_task3.DTO
 
             if (locality is null)
             {
-                command.CommandText = "SELECT id FROM localities;";
-                using var localityReader = command.ExecuteReader();
+                using var selectCommand = new NpgsqlCommand();
+                selectCommand.Connection = connection;
+
+                selectCommand.CommandText = "SELECT id FROM localities;";
+                using var localityReader = selectCommand.ExecuteReader();
 
                 while (localityReader.Read())
                 {

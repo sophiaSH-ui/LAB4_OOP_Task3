@@ -1,21 +1,30 @@
-﻿using System;
-using Npgsql;
+﻿using Npgsql;
+using System;
 using System.Collections.Generic;
-using System.Windows;
 using System.Collections.ObjectModel;
-using System.Text.RegularExpressions;
+using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
+using System.Windows;
 
 namespace lab4_task3.DTO
 {
-    class DB
+    internal class DB
     {
-        public static string connectionString = "Host=78.137.52.42;Username=socksof;Password=вуафгде;Database=properties";
+        public static string ConnectionString;
+
+        static DB()
+        {
+            using (StreamReader reader = new StreamReader("access.txt"))
+            {
+                ConnectionString = reader.ReadToEnd();
+            }
+        }
 
         public ObservableCollection<Property> GetProperties(Locality locality = null)
         {
-            using var connection = new NpgsqlConnection(connectionString);
+            using var connection = new NpgsqlConnection(DB.ConnectionString);
             connection.Open();
 
             var owners = new Dictionary<int, Owner>();
@@ -73,32 +82,18 @@ namespace lab4_task3.DTO
             }
 
             return properties;
-
-
         }
 
-        public int GetPropertiesCountByLocation(string location)
+        public ObservableCollection<Owner> GetOwners()
         {
-            using var conn = new NpgsqlConnection(connectionString);
-            conn.Open();
-            string sql = @"SELECT COUNT(*) FROM properties p
-                   JOIN localities l ON p.locality = l.id
-                   WHERE l.title ILIKE @loc";
-            using var cmd = new NpgsqlCommand(sql, conn);
-            cmd.Parameters.AddWithValue("loc", "%" + location + "%");
-            return Convert.ToInt32(cmd.ExecuteScalar());
-        }
-
-        public List<Owner> GetOwners()
-        {
-            using var connection = new NpgsqlConnection(connectionString);
+            using var connection = new NpgsqlConnection(DB.ConnectionString);
             connection.Open();
 
             using var command = new NpgsqlCommand();
             command.Connection = connection;
             command.CommandText = "SELECT * FROM owners;";
 
-            List<Owner> owners = new List<Owner>();
+            ObservableCollection<Owner> owners = new ObservableCollection<Owner>();
 
             using var reader = command.ExecuteReader();
 
@@ -116,7 +111,7 @@ namespace lab4_task3.DTO
 
         public long GetPropertiesCount(Locality locality = null)
         {
-            using var connection = new NpgsqlConnection(connectionString);
+            using var connection = new NpgsqlConnection(DB.ConnectionString);
             connection.Open();
 
             using var command = new NpgsqlCommand();
@@ -139,7 +134,7 @@ namespace lab4_task3.DTO
         }
 
 
-        public Property? CheckOverlapping(Property property, List<Property> properties)
+        public Property? CheckOverlapping(Property property, ObservableCollection<Property> properties)
         {
             var currentPoly = ToPoints(property.Description.Coordinates);
 
@@ -232,7 +227,7 @@ namespace lab4_task3.DTO
             coords.ConvertAll(p => ((long)p[0], (long)p[1]));
     }
 
-    class Owner
+    public class Owner
     {
         private string firstName;
         private string lastName;
@@ -303,7 +298,7 @@ namespace lab4_task3.DTO
             LastName = ln;
             BirthDate = bd;
 
-            using var connection = new NpgsqlConnection(DB.connectionString);
+            using var connection = new NpgsqlConnection(DB.ConnectionString);
             connection.Open();
 
             string sql = "INSERT INTO owners (first_name, last_name, birth_day) VALUES (@fn, @ln, @bd) RETURNING id;";
@@ -319,7 +314,7 @@ namespace lab4_task3.DTO
 
         public Owner(int ownerID)
         {
-            using var connection = new NpgsqlConnection(DB.connectionString);
+            using var connection = new NpgsqlConnection(DB.ConnectionString);
             connection.Open();
 
             string sql = "SELECT first_name, last_name, birth_date FROM owners WHERE id = @id;";
@@ -339,7 +334,7 @@ namespace lab4_task3.DTO
         }
     }
 
-    class Property
+    public class Property
     {
         private Owner owner;
         private Description description;
@@ -356,7 +351,7 @@ namespace lab4_task3.DTO
             this.usage = usage;
             this.price = price;
 
-            using var connection = new NpgsqlConnection(DB.connectionString);
+            using var connection = new NpgsqlConnection(DB.ConnectionString);
             connection.Open();
 
             string sql = "INSERT INTO properties (owner, locality, description, usage, price) VALUES (@o, @l, @d, @u, @p) RETURNING id;";
@@ -378,7 +373,7 @@ namespace lab4_task3.DTO
             this.description = description;
             this.locality = locality;
 
-            using var connection = new NpgsqlConnection(DB.connectionString);
+            using var connection = new NpgsqlConnection(DB.ConnectionString);
             connection.Open();
 
             string sql = "SELECT usage, price FROM properties WHERE id = @id;";
@@ -436,7 +431,7 @@ namespace lab4_task3.DTO
         }
     }
 
-    class Description
+    public class Description
     {
         private int water;
         private string soil;
@@ -449,7 +444,7 @@ namespace lab4_task3.DTO
             this.soil = soil;
             this.coordinates = coordinates;
 
-            using var connection = new NpgsqlConnection(DB.connectionString);
+            using var connection = new NpgsqlConnection(DB.ConnectionString);
             connection.Open();
 
             using var command = new NpgsqlCommand("INSERT INTO descriptions (water, soil, coordinates) VALUES (@w, @s, @c) RETURNING id;", connection);
@@ -467,7 +462,7 @@ namespace lab4_task3.DTO
 
         public Description(int descriptionId)
         {
-            using var connection = new NpgsqlConnection(DB.connectionString);
+            using var connection = new NpgsqlConnection(DB.ConnectionString);
             connection.Open();
 
             string sql = "SELECT water, soil, coordinates FROM descriptions WHERE id = @id;";
@@ -503,7 +498,7 @@ namespace lab4_task3.DTO
         }
     }
 
-    class Locality
+    public class Locality
     {
         private string title;
         private int id;
@@ -512,7 +507,7 @@ namespace lab4_task3.DTO
         {
             this.title = title;
 
-            using var connection = new NpgsqlConnection(DB.connectionString);
+            using var connection = new NpgsqlConnection(DB.ConnectionString);
             connection.Open();
 
             using var command = new NpgsqlCommand("INSERT INTO localities (title) VALUES (@t) RETURNING id;", connection);
@@ -524,7 +519,7 @@ namespace lab4_task3.DTO
 
         public Locality(int localityID)
         {
-            using var connection = new NpgsqlConnection(DB.connectionString);
+            using var connection = new NpgsqlConnection(DB.ConnectionString);
             connection.Open();
 
             string sql = "SELECT title FROM localities WHERE id = @id;";

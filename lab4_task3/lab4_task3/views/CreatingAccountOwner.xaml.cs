@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
 using System.Windows;
 using lab4_task3.DTO;
 
@@ -15,74 +13,21 @@ namespace lab4_task3.views
             InitializeComponent();
         }
 
-        private void BtnBack_Click(object sender, RoutedEventArgs e)
-        {
-            AppUtils.GoBack(this);
-        }
+        private void BtnBack_Click(object sender, RoutedEventArgs e) => AppUtils.GoBack(this);
 
         private void BtnSave_Click(object sender, RoutedEventArgs e)
         {
             string lastName = TxtLastName.Text?.Trim();
             string firstName = TxtFirstName.Text?.Trim();
 
-            if (string.IsNullOrWhiteSpace(lastName) ||
-                string.IsNullOrWhiteSpace(firstName) ||
-                DpBirthDate.SelectedDate == null)
+            if (string.IsNullOrWhiteSpace(lastName) || string.IsNullOrWhiteSpace(firstName) || DpBirthDate.SelectedDate == null)
             {
                 AppUtils.ShowWarning("Будь ласка, заповніть всі поля.");
                 return;
             }
 
-            if (!InputValidator.HasAtLeastOneLetter(firstName) || !InputValidator.HasAtLeastOneLetter(lastName))
-            {
-                AppUtils.ShowWarning("Прізвище та ім'я повинні містити хоча б одну літеру.");
-                return;
-            }
-
-            if (lastName.Length < 2 || lastName.Length > 50 ||
-                firstName.Length < 2 || firstName.Length > 50)
-            {
-                AppUtils.ShowWarning("Ім'я та прізвище повинні містити від 2 до 50 символів.");
-                return;
-            }
-
             DateTime birthDate = DpBirthDate.SelectedDate.Value;
-
-            if (birthDate > DateTime.Now)
-            {
-                AppUtils.ShowWarning("Дата народження не може бути в майбутньому.");
-                return;
-            }
-
-            if (birthDate < new DateTime(1900, 1, 1))
-            {
-                AppUtils.ShowWarning("Введіть коректну дату народження.");
-                return;
-            }
-
-            int age = DateTime.Now.Year - birthDate.Year;
-            if (birthDate.Date > DateTime.Now.Date.AddYears(-age))
-            {
-                age--;
-            }
-
-            if (age < 18)
-            {
-                AppUtils.ShowWarning("Власник повинен бути повнолітнім (від 18 років).");
-                return;
-            }
-
-            TxtLastName.Text = lastName;
-            TxtFirstName.Text = firstName;
-
             SaveOwnerToDatabase(firstName, lastName, birthDate);
-        }
-
-        private void BtnReset_Click(object sender, RoutedEventArgs e)
-        {
-            TxtLastName.Clear();
-            TxtFirstName.Clear();
-            DpBirthDate.SelectedDate = null;
         }
 
         private void SaveOwnerToDatabase(string firstName, string lastName, DateTime birthDate)
@@ -90,15 +35,6 @@ namespace lab4_task3.views
             try
             {
                 CreatedOwner = new Owner(firstName, lastName, birthDate);
-
-                LocalStorage.SaveOwner(new OwnerJson
-                {
-                    Id = CreatedOwner.ID,
-                    FirstName = firstName,
-                    LastName = lastName,
-                    BirthDate = birthDate
-                });
-
                 AppUtils.ShowInfo("Нового власника успішно додано!");
                 AppUtils.GoBack(this);
             }
@@ -107,6 +43,11 @@ namespace lab4_task3.views
                 CreatedOwner = null;
                 AppUtils.ShowWarning($"Помилка при збереженні: {ex.Message}");
             }
+        }
+
+        private void BtnReset_Click(object sender, RoutedEventArgs e)
+        {
+            TxtLastName.Clear(); TxtFirstName.Clear(); DpBirthDate.SelectedDate = null;
         }
     }
 }

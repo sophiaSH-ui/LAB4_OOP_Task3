@@ -2,8 +2,8 @@
 using Npgsql;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,6 +13,7 @@ namespace lab4_task3
     public partial class ViewWindow : Window
     {
         private string _locationFilter;
+        private ObservableCollection<Plot> _plotsCollection = new ObservableCollection<Plot>();
 
         public ViewWindow(string locationFilter = "")
         {
@@ -22,6 +23,7 @@ namespace lab4_task3
             InputValidator.AttachIntOnly(FilterTxtMaxValue);
 
             _locationFilter = locationFilter;
+            LbDilyanky.ItemsSource = _plotsCollection;
 
             ApplyFilters();
         }
@@ -41,13 +43,13 @@ namespace lab4_task3
 
             var plots = GetPlotsFromDatabase(_locationFilter, purpose, ownerQuery, minPrice, maxPrice);
 
-            if (LbDilyanky != null)
+            _plotsCollection.Clear();
+            foreach (var plot in plots)
             {
-                LbDilyanky.ItemsSource = plots;
-                UpdateCount();
+                _plotsCollection.Add(plot);
             }
+            UpdateCount();
         }
-
 
         private List<Plot> GetPlotsFromDatabase(string location, string purpose, string owner, int minPrice, int maxPrice)
         {
@@ -59,12 +61,12 @@ namespace lab4_task3
 
                 string sql = @"
                 SELECT p.id, p.usage, p.price, o.first_name, o.last_name, o.id as owner_id,
-                       l.title as locality, d.water, d.soil, d.coordinates
+                       l.title as locality, l.id as locality_id, d.water, d.soil, d.coordinates, d.id as desc_id
                 FROM properties p
                 JOIN owners o ON p.owner = o.id
                 JOIN localities l ON p.locality = l.id
-                JOIN descriptions d ON p.description = d.id";
-
+                JOIN descriptions d ON p.description = d.id
+                WHERE 1=1";
 
                 if (!string.IsNullOrWhiteSpace(location)) sql += " AND l.title ILIKE @loc";
                 if (!string.IsNullOrWhiteSpace(purpose)) sql += " AND p.usage = @usage";
@@ -85,7 +87,6 @@ namespace lab4_task3
                 {
                     var jsonCoords = reader.GetString(reader.GetOrdinal("coordinates"));
                     var points = new List<Point>();
-
                     var matches = Regex.Matches(jsonCoords, @"[0-9]+(?:\.[0-9]+)?");
                     for (int i = 0; i < matches.Count; i += 2)
                     {
@@ -107,10 +108,8 @@ namespace lab4_task3
                         Location = reader.GetString(reader.GetOrdinal("locality")),
                         GroundWater = reader.GetInt32(reader.GetOrdinal("water")),
                         SoilType = reader.GetString(reader.GetOrdinal("soil")),
-                        CoordinatePoints = points,
-                        Coordinates = new List<string>()
+                        CoordinatePoints = points
                     });
-
                 }
             }
             return plots;
@@ -124,15 +123,9 @@ namespace lab4_task3
             return 0;
         }
 
-        private void BtnBack_Click(object sender, RoutedEventArgs e)
-        {
-            AppUtils.GoBack(this);
-        }
+        private void BtnBack_Click(object sender, RoutedEventArgs e) => AppUtils.GoBack(this);
 
-        private void Filter_Changed(object sender, RoutedEventArgs e)
-        {
-            ApplyFilters();
-        }
+        private void Filter_Changed(object sender, RoutedEventArgs e) => ApplyFilters();
 
         private void BtnResetFilters_Click(object sender, RoutedEventArgs e)
         {
@@ -140,7 +133,6 @@ namespace lab4_task3
             FilterTxtOwner.Clear();
             FilterTxtMinValue.Clear();
             FilterTxtMaxValue.Clear();
-
             ApplyFilters();
         }
 
@@ -154,10 +146,7 @@ namespace lab4_task3
 
         private void UpdateCount()
         {
-            if (ResultCountText != null && LbDilyanky != null)
-            {
-                ResultCountText.Text = $"Знайдено: {LbDilyanky.Items.Count}";
-            }
+            if (ResultCountText != null) ResultCountText.Text = $"Знайдено: {_plotsCollection.Count}";
         }
 
         private void BtnDetails_Click(object sender, RoutedEventArgs e)
@@ -177,7 +166,9 @@ namespace lab4_task3
         {
             if (LbDilyanky.SelectedItem is Plot selectedPlot)
             {
-                AppUtils.NavigateTo(this, new AddEditWindow(selectedPlot));
+                var editWin = new AddEditWindow(selectedPlot);
+                editWin.Closed += (s, args) => ApplyFilters();
+                AppUtils.NavigateTo(this, editWin);
             }
         }
 

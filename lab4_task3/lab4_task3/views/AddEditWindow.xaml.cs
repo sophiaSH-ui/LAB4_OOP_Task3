@@ -22,12 +22,8 @@ namespace lab4_task3
         public AddEditWindow(Plot plot) : this(plot.Location)
         {
             _editId = plot.Id;
-            TxtLocation.IsReadOnly = true;
-            TxtLocation.Opacity = 0.6;
-
             TxtMarketValue.Text = plot.MarketValueFormatted.Replace(" грн", "").Replace(".", ",");
             TxtGroundWater.Text = plot.GroundWater.ToString();
-
             CbOwner.SelectedValue = plot.OwnerId;
 
             foreach (ComboBoxItem item in CbPryznachennya.Items)
@@ -42,10 +38,10 @@ namespace lab4_task3
 
             unsaved = false;
         }
+
         public AddEditWindow(string location = "Не вказано")
         {
             InitializeComponent();
-
             InputValidator.AttachDecimalOnly(TxtMarketValue);
             InputValidator.AttachDecimalOnly(TxtGroundWater);
             InputValidator.AttachDecimalOnly(TxtCoordX);
@@ -53,134 +49,37 @@ namespace lab4_task3
 
             _location = location;
             TxtLocation.Text = _location;
-
             LoadOwnersFromDatabase();
         }
 
         private void LoadOwnersFromDatabase()
         {
             ownersList.Clear();
-
             using (var conn = new NpgsqlConnection(DB.connectionString))
             {
                 conn.Open();
-
-                string sql = "SELECT id FROM owners ORDER BY last_name, first_name;";
-
-                using var cmd = new NpgsqlCommand(sql, conn);
+                using var cmd = new NpgsqlCommand("SELECT id FROM owners ORDER BY last_name, first_name;", conn);
                 using var reader = cmd.ExecuteReader();
-
-                while (reader.Read())
-                {
-                    ownersList.Add(new Owner(reader.GetInt32(0)));
-                }
+                while (reader.Read()) ownersList.Add(new Owner(reader.GetInt32(0)));
             }
-
             RefreshOwnerComboBox();
         }
+
         private void RefreshOwnerComboBox()
         {
             int selectedId = CbOwner.SelectedValue is int id ? id : -1;
-
-            CbOwner.ItemsSource = null;
-            CbOwner.ItemsSource = ownersList.Select(o => new
-            {
-                Id = o.ID,
-                FullName = $"{o.LastName} {o.FirstName}"
-            }).ToList();
-
+            CbOwner.ItemsSource = ownersList.Select(o => new { Id = o.ID, FullName = $"{o.LastName} {o.FirstName}" }).ToList();
             CbOwner.DisplayMemberPath = "FullName";
             CbOwner.SelectedValuePath = "Id";
-
             if (selectedId != -1) CbOwner.SelectedValue = selectedId;
-        }
-
-        private Plot BuildPlot(int ownerId, string purpose, double marketValue,
-                           int groundWater, string soilType,
-                           List<string> coordinates, string description)
-        {
-            var points = new List<System.Windows.Point>();
-            foreach (var coord in coordinates)
-            {
-                var matches = Regex.Matches(coord, @"[\d.]+");
-                if (matches.Count >= 2)
-                {
-                    double x = double.Parse(matches[0].Value);
-                    double y = double.Parse(matches[1].Value);
-                    points.Add(new System.Windows.Point(x, y));
-                }
-            }
-
-            return new Plot
-            {
-                OwnerId = ownerId,
-                Location = _location,
-                Purpose = purpose,
-                MarketValue = marketValue,
-                GroundWater = groundWater,
-                SoilType = soilType,
-                Description = description,
-                Coordinates = coordinates,
-                CoordinatePoints = points
-            };
-        }
-
-        private void UpdatePlotInDatabase(int id, int ownerId, string purpose, double marketValue,
-            int groundWater, string soilType, List<string> coordinates, string description)
-        {
-            Plot updatedPlot = BuildPlot(ownerId, purpose, marketValue, groundWater,
-                                         soilType, coordinates, description);
-            LocalStorage.UpdatePlot(id, updatedPlot);
-            DatabaseSyncService.UpdateInDatabase(id, updatedPlot);
-        }
-
-        private void SavePlotToDatabase(int ownerId, string purpose, double marketValue,
-            int groundWater, string soilType, List<string> coordinates, string description)
-        {
-            Plot newPlot = BuildPlot(ownerId, purpose, marketValue, groundWater,
-                                     soilType, coordinates, description);
-            LocalStorage.SavePlot(newPlot);
-            //DatabaseSyncService.PushToDatabase(newPlot);
-
-            Locality locality = new Locality(newPlot.Location);
-
-            List<List<int>> coords = new List<List<int>>();
-
-            foreach (Point point in newPlot.CoordinatePoints)
-            {
-                int x = (int)point.X;
-                int y = (int)point.Y;
-
-                coords.Add(new List<int>() { x, y });
-            }
-
-            Description desc = new Description(newPlot.GroundWater, newPlot.SoilType, coords);
-
-            Owner owner = new Owner(newPlot.OwnerId);
-
-            new Property(owner, desc, locality, newPlot.Purpose, newPlot.MarketValue);
-        }
-
-        private void BtnBack_Click(object sender, RoutedEventArgs e)
-        {
-            AppUtils.GoBack(this);
         }
 
         private async void BtnSave_Click(object sender, RoutedEventArgs e)
         {
-            if (CbOwner.SelectedIndex == -1 ||
-                CbPryznachennya.SelectedIndex == -1 ||
-                CbSoilType.SelectedIndex == -1 ||
-                string.IsNullOrWhiteSpace(TxtMarketValue.Text) ||
-                string.IsNullOrWhiteSpace(TxtGroundWater.Text))
+            if (CbOwner.SelectedIndex == -1 || CbPryznachennya.SelectedIndex == -1 || CbSoilType.SelectedIndex == -1 ||
+                string.IsNullOrWhiteSpace(TxtMarketValue.Text) || string.IsNullOrWhiteSpace(TxtGroundWater.Text))
             {
                 AppUtils.ShowWarning("Будь ласка, заповніть всі основні поля.");
-                return;
-            }
-
-            if (!double.TryParse(TxtMarketValue.Text, out double marketValue) || marketValue < 0)
-            {
-                AppUtils.ShowWarning("Введіть коректну ринкову вартість.");
                 return;
             }
 
@@ -190,64 +89,29 @@ namespace lab4_task3
                 return;
             }
 
-            if (!int.TryParse(TxtGroundWater.Text, out int groundWater))
-            {
-                AppUtils.ShowWarning("Введіть коректний рівень ґрунтових вод.");
-                return;
-            }
-
-            if (groundWater < 0 || groundWater > 1000)
-            {
-                AppUtils.ShowWarning("Значення грунтових вод виходить за межі допустимого діапазону для збереження (0-1000).");
-                return;
-            }
-
-            Button btnSave = sender as Button;
-            string originalContent = btnSave.Content?.ToString();
-            btnSave.IsEnabled = false;
-            btnSave.Content = "⏳ Перевірка меж...";
-
-            await Task.Delay(2000);
-
-            List<string> coordinates = new List<string>();
-            var coordsList = new List<List<int>>();
-
-            foreach (var item in LbCoordinates.Items)
-            {
-                coordinates.Add(item.ToString());
-                var matches = Regex.Matches(item.ToString(), @"[\d.]+");
-                if (matches.Count >= 2)
-                    coordsList.Add(new List<int> { (int)double.Parse(matches[0].Value), (int)double.Parse(matches[1].Value) });
-            }
-
-            var properties = new DB().GetProperties();
-
-            var overlappingProperty = new DB().CheckOverlapping();
-
-            if (overlappingProperty != null)
-            {
-                btnSave.IsEnabled = true;
-                btnSave.Content = originalContent;
-                
-                AppUtils.ShowWarning($"Виявлено накладання меж з ділянкою № {overlappingProperty.ID}");
-                return;
-            }
-
+            double marketValue = double.Parse(TxtMarketValue.Text);
+            int groundWater = int.Parse(TxtGroundWater.Text);
             int ownerId = (int)CbOwner.SelectedValue;
             string purpose = (CbPryznachennya.SelectedItem as ComboBoxItem)?.Content.ToString();
             string soilType = (CbSoilType.SelectedItem as ComboBoxItem)?.Content.ToString();
 
-            string description = $"Населений пункт: {_location}.";
+            List<List<int>> coords = new List<List<int>>();
+            foreach (var item in LbCoordinates.Items)
+            {
+                var matches = Regex.Matches(item.ToString(), @"[\d.]+");
+                coords.Add(new List<int> { (int)double.Parse(matches[0].Value), (int)double.Parse(matches[1].Value) });
+            }
 
             if (_editId == -1)
             {
-                SavePlotToDatabase(ownerId, purpose, marketValue, groundWater, soilType,
-                    coordinates, description);
+                Locality locality = new Locality(_location);
+                Description desc = new Description(groundWater, soilType, coords);
+                Owner owner = new Owner(ownerId);
+                new Property(owner, desc, locality, purpose, marketValue);
             }
             else
             {
-                UpdatePlotInDatabase(_editId, ownerId, purpose, marketValue, groundWater, soilType,
-                    coordinates, description);
+                UpdateExistingPlot(_editId, ownerId, purpose, marketValue, groundWater, soilType, coords);
             }
 
             unsaved = false;
@@ -255,17 +119,38 @@ namespace lab4_task3
             AppUtils.GoBack(this);
         }
 
+        private void UpdateExistingPlot(int propertyId, int ownerId, string purpose, double marketValue, int water, string soil, List<List<int>> coords)
+        {
+            using var conn = new NpgsqlConnection(DB.connectionString);
+            conn.Open();
+            
+            using var cmd = new NpgsqlCommand("SELECT description, locality FROM properties WHERE id = @id", conn);
+            cmd.Parameters.AddWithValue("id", propertyId);
+            using var reader = cmd.ExecuteReader();
+            reader.Read();
+            int descId = reader.GetInt32(0);
+            int locId = reader.GetInt32(1);
+            reader.Close();
+
+            Description desc = new Description(descId);
+            // Тут викликається метод Update(), який буде в DTO
+            // desc.Update(water, soil, coords); 
+
+            Property prop = new Property(new Owner(ownerId), desc, new Locality(locId), propertyId);
+            // prop.Update(ownerId, locId, descId, purpose, marketValue);
+        }
+
+        private void BtnBack_Click(object sender, RoutedEventArgs e) => AppUtils.GoBack(this);
+
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            if (!unsaved) return;
-            if (!AppUtils.AskConfirmation("Закрити без збереження?", "Увага")) e.Cancel = true;
+            if (unsaved && !AppUtils.AskConfirmation("Закрити без збереження?", "Увага")) e.Cancel = true;
         }
 
         private void BtnAddNewOwner_Click(object sender, RoutedEventArgs e)
         {
             var window = new CreatingAccountOwner();
             window.ShowDialog();
-
             if (window.CreatedOwner != null)
             {
                 LoadOwnersFromDatabase();
@@ -286,18 +171,12 @@ namespace lab4_task3
             if (LbCoordinates.SelectedIndex != -1) { LbCoordinates.Items.RemoveAt(LbCoordinates.SelectedIndex); unsaved = true; }
         }
 
-        private void LbCoordinates_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            BtnRemoveCoord.IsEnabled = LbCoordinates.SelectedItem != null;
-        }
+        private void LbCoordinates_SelectionChanged(object sender, SelectionChangedEventArgs e) => BtnRemoveCoord.IsEnabled = LbCoordinates.SelectedItem != null;
 
         private void BtnReset_Click(object sender, RoutedEventArgs e)
         {
-            CbOwner.SelectedIndex = -1;
-            CbPryznachennya.SelectedIndex = -1;
-            CbSoilType.SelectedIndex = -1;
-            TxtMarketValue.Clear(); TxtGroundWater.Clear();
-            LbCoordinates.Items.Clear();
+            CbOwner.SelectedIndex = -1; CbPryznachennya.SelectedIndex = -1; CbSoilType.SelectedIndex = -1;
+            TxtMarketValue.Clear(); TxtGroundWater.Clear(); LbCoordinates.Items.Clear();
             unsaved = true;
         }
     }

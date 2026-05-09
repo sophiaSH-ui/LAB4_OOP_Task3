@@ -465,6 +465,22 @@ namespace lab4_task3.DTO
             }
         }
 
+        public string Usage
+        {
+            get
+            {
+                return usage;
+            }
+        }
+
+        public double Price
+        {
+            get
+            {
+                return price;
+            }
+        }
+
         public void Update(Owner owner, Description description, Locality locality, string usage, double price)
         {
             this.owner = owner;
@@ -568,6 +584,22 @@ namespace lab4_task3.DTO
             get
             {
                 return coordinates;
+            }
+        }
+
+        public int Water
+        {
+            get
+            {
+                return water;
+            }
+        }
+
+        public string Soil
+        {
+            get
+            {
+                return soil;
             }
         }
 

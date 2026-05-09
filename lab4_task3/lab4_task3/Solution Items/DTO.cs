@@ -321,7 +321,7 @@ namespace lab4_task3.DTO
 
             using var command = new NpgsqlCommand( sql, connection);
 
-            command.Parameters[0].Value = ownerID;
+            command.Parameters.AddWithValue("id", ownerID);
 
             var reader = command.ExecuteReader();
 
@@ -415,7 +415,7 @@ namespace lab4_task3.DTO
 
             using var command = new NpgsqlCommand(sql, connection);
 
-            command.Parameters[0].Value = propertyId;
+            command.Parameters.AddWithValue("id", propertyId);
 
             var reader = command.ExecuteReader();
 
@@ -559,7 +559,7 @@ namespace lab4_task3.DTO
 
             using var command = new NpgsqlCommand(sql, connection);
 
-            command.Parameters[0].Value = descriptionId;
+            command.Parameters.AddWithValue("id", descriptionId);
 
             var reader = command.ExecuteReader();
 
@@ -667,7 +667,7 @@ namespace lab4_task3.DTO
 
             using var command = new NpgsqlCommand(sql, connection);
 
-            command.Parameters[0].Value = localityID;
+            command.Parameters.AddWithValue("id", localityID);
 
             var reader = command.ExecuteReader();
 

@@ -332,6 +332,41 @@ namespace lab4_task3.DTO
             BirthDate = DateTime.Parse(reader.GetString(2));
             this.id = ownerID;
         }
+
+        public void Update(string fn, string ln, DateTime bd)
+        {
+            FirstName = fn;
+            LastName = ln;
+            BirthDate = bd;
+
+            using var connection = new NpgsqlConnection(DB.ConnectionString);
+            connection.Open();
+
+            string sql = "UPDATE owners SET first_name = @fn, last_name = @ln, birth_day = @bd WHERE id = @id;";
+
+            using var command = new NpgsqlCommand(sql, connection);
+
+            command.Parameters.AddWithValue("fn", FirstName);
+            command.Parameters.AddWithValue("ln", LastName);
+            command.Parameters.AddWithValue("bd", BirthDate);
+            command.Parameters.AddWithValue("id", id);
+
+            command.ExecuteNonQuery();
+        }
+
+        public void Delete()
+        {
+            using var connection = new NpgsqlConnection(DB.ConnectionString);
+            connection.Open();
+
+            string sql = "DELETE FROM owners WHERE id = @id;";
+
+            using var command = new NpgsqlCommand(sql, connection);
+
+            command.Parameters.AddWithValue("id", id);
+
+            command.ExecuteNonQuery();
+        }
     }
 
     public class Property
@@ -429,6 +464,45 @@ namespace lab4_task3.DTO
                 return locality;
             }
         }
+
+        public void Update(Owner owner, Description description, Locality locality, string usage, double price)
+        {
+            this.owner = owner;
+            this.description = description;
+            this.locality = locality;
+            this.usage = usage;
+            this.price = price;
+
+            using var connection = new NpgsqlConnection(DB.ConnectionString);
+            connection.Open();
+
+            string sql = "UPDATE properties SET owner = @o, locality = @l, description = @d, usage = @u, price = @p WHERE id = @id;";
+
+            using var command = new NpgsqlCommand(sql, connection);
+
+            command.Parameters.AddWithValue("o", owner.ID);
+            command.Parameters.AddWithValue("l", locality.ID);
+            command.Parameters.AddWithValue("d", description.ID);
+            command.Parameters.AddWithValue("u", usage);
+            command.Parameters.AddWithValue("p", price);
+            command.Parameters.AddWithValue("id", id);
+
+            command.ExecuteNonQuery();
+        }
+
+        public void Delete()
+        {
+            using var connection = new NpgsqlConnection(DB.ConnectionString);
+            connection.Open();
+
+            string sql = "DELETE FROM properties WHERE id = @id;";
+
+            using var command = new NpgsqlCommand(sql, connection);
+
+            command.Parameters.AddWithValue("id", id);
+
+            command.ExecuteNonQuery();
+        }
     }
 
     public class Description
@@ -496,6 +570,41 @@ namespace lab4_task3.DTO
                 return coordinates;
             }
         }
+
+        public void Update(int descriptionId, int water, string soil, List<List<int>> coordinates)
+        {
+            using var connection = new NpgsqlConnection(DB.ConnectionString);
+            connection.Open();
+
+            string sql = "UPDATE descriptions SET water = @w, soil = @s, coordinates = @c WHERE id = @id;";
+
+            using var command = new NpgsqlCommand(sql, connection);
+
+            command.Parameters.Add(new NpgsqlParameter("c", NpgsqlTypes.NpgsqlDbType.Jsonb)
+            {
+                Value = coordinates
+            });
+
+            command.Parameters.AddWithValue("w", water);
+            command.Parameters.AddWithValue("s", soil);
+            command.Parameters.AddWithValue("id", descriptionId);
+
+            command.ExecuteNonQuery();
+        }
+
+        public void Delete()
+        {
+            using var connection = new NpgsqlConnection(DB.ConnectionString);
+            connection.Open();
+
+            string sql = "DELETE FROM descriptions WHERE id = @id;";
+
+            using var command = new NpgsqlCommand(sql, connection);
+
+            command.Parameters.AddWithValue("id", id);
+
+            command.ExecuteNonQuery();
+        }
     }
 
     public class Locality
@@ -550,6 +659,35 @@ namespace lab4_task3.DTO
             {
                 return title;
             }
+        }
+
+        public void Update(int localityId, string title)
+        {
+            using var connection = new NpgsqlConnection(DB.ConnectionString);
+            connection.Open();
+
+            string sql = "UPDATE localities SET title = @t WHERE id = @id;";
+
+            using var command = new NpgsqlCommand(sql, connection);
+
+            command.Parameters.AddWithValue("t", title);
+            command.Parameters.AddWithValue("id", localityId);
+
+            command.ExecuteNonQuery();
+        }
+
+        public void Delete()
+        {
+            using var connection = new NpgsqlConnection(DB.ConnectionString);
+            connection.Open();
+
+            string sql = "DELETE FROM localities WHERE id = @id;";
+
+            using var command = new NpgsqlCommand(sql, connection);
+
+            command.Parameters.AddWithValue("id", id);
+
+            command.ExecuteNonQuery();
         }
     }
 

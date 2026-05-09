@@ -44,7 +44,7 @@ namespace lab4_task3
             if (FilterCbPryznachennya?.SelectedItem is ComboBoxItem cbItem && cbItem.Content.ToString() != "Всі")
             {
                 string purpose = cbItem.Content.ToString();
-                query = query.Where(p => p.Usage == purpose);
+                query = query.Where(p => p.Usage.Title == purpose);
             }
 
             string ownerQuery = FilterTxtOwner?.Text?.Trim();
@@ -105,7 +105,7 @@ namespace lab4_task3
             {
                 string info = $"Власник: {selectedPlot.Owner.LastName} {selectedPlot.Owner.FirstName}\n" +
                               $"Розташування: {selectedPlot.Locality.Title}\n" +
-                              $"Призначення: {selectedPlot.Usage}\n" +
+                              $"Призначення: {selectedPlot.Usage.Title}\n" +
                               $"Тип ґрунту: {selectedPlot.Description.Soil}\n" +
                               $"Ринкова вартість: {selectedPlot.Price:F2} грн";
                 MessageBox.Show(info, "Деталі ділянки", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -144,5 +144,6 @@ namespace lab4_task3
                 }
             }
         }
+
     }
 }

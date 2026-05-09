@@ -65,11 +65,8 @@
                             <TextBlock Text="ДІЛЯНКА" Style="{StaticResource SectionHeader}" VerticalAlignment="Center"/>
                         </StackPanel>
                         <TextBlock Text="Призначення" Style="{StaticResource FieldLabel}"/>
-                        <ComboBox x:Name="CbPryznachennya" Style="{StaticResource InputCombo}" Margin="0,0,0,12">
-                            <ComboBoxItem Content="Під забудову"/>
-                            <ComboBoxItem Content="Сільськогосподарського призначення"/>
-                            <ComboBoxItem Content="Зарезервована"/>
-                        </ComboBox>
+                        <ComboBox x:Name="CbPryznachennya" Style="{StaticResource InputCombo}" Margin="0,0,0,12"
+          DisplayMemberPath="Title" SelectedValuePath="ID" Text="Оберіть призначення..."/>
                         <TextBlock Text="Ринкова вартість (грн)" Style="{StaticResource FieldLabel}"/>
                         <TextBox x:Name="TxtMarketValue" Style="{StaticResource InputBox}" Margin="0,0,0,12"/>
                     </StackPanel>

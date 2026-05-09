@@ -14,28 +14,9 @@ namespace lab4_task3
     {
         private bool unsaved = false;
         private List<Owner> ownersList = new List<Owner>();
+        private List<Usage> usagesList = new List<Usage>();
         private string _location;
         private Property _editProperty;
-
-        public AddEditWindow(Property property) : this(property.Locality.Title)
-        {
-            _editProperty = property;
-            TxtMarketValue.Text = property.Price.ToString().Replace(".", ",");
-            TxtGroundWater.Text = property.Description.Water.ToString();
-            CbOwner.SelectedValue = property.Owner.ID;
-
-            foreach (ComboBoxItem item in CbPryznachennya.Items)
-                if (item.Content?.ToString() == property.Usage) { CbPryznachennya.SelectedItem = item; break; }
-
-            foreach (ComboBoxItem item in CbSoilType.Items)
-                if (item.Content?.ToString() == property.Description.Soil) { CbSoilType.SelectedItem = item; break; }
-
-            LbCoordinates.Items.Clear();
-            foreach (var p in property.Description.Coordinates)
-                LbCoordinates.Items.Add($"X: {p[0]}  |  Y: {p[1]}");
-
-            unsaved = false;
-        }
 
         public AddEditWindow(string location = "Не вказано")
         {
@@ -47,13 +28,40 @@ namespace lab4_task3
 
             _location = location;
             TxtLocation.Text = _location;
+
             LoadOwnersFromDatabase();
+            LoadUsagesFromDatabase(); 
+        }
+
+        public AddEditWindow(Property property) : this(property.Locality.Title)
+        {
+            _editProperty = property;
+            TxtMarketValue.Text = property.Price.ToString().Replace(".", ",");
+            TxtGroundWater.Text = property.Description.Water.ToString();
+
+            CbOwner.SelectedValue = property.Owner.ID;
+            CbPryznachennya.SelectedValue = property.Usage.ID;
+
+            foreach (ComboBoxItem item in CbSoilType.Items)
+                if (item.Content?.ToString() == property.Description.Soil) { CbSoilType.SelectedItem = item; break; }
+
+            LbCoordinates.Items.Clear();
+            foreach (var p in property.Description.Coordinates)
+                LbCoordinates.Items.Add($"X: {p[0]}  |  Y: {p[1]}");
+
+            unsaved = false;
         }
 
         private void LoadOwnersFromDatabase()
         {
             ownersList = new DB().GetOwners().ToList();
             RefreshOwnerComboBox();
+        }
+
+        private void LoadUsagesFromDatabase()
+        {
+            usagesList = new DB().GetUsages().ToList();
+            CbPryznachennya.ItemsSource = usagesList;
         }
 
         private void RefreshOwnerComboBox()
@@ -89,8 +97,9 @@ namespace lab4_task3
 
             double marketValue = double.Parse(TxtMarketValue.Text);
             int groundWater = int.Parse(TxtGroundWater.Text);
+
             int ownerId = (int)CbOwner.SelectedValue;
-            string purpose = (CbPryznachennya.SelectedItem as ComboBoxItem)?.Content.ToString();
+            int usageId = (int)CbPryznachennya.SelectedValue; 
             string soilType = (CbSoilType.SelectedItem as ComboBoxItem)?.Content.ToString();
 
             List<List<int>> coords = new List<List<int>>();
@@ -105,13 +114,17 @@ namespace lab4_task3
                 Locality locality = new Locality(_location);
                 Description desc = new Description(groundWater, soilType, coords);
                 Owner owner = new Owner(ownerId);
-                new Property(owner, desc, locality, purpose, marketValue);
+                Usage usage = new Usage(usageId); 
+
+                new Property(owner, desc, locality, usage, marketValue);
             }
             else
             {
                 _editProperty.Description.Update(_editProperty.Description.ID, groundWater, soilType, coords);
                 Owner owner = new Owner(ownerId);
-                _editProperty.Update(owner, _editProperty.Description, _editProperty.Locality, purpose, marketValue);
+                Usage usage = new Usage(usageId);
+
+                _editProperty.Update(owner, _editProperty.Description, _editProperty.Locality, usage, marketValue);
             }
 
             btnSave.IsEnabled = true;

@@ -22,7 +22,7 @@ namespace lab4_task3
         {
             TxtOwner.Text = $"{property.Owner.LastName} {property.Owner.FirstName}";
             TxtLocation.Text = property.Locality.Title;
-            TxtPurpose.Text = property.Usage;
+            TxtPurpose.Text = property.Usage.Title;
             TxtSoil.Text = property.Description.Soil;
             TxtPrice.Text = $"{property.Price:F2} грн";
 

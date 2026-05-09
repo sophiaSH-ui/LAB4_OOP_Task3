@@ -780,27 +780,4 @@ namespace lab4_task3.DTO
             command.ExecuteNonQuery();
         }
     }
-
-    public class Plot
-    {
-        public int Id { get; set; }
-        public string OwnerName { get; set; }
-        public int OwnerId { get; set; }
-        public string Location { get; set; }
-        public string Purpose { get; set; }
-        public string Pryznachennya  
-        {
-            get => Purpose;
-            set => Purpose = value;
-        }
-        public double MarketValue { get; set; }
-        public string MarketValueFormatted { get; set; }
-        public int GroundWater { get; set; }
-        public string SoilType { get; set; }
-        public string Description { get; set; }    
-        public List<string> Coordinates { get; set; }
-
-        [JsonIgnore]
-        public List<Point> CoordinatePoints { get; set; }
-    }
 }

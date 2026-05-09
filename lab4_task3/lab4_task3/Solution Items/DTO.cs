@@ -112,6 +112,29 @@ namespace lab4_task3.DTO
             return owners;
         }
 
+        public ObservableCollection<Usage> GetUsages()
+        {
+            using var connection = new NpgsqlConnection(DB.ConnectionString);
+            connection.Open();
+
+            using var command = new NpgsqlCommand();
+
+            command.Connection = connection;
+            command.CommandText = "SELECT id FROM usages;";
+
+            ObservableCollection<Usage> usages = new ObservableCollection<Usage>();
+
+            using var reader = command.ExecuteReader();
+
+            while (reader.Read())
+            {
+                int usageID = reader.GetInt32(reader.GetOrdinal("id"));
+                usages.Add(new Usage(usageID));
+            }
+
+            return usages;
+        }
+
         public long GetPropertiesCount(Locality locality = null)
         {
             using var connection = new NpgsqlConnection(DB.ConnectionString);

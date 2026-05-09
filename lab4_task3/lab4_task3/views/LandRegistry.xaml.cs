@@ -1,7 +1,6 @@
 ﻿using lab4_task3.DTO;
 using System;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -17,7 +16,7 @@ namespace lab4_task3.views
             InputValidator.AttachTextOnly(CbLocation);
             UpdatePlotsCount();
             CbLocation.AddHandler(System.Windows.Controls.Primitives.TextBoxBase.TextChangedEvent,
-                                  new TextChangedEventHandler(CbLocation_TextChanged)); 
+                                  new TextChangedEventHandler(CbLocation_TextChanged));
         }
 
         private void CbLocation_TextChanged(object sender, TextChangedEventArgs e)
@@ -32,9 +31,16 @@ namespace lab4_task3.views
             DB db = new DB();
             string location = GetValidLocation();
 
-            CountText.Text = location != null
-                ? db.GetPropertiesCountByLocation(location).ToString()
-                : db.GetPropertiesCount().ToString();
+            if (location != null)
+            {
+                var allProperties = db.GetProperties();
+                int count = allProperties.Count(p => p.Locality.Title.Equals(location, StringComparison.OrdinalIgnoreCase));
+                CountText.Text = count.ToString();
+            }
+            else
+            {
+                CountText.Text = db.GetPropertiesCount().ToString();
+            }
         }
 
         private void BtnView_Click(object sender, RoutedEventArgs e)
@@ -54,7 +60,7 @@ namespace lab4_task3.views
 
         private void BtnAddLandPlot_Click(object sender, RoutedEventArgs e)
         {
-            if (!IsLocationValid()) return; 
+            if (!IsLocationValid()) return;
             AppUtils.NavigateTo(this, new AddEditWindow(CbLocation.Text.Trim()));
         }
 
@@ -65,6 +71,7 @@ namespace lab4_task3.views
                                && locationText != LocationPlaceholder;
             return hasLocation ? locationText : null;
         }
+
         private void BtnBack_Click(object sender, RoutedEventArgs e) => AppUtils.GoBack(this);
     }
 }

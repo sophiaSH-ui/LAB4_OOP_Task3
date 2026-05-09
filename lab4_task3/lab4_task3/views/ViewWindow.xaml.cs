@@ -1,10 +1,7 @@
 ﻿using lab4_task3.DTO;
-using Npgsql;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -13,7 +10,8 @@ namespace lab4_task3
     public partial class ViewWindow : Window
     {
         private string _locationFilter;
-        private ObservableCollection<Plot> _plotsCollection = new ObservableCollection<Plot>();
+        private ObservableCollection<Property> _allProperties;
+        private ObservableCollection<Property> _filteredProperties = new ObservableCollection<Property>();
 
         public ViewWindow(string locationFilter = "")
         {
@@ -23,96 +21,48 @@ namespace lab4_task3
             InputValidator.AttachIntOnly(FilterTxtMaxValue);
 
             _locationFilter = locationFilter;
-            LbDilyanky.ItemsSource = _plotsCollection;
+            DgDilyanky.ItemsSource = _filteredProperties;
 
+            LoadData();
+        }
+
+        private void LoadData()
+        {
+            _allProperties = new DB().GetProperties();
             ApplyFilters();
         }
 
         private void ApplyFilters()
         {
-            string purpose = "";
-            if (FilterCbPryznachennya != null && FilterCbPryznachennya.SelectedItem is ComboBoxItem selectedComboItem)
+            if (_allProperties == null) return;
+
+            var query = _allProperties.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(_locationFilter))
+                query = query.Where(p => p.Locality.Title.IndexOf(_locationFilter, StringComparison.OrdinalIgnoreCase) >= 0);
+
+            if (FilterCbPryznachennya?.SelectedItem is ComboBoxItem cbItem && cbItem.Content.ToString() != "Всі")
             {
-                purpose = selectedComboItem.Content?.ToString();
-                if (purpose == "Всі") purpose = "";
+                string purpose = cbItem.Content.ToString();
+                query = query.Where(p => p.Usage == purpose);
             }
 
-            string ownerQuery = FilterTxtOwner?.Text?.Trim() ?? "";
+            string ownerQuery = FilterTxtOwner?.Text?.Trim();
+            if (!string.IsNullOrWhiteSpace(ownerQuery))
+                query = query.Where(p => (p.Owner.LastName + " " + p.Owner.FirstName).IndexOf(ownerQuery, StringComparison.OrdinalIgnoreCase) >= 0);
+
             int minPrice = ParsePrice(FilterTxtMinValue?.Text);
+            if (minPrice > 0) query = query.Where(p => p.Price >= minPrice);
+
             int maxPrice = ParsePrice(FilterTxtMaxValue?.Text);
+            if (maxPrice > 0) query = query.Where(p => p.Price <= maxPrice);
 
-            var plots = GetPlotsFromDatabase(_locationFilter, purpose, ownerQuery, minPrice, maxPrice);
-
-            _plotsCollection.Clear();
-            foreach (var plot in plots)
+            _filteredProperties.Clear();
+            foreach (var p in query)
             {
-                _plotsCollection.Add(plot);
+                _filteredProperties.Add(p);
             }
             UpdateCount();
-        }
-
-        private List<Plot> GetPlotsFromDatabase(string location, string purpose, string owner, int minPrice, int maxPrice)
-        {
-            List<Plot> plots = new List<Plot>();
-
-            using (var conn = new NpgsqlConnection(DB.connectionString))
-            {
-                conn.Open();
-
-                string sql = @"
-                SELECT p.id, p.usage, p.price, o.first_name, o.last_name, o.id as owner_id,
-                       l.title as locality, l.id as locality_id, d.water, d.soil, d.coordinates, d.id as desc_id
-                FROM properties p
-                JOIN owners o ON p.owner = o.id
-                JOIN localities l ON p.locality = l.id
-                JOIN descriptions d ON p.description = d.id
-                WHERE 1=1";
-
-                if (!string.IsNullOrWhiteSpace(location)) sql += " AND l.title ILIKE @loc";
-                if (!string.IsNullOrWhiteSpace(purpose)) sql += " AND p.usage = @usage";
-                if (!string.IsNullOrWhiteSpace(owner)) sql += " AND (o.first_name ILIKE @owner OR o.last_name ILIKE @owner)";
-                if (minPrice > 0) sql += " AND p.price::numeric >= @minP";
-                if (maxPrice > 0) sql += " AND p.price::numeric <= @maxP";
-
-                using var cmd = new NpgsqlCommand(sql, conn);
-
-                if (!string.IsNullOrWhiteSpace(location)) cmd.Parameters.AddWithValue("loc", "%" + location + "%");
-                if (!string.IsNullOrWhiteSpace(purpose)) cmd.Parameters.AddWithValue("usage", purpose);
-                if (!string.IsNullOrWhiteSpace(owner)) cmd.Parameters.AddWithValue("owner", "%" + owner + "%");
-                if (minPrice > 0) cmd.Parameters.AddWithValue("minP", (decimal)minPrice);
-                if (maxPrice > 0) cmd.Parameters.AddWithValue("maxP", (decimal)maxPrice);
-
-                using var reader = cmd.ExecuteReader();
-                while (reader.Read())
-                {
-                    var jsonCoords = reader.GetString(reader.GetOrdinal("coordinates"));
-                    var points = new List<Point>();
-                    var matches = Regex.Matches(jsonCoords, @"[0-9]+(?:\.[0-9]+)?");
-                    for (int i = 0; i < matches.Count; i += 2)
-                    {
-                        if (i + 1 < matches.Count)
-                        {
-                            double x = double.Parse(matches[i].Value, System.Globalization.CultureInfo.InvariantCulture);
-                            double y = double.Parse(matches[i + 1].Value, System.Globalization.CultureInfo.InvariantCulture);
-                            points.Add(new Point(x, y));
-                        }
-                    }
-
-                    plots.Add(new Plot
-                    {
-                        Id = reader.GetInt32(0),
-                        Pryznachennya = reader.GetString(1),
-                        MarketValueFormatted = reader.GetDecimal(2).ToString("F2") + " грн",
-                        OwnerName = reader.GetString(3) + " " + reader.GetString(4),
-                        OwnerId = reader.GetInt32(reader.GetOrdinal("owner_id")),
-                        Location = reader.GetString(reader.GetOrdinal("locality")),
-                        GroundWater = reader.GetInt32(reader.GetOrdinal("water")),
-                        SoilType = reader.GetString(reader.GetOrdinal("soil")),
-                        CoordinatePoints = points
-                    });
-                }
-            }
-            return plots;
         }
 
         private int ParsePrice(string priceStr)
@@ -124,7 +74,6 @@ namespace lab4_task3
         }
 
         private void BtnBack_Click(object sender, RoutedEventArgs e) => AppUtils.GoBack(this);
-
         private void Filter_Changed(object sender, RoutedEventArgs e) => ApplyFilters();
 
         private void BtnResetFilters_Click(object sender, RoutedEventArgs e)
@@ -136,49 +85,63 @@ namespace lab4_task3
             ApplyFilters();
         }
 
-        private void LbDilyanky_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void DgDilyanky_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            bool hasSelection = LbDilyanky.SelectedItem != null;
+            bool hasSelection = DgDilyanky.SelectedItem != null;
             BtnDetails.IsEnabled = hasSelection;
             BtnEdit.IsEnabled = hasSelection;
             BtnMap.IsEnabled = hasSelection;
+            BtnDelete.IsEnabled = hasSelection;
         }
 
         private void UpdateCount()
         {
-            if (ResultCountText != null) ResultCountText.Text = $"Знайдено: {_plotsCollection.Count}";
+            if (ResultCountText != null) ResultCountText.Text = $"Знайдено: {_filteredProperties.Count}";
         }
 
         private void BtnDetails_Click(object sender, RoutedEventArgs e)
         {
-            if (LbDilyanky.SelectedItem is Plot selectedPlot)
+            if (DgDilyanky.SelectedItem is Property selectedPlot)
             {
-                string info = $"Власник: {selectedPlot.OwnerName}\n" +
-                              $"Розташування: {selectedPlot.Location}\n" +
-                              $"Призначення: {selectedPlot.Pryznachennya}\n" +
-                              $"Тип ґрунту: {selectedPlot.SoilType}\n" +
-                              $"Ринкова вартість: {selectedPlot.MarketValueFormatted}";
-                MessageBox.Show(info, "Деталі ділянки", MessageBoxButton.OK, MessageBoxImage.None);
+                string info = $"Власник: {selectedPlot.Owner.LastName} {selectedPlot.Owner.FirstName}\n" +
+                              $"Розташування: {selectedPlot.Locality.Title}\n" +
+                              $"Призначення: {selectedPlot.Usage}\n" +
+                              $"Тип ґрунту: {selectedPlot.Description.Soil}\n" +
+                              $"Ринкова вартість: {selectedPlot.Price:F2} грн";
+                MessageBox.Show(info, "Деталі ділянки", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
         private void BtnEdit_Click(object sender, RoutedEventArgs e)
         {
-            if (LbDilyanky.SelectedItem is Plot selectedPlot)
+            if (DgDilyanky.SelectedItem is Property selectedPlot)
             {
                 var editWin = new AddEditWindow(selectedPlot);
-                editWin.Closed += (s, args) => ApplyFilters();
+                editWin.Closed += (s, args) => LoadData();
                 AppUtils.NavigateTo(this, editWin);
             }
         }
 
         private void BtnMap_Click(object sender, RoutedEventArgs e)
         {
-            if (LbDilyanky.SelectedItem is Plot selectedPlot)
+            if (DgDilyanky.SelectedItem is Property selectedPlot)
             {
                 var mapWin = new VisualizationWindow();
                 mapWin.LoadPlotData(selectedPlot);
                 AppUtils.NavigateTo(this, mapWin);
+            }
+        }
+
+        private void BtnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            if (DgDilyanky.SelectedItem is Property selectedPlot)
+            {
+                if (AppUtils.AskConfirmation("Ви впевнені, що хочете видалити цю ділянку?", "Видалення"))
+                {
+                    selectedPlot.Delete();
+                    selectedPlot.Description.Delete();
+                    LoadData();
+                }
             }
         }
     }

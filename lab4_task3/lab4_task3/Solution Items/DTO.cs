@@ -318,7 +318,7 @@ namespace lab4_task3.DTO
             using var connection = new NpgsqlConnection(DB.ConnectionString);
             connection.Open();
 
-            string sql = "SELECT first_name, last_name, birth_date FROM owners WHERE id = @id;";
+            string sql = "SELECT first_name, last_name, birth_day FROM owners WHERE id = @id;";
 
             using var command = new NpgsqlCommand( sql, connection);
 
@@ -330,7 +330,7 @@ namespace lab4_task3.DTO
 
             FirstName = reader.GetString(0);
             LastName = reader.GetString(1);
-            BirthDate = DateTime.Parse(reader.GetString(2));
+            BirthDate = reader.GetDateTime(2);
             this.id = ownerID;
         }
 
@@ -370,16 +370,71 @@ namespace lab4_task3.DTO
         }
     }
 
+    public class Usage
+    {
+        private string title;
+        private int id;
+
+        public Usage(string title)
+        {
+            this.title = title;
+
+            using var connection = new NpgsqlConnection(DB.ConnectionString);
+            connection.Open();
+
+            using var command = new NpgsqlCommand("INSERT INTO usages (title) VALUES (@t) RETURNING id;", connection);
+
+            command.Parameters.AddWithValue("t", title);
+
+            id = (int)command.ExecuteScalar();
+        }
+
+        public Usage(int usageID)
+        {
+            using var connection = new NpgsqlConnection(DB.ConnectionString);
+            connection.Open();
+
+            string sql = "SELECT title FROM usages WHERE id = @id;";
+
+            using var command = new NpgsqlCommand(sql, connection);
+
+            command.Parameters.AddWithValue("id", usageID);
+
+            var reader = command.ExecuteReader();
+
+            reader.Read();
+
+            this.title = reader.GetString(0);
+            this.id = usageID;
+        }
+
+        public int ID
+        {
+            get
+            {
+                return id;
+            }
+        }
+
+        public string Title
+        {
+            get
+            {
+                return title;
+            }
+        }
+    }
+
     public class Property
     {
         private Owner owner;
         private Description description;
         private Locality locality;
-        private string usage;
+        private Usage usage;
         private double price;
         private int id;
 
-        public Property(Owner owner, Description description, Locality locality, string usage, double price)
+        public Property(Owner owner, Description description, Locality locality, Usage usage, double price)
         {
             this.owner = owner;
             this.description = description;
@@ -397,7 +452,7 @@ namespace lab4_task3.DTO
             command.Parameters.AddWithValue("o", owner.ID);
             command.Parameters.AddWithValue("l", locality.ID);
             command.Parameters.AddWithValue("d", description.ID);
-            command.Parameters.AddWithValue("u", usage);
+            command.Parameters.AddWithValue("u", usage.ID);
             command.Parameters.AddWithValue("p", price);
 
             id = (int)command.ExecuteScalar();
@@ -422,8 +477,8 @@ namespace lab4_task3.DTO
 
             reader.Read();
 
-            this.usage = reader.GetString(0);
-            this.price = reader.GetInt32(1);
+            this.usage = new Usage(reader.GetInt32(0));
+            this.price = reader.GetDouble(1);
             this.id = propertyId;
         }
 
@@ -540,9 +595,9 @@ namespace lab4_task3.DTO
 
             using var command = new NpgsqlCommand("INSERT INTO descriptions (water, soil, coordinates) VALUES (@w, @s, @c) RETURNING id;", connection);
 
-            command.Parameters.Add(new NpgsqlParameter("c", NpgsqlTypes.NpgsqlDbType.Jsonb)
+            command.Parameters.Add(new NpgsqlParameter("c", NpgsqlTypes.NpgsqlDbType.Json)
             {
-                Value = coordinates
+                Value = JsonSerializer.Serialize(coordinates)
             });
 
             command.Parameters.AddWithValue("w", water);

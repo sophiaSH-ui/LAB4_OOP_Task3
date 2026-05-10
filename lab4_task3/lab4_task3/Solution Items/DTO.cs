@@ -16,7 +16,7 @@ namespace lab4_task3.DTO
 
         static DB()
         {
-            using (StreamReader reader = new StreamReader("access.txt"))
+            using (StreamReader reader = new StreamReader("Solution Items/access.txt"))
             {
                 ConnectionString = reader.ReadToEnd();
             }

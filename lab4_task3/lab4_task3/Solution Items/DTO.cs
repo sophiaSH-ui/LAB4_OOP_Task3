@@ -16,7 +16,7 @@ namespace lab4_task3.DTO
 
         static DB()
         {
-            using (StreamReader reader = new StreamReader("access.txt"))
+            using (StreamReader reader = new StreamReader("Solution Items/access.txt"))
             {
                 ConnectionString = reader.ReadToEnd();
             }
@@ -159,11 +159,11 @@ namespace lab4_task3.DTO
             return count;
         }
 
+        enum PointPosition { Outside, OnBoundary, Inside }
 
         public Property? CheckOverlapping(Property property, ObservableCollection<Property> properties)
         {
             var currentPoly = ToPoints(property.Description.Coordinates);
-
             return properties
                 .Where(p => p.Locality.ID == property.Locality.ID)
                 .Where(p => p.ID != property.ID)
@@ -172,51 +172,52 @@ namespace lab4_task3.DTO
                     && PolygonsOverlap(currentPoly, ToPoints(p.Description.Coordinates)));
         }
 
-        static bool SegmentsIntersect(
-    (long X, long Y) a1, (long X, long Y) a2,
-    (long X, long Y) b1, (long X, long Y) b2)
+        static bool SegmentsProperlyIntersect(
+            (long X, long Y) a1, (long X, long Y) a2,
+            (long X, long Y) b1, (long X, long Y) b2)
         {
             long Cross((long X, long Y) o, (long X, long Y) a, (long X, long Y) b) =>
                 (a.X - o.X) * (b.Y - o.Y) - (a.Y - o.Y) * (b.X - o.X);
 
-            bool OnSegment((long X, long Y) p, (long X, long Y) a, (long X, long Y) b) =>
-                Math.Min(a.X, b.X) <= p.X && p.X <= Math.Max(a.X, b.X) &&
-                Math.Min(a.Y, b.Y) <= p.Y && p.Y <= Math.Max(a.Y, b.Y);
-
             long d1 = Cross(b1, b2, a1), d2 = Cross(b1, b2, a2);
             long d3 = Cross(a1, a2, b1), d4 = Cross(a1, a2, b2);
 
-            if (((d1 > 0 && d2 < 0) || (d1 < 0 && d2 > 0)) &&
-                ((d3 > 0 && d4 < 0) || (d3 < 0 && d4 > 0)))
-                return true;
-
-            if (d1 == 0 && OnSegment(a1, b1, b2)) return true;
-            if (d2 == 0 && OnSegment(a2, b1, b2)) return true;
-            if (d3 == 0 && OnSegment(b1, a1, a2)) return true;
-            if (d4 == 0 && OnSegment(b2, a1, a2)) return true;
-
-            return false;
+            return ((d1 > 0 && d2 < 0) || (d1 < 0 && d2 > 0)) &&
+                   ((d3 > 0 && d4 < 0) || (d3 < 0 && d4 > 0));
         }
 
-        static bool PointInPolygon(
+        static PointPosition PointInPolygon(
             (long X, long Y) p,
             List<(long X, long Y)> polygon)
         {
-            bool inside = false;
+            int winding = 0;
             int n = polygon.Count;
-            for (int i = 0, j = n - 1; i < n; j = i++)
+
+            for (int i = 0; i < n; i++)
             {
                 var a = polygon[i];
-                var b = polygon[j];
-                if ((a.Y > p.Y) != (b.Y > p.Y))
+                var b = polygon[(i + 1) % n];
+
+                long cross = (b.X - a.X) * (p.Y - a.Y) - (b.Y - a.Y) * (p.X - a.X);
+
+                if (cross == 0 &&
+                    Math.Min(a.X, b.X) <= p.X && p.X <= Math.Max(a.X, b.X) &&
+                    Math.Min(a.Y, b.Y) <= p.Y && p.Y <= Math.Max(a.Y, b.Y))
+                    return PointPosition.OnBoundary;
+
+                if (a.Y <= p.Y)
                 {
-                    long lhs = (b.X - a.X) * (p.Y - a.Y);
-                    long rhs = (b.Y - a.Y) * (p.X - a.X);
-                    if ((lhs > rhs) == (a.Y < b.Y))
-                        inside = !inside;
+                    if (b.Y > p.Y && cross > 0)
+                        winding++;
+                }
+                else
+                {
+                    if (b.Y <= p.Y && cross < 0)
+                        winding--;
                 }
             }
-            return inside;
+
+            return winding != 0 ? PointPosition.Inside : PointPosition.Outside;
         }
 
         static bool PolygonsOverlap(
@@ -225,13 +226,13 @@ namespace lab4_task3.DTO
         {
             for (int i = 0; i < a.Count; i++)
                 for (int j = 0; j < b.Count; j++)
-                    if (SegmentsIntersect(
+                    if (SegmentsProperlyIntersect(
                         a[i], a[(i + 1) % a.Count],
                         b[j], b[(j + 1) % b.Count]))
                         return true;
 
-            if (PointInPolygon(a[0], b)) return true;
-            if (PointInPolygon(b[0], a)) return true;
+            if (a.Any(p => PointInPolygon(p, b) == PointPosition.Inside)) return true;
+            if (b.Any(p => PointInPolygon(p, a) == PointPosition.Inside)) return true;
 
             return false;
         }
@@ -239,12 +240,10 @@ namespace lab4_task3.DTO
         static bool AabbOverlaps(List<List<int>> a, List<List<int>> b)
         {
             if (a.Count == 0 || b.Count == 0) return false;
-
             int aMinX = a.Min(p => p[0]), aMaxX = a.Max(p => p[0]);
             int aMinY = a.Min(p => p[1]), aMaxY = a.Max(p => p[1]);
             int bMinX = b.Min(p => p[0]), bMaxX = b.Max(p => p[0]);
             int bMinY = b.Min(p => p[1]), bMaxY = b.Max(p => p[1]);
-
             return aMinX <= bMaxX && aMaxX >= bMinX &&
                    aMinY <= bMaxY && aMaxY >= bMinY;
         }

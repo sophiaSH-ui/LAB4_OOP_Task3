@@ -45,12 +45,7 @@
                     <StackPanel Grid.Column="0">
                         <TextBlock Text="Призначення" Style="{StaticResource FieldLabel}"/>
                         <ComboBox x:Name="FilterCbPryznachennya" Style="{StaticResource InputCombo}"
-                                  SelectionChanged="Filter_Changed">
-                            <ComboBoxItem Content="Всі" IsSelected="True"/>
-                            <ComboBoxItem Content="Під забудову"/>
-                            <ComboBoxItem Content="Сільськогосподарського призначення"/>
-                            <ComboBoxItem Content="Зарезервована"/>
-                        </ComboBox>
+                            SelectionChanged="Filter_Changed" />
                     </StackPanel>
                     <StackPanel Grid.Column="2">
                         <TextBlock Text="Прізвище власника" Style="{StaticResource FieldLabel}"/>

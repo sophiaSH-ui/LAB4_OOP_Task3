@@ -17,6 +17,32 @@ namespace lab4_task3.views
             UpdatePlotsCount();
         }
 
+        private void CbLocation_LostFocus(object sender, RoutedEventArgs e)
+        {
+            string locationText = GetValidLocation();
+            if (string.IsNullOrWhiteSpace(locationText)) return;
+
+            bool exists = false;
+            foreach (var item in CbLocation.Items)
+            {
+                string itemText = item is ComboBoxItem cbItem ? cbItem.Content?.ToString() : item?.ToString();
+                if (string.Equals(itemText, locationText, StringComparison.OrdinalIgnoreCase))
+                {
+                    exists = true;
+                    break;
+                }
+            }
+
+            if (!exists)
+            {
+                CbLocation.Items.Add(new ComboBoxItem { Content = locationText });
+            }
+        }
+       
+        private void CbLocation_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            UpdatePlotsCount();
+        }
 
         private void CbLocation_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -50,17 +76,11 @@ namespace lab4_task3.views
             }
             return true;
         }
-
         private string GetValidLocation()
         {
-            if (CbLocation.SelectedItem is ComboBoxItem item)
-            {
-                return item.Content.ToString();
-            }
+            string locationText = CbLocation.Text?.Trim();
 
-            string locationText = CbLocation?.Text?.Trim();
-
-            if (!string.IsNullOrWhiteSpace(locationText) && locationText != LocationPlaceholder)
+            if (!string.IsNullOrWhiteSpace(locationText) && locationText != "Почніть вводити назву...")
             {
                 return locationText;
             }

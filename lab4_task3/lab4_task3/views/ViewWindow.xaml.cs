@@ -23,6 +23,7 @@ namespace lab4_task3
             _locationFilter = locationFilter;
             DgDilyanky.ItemsSource = _filteredProperties;
 
+            LoadUsagesFromDatabase();
             LoadData();
         }
 
@@ -41,9 +42,8 @@ namespace lab4_task3
             if (!string.IsNullOrWhiteSpace(_locationFilter))
                 query = query.Where(p => p.Locality.Title.IndexOf(_locationFilter, StringComparison.OrdinalIgnoreCase) >= 0);
 
-            if (FilterCbPryznachennya?.SelectedItem is ComboBoxItem cbItem && cbItem.Content.ToString() != "Всі")
+            if (FilterCbPryznachennya?.SelectedItem is string purpose && purpose != "Всі")
             {
-                string purpose = cbItem.Content.ToString();
                 query = query.Where(p => p.Usage.Title == purpose);
             }
 
@@ -143,6 +143,16 @@ namespace lab4_task3
                     LoadData();
                 }
             }
+        }
+
+        private void LoadUsagesFromDatabase()
+        {
+            var usagesList = new DB().GetUsages().Select(u => u.Title).ToList();
+
+            usagesList.Insert(0, "Всі");
+
+            FilterCbPryznachennya.ItemsSource = usagesList;
+            FilterCbPryznachennya.SelectedIndex = 0; 
         }
 
     }

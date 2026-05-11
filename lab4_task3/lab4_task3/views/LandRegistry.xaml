@@ -59,10 +59,11 @@
                            Margin="0,0,0,8"/>
 
                 <ComboBox x:Name="CbLocation" 
-                          Style="{StaticResource InputCombo}"
-                          IsEditable="True"
-                          Text="Почніть вводити назву..."
-                          Margin="0,0,0,15">
+                     Style="{StaticResource InputCombo}"
+                     IsEditable="True"
+                     Text="Почніть вводити назву..."
+                     Margin="0,0,0,15"
+                     SelectionChanged="CbLocation_SelectionChanged">
                     <ComboBoxItem Content="Київ"/>
                     <ComboBoxItem Content="Львів"/>
                     <ComboBoxItem Content="Одеса"/>

@@ -15,11 +15,10 @@ namespace lab4_task3.views
             InitializeComponent();
             InputValidator.AttachTextOnly(CbLocation);
             UpdatePlotsCount();
-            CbLocation.AddHandler(System.Windows.Controls.Primitives.TextBoxBase.TextChangedEvent,
-                                  new TextChangedEventHandler(CbLocation_TextChanged));
         }
 
-        private void CbLocation_TextChanged(object sender, TextChangedEventArgs e)
+
+        private void CbLocation_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             UpdatePlotsCount();
         }
@@ -30,27 +29,21 @@ namespace lab4_task3.views
 
             DB db = new DB();
             string location = GetValidLocation();
+            var allProperties = db.GetProperties();
 
-            if (location != null)
+            if (!string.IsNullOrEmpty(location))
             {
-                var allProperties = db.GetProperties();
-                int count = allProperties.Count(p => p.Locality.Title.Equals(location, StringComparison.OrdinalIgnoreCase));
-                CountText.Text = count.ToString();
+                CountText.Text = allProperties.Count(p => p.Locality.Title.Equals(location, StringComparison.OrdinalIgnoreCase)).ToString();
             }
             else
             {
-                CountText.Text = db.GetPropertiesCount().ToString();
+                CountText.Text = allProperties.Count().ToString();
             }
-        }
-
-        private void BtnView_Click(object sender, RoutedEventArgs e)
-        {
-            AppUtils.NavigateTo(this, new ViewWindow(GetValidLocation() ?? ""));
         }
 
         private bool IsLocationValid()
         {
-            if (GetValidLocation() == null)
+            if (string.IsNullOrEmpty(GetValidLocation()))
             {
                 AppUtils.ShowWarning("Будь ласка, спочатку оберіть або введіть населений пункт!");
                 return false;
@@ -58,18 +51,32 @@ namespace lab4_task3.views
             return true;
         }
 
+        private string GetValidLocation()
+        {
+            if (CbLocation.SelectedItem is ComboBoxItem item)
+            {
+                return item.Content.ToString();
+            }
+
+            string locationText = CbLocation?.Text?.Trim();
+
+            if (!string.IsNullOrWhiteSpace(locationText) && locationText != LocationPlaceholder)
+            {
+                return locationText;
+            }
+
+            return string.Empty;
+        }
+
+        private void BtnView_Click(object sender, RoutedEventArgs e)
+        {
+            AppUtils.NavigateTo(this, new ViewWindow(GetValidLocation()));
+        }
+
         private void BtnAddLandPlot_Click(object sender, RoutedEventArgs e)
         {
             if (!IsLocationValid()) return;
             AppUtils.NavigateTo(this, new AddEditWindow(CbLocation.Text.Trim()));
-        }
-
-        private string GetValidLocation()
-        {
-            string locationText = CbLocation?.Text?.Trim();
-            bool hasLocation = !string.IsNullOrWhiteSpace(locationText)
-                               && locationText != LocationPlaceholder;
-            return hasLocation ? locationText : null;
         }
 
         private void BtnBack_Click(object sender, RoutedEventArgs e) => AppUtils.GoBack(this);

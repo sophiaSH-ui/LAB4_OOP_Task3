@@ -105,7 +105,7 @@ namespace lab4_task3
             List<List<int>> coords = new List<List<int>>();
             foreach (var item in LbCoordinates.Items)
             {
-                var matches = Regex.Matches(item.ToString(), @"[\d.]+");
+                var matches = Regex.Matches(item.ToString(), @"-?[\d.]+");
                 coords.Add(new List<int> { (int)double.Parse(matches[0].Value), (int)double.Parse(matches[1].Value) });
             }
 

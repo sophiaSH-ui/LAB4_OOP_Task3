@@ -105,7 +105,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTextColumn Header="Розташ." Binding="{Binding Locality.Title}" Width="80"/>
-                <DataGridTextColumn Header="Призначення" Binding="{Binding Usage}" Width="*"/>
+                <DataGridTextColumn Header="Призначення" Binding="{Binding Usage.Title}" Width="*"/>
                 <DataGridTextColumn Header="Вартість" Binding="{Binding Price, StringFormat={}{0:F2} грн}" Width="100"/>
             </DataGrid.Columns>
         </DataGrid>

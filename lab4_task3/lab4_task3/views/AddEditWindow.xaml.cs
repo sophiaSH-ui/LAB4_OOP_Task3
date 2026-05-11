@@ -99,7 +99,7 @@ namespace lab4_task3
             int groundWater = int.Parse(TxtGroundWater.Text);
 
             int ownerId = (int)CbOwner.SelectedValue;
-            int usageId = (int)CbPryznachennya.SelectedValue; 
+            int usageId = (int)CbPryznachennya.SelectedValue;
             string soilType = (CbSoilType.SelectedItem as ComboBoxItem)?.Content.ToString();
 
             List<List<int>> coords = new List<List<int>>();
@@ -109,22 +109,54 @@ namespace lab4_task3
                 coords.Add(new List<int> { (int)double.Parse(matches[0].Value), (int)double.Parse(matches[1].Value) });
             }
 
+            DB db = new DB();
+
             if (_editProperty == null)
             {
                 Locality locality = new Locality(_location);
                 Description desc = new Description(groundWater, soilType, coords);
                 Owner owner = new Owner(ownerId);
-                Usage usage = new Usage(usageId); 
+                Usage usage = new Usage(usageId);
 
-                new Property(owner, desc, locality, usage, marketValue);
+                Property newProp = new Property(owner, desc, locality, usage, marketValue);
+
+                var allProps = db.GetProperties();
+                if (db.CheckOverlapping(newProp, allProps) != null)
+                {
+                    newProp.Delete();
+                    desc.Delete();
+                    locality.Delete();
+
+                    btnSave.IsEnabled = true;
+                    btnSave.Content = originalContent;
+                    AppUtils.ShowWarning("Земельна ділянка накладається на існуючу!");
+                    return;
+                }
             }
             else
             {
+                var oldWater = _editProperty.Description.Water;
+                var oldSoil = _editProperty.Description.Soil;
+                var oldCoords = _editProperty.Description.Coordinates;
+
                 _editProperty.Description.Update(_editProperty.Description.ID, groundWater, soilType, coords);
+
+                var allProps = db.GetProperties();
+                var updatedProp = allProps.FirstOrDefault(p => p.ID == _editProperty.ID);
+
+                if (updatedProp != null && db.CheckOverlapping(updatedProp, allProps) != null)
+                {
+                    _editProperty.Description.Update(_editProperty.Description.ID, oldWater, oldSoil, oldCoords);
+
+                    btnSave.IsEnabled = true;
+                    btnSave.Content = originalContent;
+                    AppUtils.ShowWarning("Земельна ділянка накладається на існуючу!");
+                    return;
+                }
+
                 Owner owner = new Owner(ownerId);
                 Usage usage = new Usage(usageId);
-
-                _editProperty.Update(owner, _editProperty.Description, _editProperty.Locality, usage, marketValue);
+                _editProperty.Update(owner, updatedProp.Description, _editProperty.Locality, usage, marketValue);
             }
 
             btnSave.IsEnabled = true;

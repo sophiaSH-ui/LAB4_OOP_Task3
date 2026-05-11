@@ -1,6 +1,7 @@
 .vs
 .git
 lab4_task3/.vs
+lab4_task3/lab4_task3/bin/*
 lab4_task3/lab4_task3/bin
 lab4_task3/lab4_task3/obj
 lab4_task3/lab4_task3/views

@@ -21,10 +21,10 @@ namespace lab4_task3
         public AddEditWindow(string location = "Не вказано")
         {
             InitializeComponent();
-            InputValidator.AttachDecimalOnly(TxtMarketValue);
-            InputValidator.AttachDecimalOnly(TxtGroundWater);
-            InputValidator.AttachDecimalOnly(TxtCoordX);
-            InputValidator.AttachDecimalOnly(TxtCoordY);
+            InputValidator.AttachDecimalOnly(TxtMarketValue, false);
+            InputValidator.AttachIntOnly(TxtGroundWater);
+            InputValidator.AttachIntOnly(TxtCoordX, true);
+            InputValidator.AttachIntOnly(TxtCoordY, true);
 
             _location = location;
             TxtLocation.Text = _location;
@@ -66,7 +66,7 @@ namespace lab4_task3
 
         private void RefreshOwnerComboBox()
         {
-            int selectedId = CbOwner.SelectedValue is int id ? id : -1;
+            int selectedId = CbOwner.SelectedValue is int id ? id : -1; 
             CbOwner.ItemsSource = ownersList.Select(o => new { Id = o.ID, FullName = $"{o.LastName} {o.FirstName}" }).ToList();
             CbOwner.DisplayMemberPath = "FullName";
             CbOwner.SelectedValuePath = "Id";
@@ -105,27 +105,30 @@ namespace lab4_task3
             List<List<int>> coords = new List<List<int>>();
             foreach (var item in LbCoordinates.Items)
             {
-                var matches = Regex.Matches(item.ToString(), @"-?[\d.]+");
-                coords.Add(new List<int> { (int)double.Parse(matches[0].Value), (int)double.Parse(matches[1].Value) });
+                var matches = Regex.Matches(item.ToString(), @"-?[\d]+");
+                coords.Add(new List<int> {int.Parse(matches[0].Value), int.Parse(matches[1].Value) });
             }
 
             DB db = new DB();
+            var allProps = db.GetProperties();
 
             if (_editProperty == null)
             {
-                Locality locality = new Locality(_location);
+                Locality locality = allProps
+                    .Select(p => p.Locality)
+                    .FirstOrDefault(l => l.Title.Equals(_location, StringComparison.OrdinalIgnoreCase))
+                    ?? new Locality(_location);
+
                 Description desc = new Description(groundWater, soilType, coords);
                 Owner owner = new Owner(ownerId);
-                Usage usage = new Usage(usageId);
+                Property newProp = new Property(owner, desc, locality, new Usage(usageId), marketValue);
 
-                Property newProp = new Property(owner, desc, locality, usage, marketValue);
+                allProps = db.GetProperties();
 
-                var allProps = db.GetProperties();
                 if (db.CheckOverlapping(newProp, allProps) != null)
                 {
                     newProp.Delete();
                     desc.Delete();
-                    locality.Delete();
 
                     btnSave.IsEnabled = true;
                     btnSave.Content = originalContent;
@@ -141,7 +144,7 @@ namespace lab4_task3
 
                 _editProperty.Description.Update(_editProperty.Description.ID, groundWater, soilType, coords);
 
-                var allProps = db.GetProperties();
+                allProps = db.GetProperties();
                 var updatedProp = allProps.FirstOrDefault(p => p.ID == _editProperty.ID);
 
                 if (updatedProp != null && db.CheckOverlapping(updatedProp, allProps) != null)
@@ -183,8 +186,17 @@ namespace lab4_task3
         private void BtnAddCoord_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(TxtCoordX.Text) || string.IsNullOrWhiteSpace(TxtCoordY.Text)) return;
-            LbCoordinates.Items.Add($"X: {TxtCoordX.Text}  |  Y: {TxtCoordY.Text}");
-            TxtCoordX.Clear(); TxtCoordY.Clear();
+            string newCoord = $"X: {TxtCoordX.Text}  |  Y: {TxtCoordY.Text}";
+
+            if (LbCoordinates.Items.Contains(newCoord))
+            {
+                AppUtils.ShowWarning("Ця координата вже додана до списку точок!");
+                return;
+            }
+
+            LbCoordinates.Items.Add(newCoord);
+            TxtCoordX.Clear();
+            TxtCoordY.Clear();
             unsaved = true;
         }
 

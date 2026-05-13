@@ -15,6 +15,7 @@ namespace lab4_task3.views
             InitializeComponent();
             InputValidator.AttachTextOnly(CbLocation);
             UpdatePlotsCount();
+            this.Activated += (s, e) => UpdatePlotsCount();
         }
 
         private void CbLocation_LostFocus(object sender, RoutedEventArgs e)

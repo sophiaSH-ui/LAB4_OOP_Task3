@@ -33,62 +33,67 @@ namespace lab4_task3
             else e.CancelCommand();
         }
 
-        public static void AttachIntOnly(Control control)
+        public static void AttachIntOnly(Control control, bool allowNegative = false)
         {
-            control.PreviewTextInput += IntOnly_PreviewTextInput;
-            DataObject.AddPastingHandler(control, IntOnly_Pasting);
-        }
-
-        private static void IntOnly_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            e.Handled = !Regex.IsMatch(e.Text, @"^\d+$");
-        }
-
-        private static void IntOnly_Pasting(object sender, DataObjectPastingEventArgs e)
-        {
-            if (e.DataObject.GetDataPresent(typeof(string)))
+            control.PreviewTextInput += (s, e) =>
             {
-                string text = (string)e.DataObject.GetData(typeof(string));
-                if (!Regex.IsMatch(text, @"^\d+$"))
-                    e.CancelCommand();
-            }
-            else e.CancelCommand();
-        }
-
-        public static void AttachDecimalOnly(Control control)
-        {
-            control.PreviewTextInput += DecimalOnly_PreviewTextInput;
-            DataObject.AddPastingHandler(control, DecimalOnly_Pasting);
-        }
-
-        private static void DecimalOnly_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            TextBox textBox = sender as TextBox;
-            if (textBox == null) return;
-
-            if (Regex.IsMatch(e.Text, @"^\d+$")) return;
-
-            if ((e.Text == "," || e.Text == ".") && !textBox.Text.Contains(",") && !textBox.Text.Contains("."))
-                return;
-
-            if (e.Text == "-" && textBox.SelectionStart == 0 && !textBox.Text.Contains("-"))
-                return;
-
-            e.Handled = true;
-        }
-
-        private static void DecimalOnly_Pasting(object sender, DataObjectPastingEventArgs e)
-        {
-            if (e.DataObject.GetDataPresent(typeof(string)))
+                TextBox textBox = s as TextBox;
+                if (textBox == null) return;
+                if (Regex.IsMatch(e.Text, @"^\d+$")) return;
+                if (allowNegative && e.Text == "-" && textBox.SelectionStart == 0 && !textBox.Text.Contains("-"))
+                    return;
+                e.Handled = true;
+            };
+            DataObject.AddPastingHandler(control, (s, e) =>
             {
-                string text = (string)e.DataObject.GetData(typeof(string));
-                text = text.Replace('.', ',');
-                if (!double.TryParse(text, out _))
-                    e.CancelCommand();
-            }
-            else e.CancelCommand();
+                if (e.DataObject.GetDataPresent(typeof(string)))
+                {
+                    string text = (string)e.DataObject.GetData(typeof(string));
+                    if (int.TryParse(text, out int result))
+                    {
+                        if (!allowNegative && result < 0) e.CancelCommand();
+                    }
+                    else e.CancelCommand();
+                }
+                else e.CancelCommand();
+            });
         }
 
+        public static void AttachDecimalOnly(Control control, bool allowNegative = true)
+        {
+            control.PreviewTextInput += (s, e) =>
+            {
+                TextBox textBox = s as TextBox;
+                if (textBox == null) return;
+
+                if (Regex.IsMatch(e.Text, @"^\d+$")) return;
+
+                if (e.Text == "," && !textBox.Text.Contains(","))
+                    return;
+
+                if (allowNegative && e.Text == "-" && textBox.SelectionStart == 0 && !textBox.Text.Contains("-"))
+                    return;
+
+                e.Handled = true;
+            };
+
+            DataObject.AddPastingHandler(control, (s, e) =>
+            {
+                if (e.DataObject.GetDataPresent(typeof(string)))
+                {
+                    string text = (string)e.DataObject.GetData(typeof(string));
+
+                    text = text.Replace('.', ',');
+
+                    if (double.TryParse(text, out double result))
+                    {
+                        if (!allowNegative && result < 0) e.CancelCommand();
+                    }
+                    else e.CancelCommand();
+                }
+                else e.CancelCommand();
+            });
+        }
         public static bool HasAtLeastOneLetter(string text)
         {
             return Regex.IsMatch(text ?? "", @"[а-яА-ЯіІїЇєЄґҐa-zA-Z]");

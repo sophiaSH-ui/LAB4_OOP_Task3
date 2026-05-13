@@ -692,9 +692,9 @@ namespace lab4_task3.DTO
 
             using var command = new NpgsqlCommand(sql, connection);
 
-            command.Parameters.Add(new NpgsqlParameter("c", NpgsqlTypes.NpgsqlDbType.Jsonb)
+            command.Parameters.Add(new NpgsqlParameter("c", NpgsqlTypes.NpgsqlDbType.Json)
             {
-                Value = coordinates
+                Value = JsonSerializer.Serialize(coordinates)
             });
 
             command.Parameters.AddWithValue("w", water);

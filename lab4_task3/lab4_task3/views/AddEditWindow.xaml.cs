@@ -111,6 +111,7 @@ namespace lab4_task3
 
             DB db = new DB();
             var allProps = db.GetProperties();
+            int savedId = 0;
 
             if (_editProperty == null)
             {
@@ -122,17 +123,20 @@ namespace lab4_task3
                 Description desc = new Description(groundWater, soilType, coords);
                 Owner owner = new Owner(ownerId);
                 Property newProp = new Property(owner, desc, locality, new Usage(usageId), marketValue);
+                savedId = newProp.ID;
 
                 allProps = db.GetProperties();
 
-                if (db.CheckOverlapping(newProp, allProps) != null)
+                var overlapping = db.CheckOverlapping(newProp, allProps);
+                if (overlapping != null)
                 {
                     newProp.Delete();
                     desc.Delete();
 
                     btnSave.IsEnabled = true;
                     btnSave.Content = originalContent;
-                    AppUtils.ShowWarning("Земельна ділянка накладається на існуючу!");
+                    var coords2 = string.Join(", ", overlapping.Description.Coordinates.Select(c => $"({c[0]};{c[1]})"));
+                    AppUtils.ShowWarning($"Накладання з ділянкою ID:{overlapping.ID}\nКоординати: {coords2}");
                     return;
                 }
             }
@@ -146,26 +150,28 @@ namespace lab4_task3
 
                 allProps = db.GetProperties();
                 var updatedProp = allProps.FirstOrDefault(p => p.ID == _editProperty.ID);
-
-                if (updatedProp != null && db.CheckOverlapping(updatedProp, allProps) != null)
+                var overlapping = db.CheckOverlapping(updatedProp, allProps);
+                if (updatedProp != null && overlapping != null)
                 {
                     _editProperty.Description.Update(_editProperty.Description.ID, oldWater, oldSoil, oldCoords);
 
                     btnSave.IsEnabled = true;
                     btnSave.Content = originalContent;
-                    AppUtils.ShowWarning("Земельна ділянка накладається на існуючу!");
+                    var coords2 = string.Join(", ", overlapping.Description.Coordinates.Select(c => $"({c[0]};{c[1]})"));
+                    AppUtils.ShowWarning($"Накладання з ділянкою ID:{overlapping.ID}\nКоординати: {coords2}");
                     return;
                 }
 
                 Owner owner = new Owner(ownerId);
                 Usage usage = new Usage(usageId);
                 _editProperty.Update(owner, updatedProp.Description, _editProperty.Locality, usage, marketValue);
+                savedId = _editProperty.ID;
             }
 
             btnSave.IsEnabled = true;
             btnSave.Content = originalContent;
             unsaved = false;
-            AppUtils.ShowInfo("Дані успішно збережено!");
+            AppUtils.ShowInfo($"Дані успішно збережено! ID ділянки: {savedId}");
             AppUtils.GoBack(this);
         }
 
@@ -183,10 +189,20 @@ namespace lab4_task3
             LoadOwnersFromDatabase();
         }
 
+        private bool IsValidCoordinate(string value)
+        {
+            return Regex.IsMatch(value.Trim(), @"^-?(?:0|[1-9]\d*)$");
+        }
         private void BtnAddCoord_Click(object sender, RoutedEventArgs e)
         {
             if (string.IsNullOrWhiteSpace(TxtCoordX.Text) || string.IsNullOrWhiteSpace(TxtCoordY.Text)) return;
+            if (!IsValidCoordinate(TxtCoordX.Text) || !IsValidCoordinate(TxtCoordY.Text))
+            {
+                AppUtils.ShowWarning("Некоректний формат координат!");
+                return;
+            }
             string newCoord = $"X: {TxtCoordX.Text}  |  Y: {TxtCoordY.Text}";
+
 
             if (LbCoordinates.Items.Contains(newCoord))
             {

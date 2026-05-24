@@ -80,15 +80,40 @@ namespace lab4_task3.views
             }
 
             DateTime birthDate = DpBirthDate.SelectedDate.Value;
+            DB db = new DB();
 
             if (_selectedOwner == null)
             {
-                new Owner(firstName, lastName, birthDate);
+                var newOwner = new Owner(firstName, lastName, birthDate);
+
+                var allOwners = db.GetOwners();
+                string dbValidationReport = db.Validate(allOwners);
+
+                if (dbValidationReport != null)
+                {
+                    newOwner.Delete();
+                    AppUtils.ShowWarning("Помилка цілісності даних у БД:\n" + dbValidationReport, "Помилка DTO");
+                    return;
+                }
                 AppUtils.ShowInfo("Нового власника успішно додано!");
             }
             else
             {
+                string oldFirstName = _selectedOwner.FirstName;
+                string oldLastName = _selectedOwner.LastName;
+                DateTime oldBirthDate = _selectedOwner.BirthDate;
+
                 _selectedOwner.Update(firstName, lastName, birthDate);
+
+                var allOwners = db.GetOwners();
+                string dbValidationReport = db.Validate(allOwners);
+
+                if (dbValidationReport != null)
+                {
+                    _selectedOwner.Update(oldFirstName, oldLastName, oldBirthDate);
+                    AppUtils.ShowWarning("Помилка цілісності даних у БД:\n" + dbValidationReport, "Помилка DTO");
+                    return;
+                }
                 AppUtils.ShowInfo("Дані власника оновлено!");
             }
 

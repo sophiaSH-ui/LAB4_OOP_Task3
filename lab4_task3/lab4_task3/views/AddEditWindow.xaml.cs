@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -30,7 +32,7 @@ namespace lab4_task3
             TxtLocation.Text = _location;
 
             LoadOwnersFromDatabase();
-            LoadUsagesFromDatabase(); 
+            LoadUsagesFromDatabase();
         }
 
         public AddEditWindow(Property property) : this(property.Locality.Title)
@@ -66,19 +68,48 @@ namespace lab4_task3
 
         private void RefreshOwnerComboBox()
         {
-            int selectedId = CbOwner.SelectedValue is int id ? id : -1; 
+            int selectedId = CbOwner.SelectedValue is int id ? id : -1;
             CbOwner.ItemsSource = ownersList.Select(o => new { Id = o.ID, FullName = $"{o.LastName} {o.FirstName}" }).ToList();
             CbOwner.DisplayMemberPath = "FullName";
             CbOwner.SelectedValuePath = "Id";
             if (selectedId != -1) CbOwner.SelectedValue = selectedId;
         }
 
+        private class TempPropertyData
+        {
+            [Required(ErrorMessage = "Ринкова вартість є обов'язковою.")]
+            [Range(0.01, double.MaxValue, ErrorMessage = "Ринкова вартість повинна бути більшою за 0.")]
+            public double MarketValue { get; set; }
+
+            [Required(ErrorMessage = "Грунтові води є обов'язковими.")]
+            [Range(0, 1000, ErrorMessage = "Рівень ґрунтових вод має бути в межах від 0 до 1000 м.")]
+            public int GroundWater { get; set; }
+        }
+
         private async void BtnSave_Click(object sender, RoutedEventArgs e)
         {
-            if (CbOwner.SelectedIndex == -1 || CbPryznachennya.SelectedIndex == -1 || CbSoilType.SelectedIndex == -1 ||
-                string.IsNullOrWhiteSpace(TxtMarketValue.Text) || string.IsNullOrWhiteSpace(TxtGroundWater.Text))
+            if (CbOwner.SelectedIndex == -1 || CbPryznachennya.SelectedIndex == -1 || CbSoilType.SelectedIndex == -1)
             {
-                AppUtils.ShowWarning("Будь ласка, заповніть всі основні поля.");
+                AppUtils.ShowWarning("Будь ласка, оберіть власника, призначення та тип ґрунту.");
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(TxtMarketValue.Text) || string.IsNullOrWhiteSpace(TxtGroundWater.Text))
+            {
+                AppUtils.ShowWarning("Будь ласка, заповніть вартість та грунтові води.");
+                return;
+            }
+
+            double.TryParse(TxtMarketValue.Text, out double marketValue);
+            int.TryParse(TxtGroundWater.Text, out int groundWater);
+
+            // поточна локальна валідація форми через анотації
+            var tempProperty = new TempPropertyData { MarketValue = marketValue, GroundWater = groundWater };
+            var errors = InputValidator.ValidateByAnnotations(tempProperty);
+
+            if (errors.Any())
+            {
+                AppUtils.ShowWarning(string.Join("\n", errors.Select(err => "• " + err)), "Помилки валідації");
                 return;
             }
 
@@ -95,9 +126,6 @@ namespace lab4_task3
 
             await Task.Delay(500);
 
-            double marketValue = double.Parse(TxtMarketValue.Text);
-            int groundWater = int.Parse(TxtGroundWater.Text);
-
             int ownerId = (int)CbOwner.SelectedValue;
             int usageId = (int)CbPryznachennya.SelectedValue;
             string soilType = (CbSoilType.SelectedItem as ComboBoxItem)?.Content.ToString();
@@ -106,7 +134,7 @@ namespace lab4_task3
             foreach (var item in LbCoordinates.Items)
             {
                 var matches = Regex.Matches(item.ToString(), @"-?[\d]+");
-                coords.Add(new List<int> {int.Parse(matches[0].Value), int.Parse(matches[1].Value) });
+                coords.Add(new List<int> { int.Parse(matches[0].Value), int.Parse(matches[1].Value) });
             }
 
             DB db = new DB();
@@ -123,6 +151,22 @@ namespace lab4_task3
                 Description desc = new Description(groundWater, soilType, coords);
                 Owner owner = new Owner(ownerId);
                 Property newProp = new Property(owner, desc, locality, new Usage(usageId), marketValue);
+
+                /* Коли з'явиться метод масової перевірки треба прописати щось типу:
+                 * * // Отримуємо всі ділянки разом із новою для перевірки
+                 * var currentPropertiesCollection = db.GetProperties(); 
+                 * string dbValidationReport = db.Validate(currentPropertiesCollection);
+                 * * if (dbValidationReport != null)
+                 * {
+                 * newProp.Delete(); // Видаляємо з бази, якщо DTO забракувало дані
+                 * desc.Delete();
+                 * btnSave.IsEnabled = true;
+                 * btnSave.Content = originalContent;
+                 * AppUtils.ShowWarning(dbValidationReport, "Помилка цілісності DTO");
+                 * return;
+                 * }
+                 */
+
                 savedId = newProp.ID;
 
                 allProps = db.GetProperties();

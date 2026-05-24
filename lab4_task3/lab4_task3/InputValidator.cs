@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -10,6 +12,17 @@ namespace lab4_task3
     public static class InputValidator
     {
         private static readonly string TextOnlyPattern = @"^[а-яА-ЯіІїЇєЄґҐa-zA-Z\s\-']+$";
+
+        public static IReadOnlyList<string> ValidateByAnnotations(object obj)
+        {
+            var context = new ValidationContext(obj);
+
+            var results = new List<System.ComponentModel.DataAnnotations.ValidationResult>();
+
+            Validator.TryValidateObject(obj, context, results, validateAllProperties: true);
+
+            return results.Select(r => r.ErrorMessage).ToList();
+        }
 
         public static void AttachTextOnly(Control control)
         {

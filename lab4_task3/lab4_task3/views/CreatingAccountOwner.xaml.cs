@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Windows;
 using lab4_task3.DTO;
@@ -23,6 +24,19 @@ namespace lab4_task3.views
             DgOwners.ItemsSource = _owners;
         }
 
+        private class TempOwnerData
+        {
+            [Required(ErrorMessage = "Прізвище є обов'язковим.")]
+            [StringLength(50, MinimumLength = 2, ErrorMessage = "Прізвище має містити від 2 до 50 символів.")]
+            [RegularExpression(@"^[а-яА-ЯіІїЇєЄґҐa-zA-Z\s\-']+$", ErrorMessage = "Прізвище містить недопустимі символи.")]
+            public string LastName { get; set; }
+
+            [Required(ErrorMessage = "Ім'я є обов'язковим.")]
+            [StringLength(50, MinimumLength = 2, ErrorMessage = "Ім'я має містити від 2 до 50 символів.")]
+            [RegularExpression(@"^[а-яА-ЯіІїЇєЄґҐa-zA-Z\s\-']+$", ErrorMessage = "Ім'я містить недопустимі символи.")]
+            public string FirstName { get; set; }
+        }
+
         private void BtnBack_Click(object sender, RoutedEventArgs e) => AppUtils.GoBack(this);
 
         private void BtnSave_Click(object sender, RoutedEventArgs e)
@@ -30,13 +44,32 @@ namespace lab4_task3.views
             string lastName = TxtLastName.Text?.Trim();
             string firstName = TxtFirstName.Text?.Trim();
 
-            if (string.IsNullOrWhiteSpace(lastName) || string.IsNullOrWhiteSpace(firstName) || DpBirthDate.SelectedDate == null)
+            // поточна локальна валідація через анотації для GUI
+            var tempOwner = new TempOwnerData { LastName = lastName, FirstName = firstName };
+            var errors = InputValidator.ValidateByAnnotations(tempOwner);
+
+            if (errors.Any())
             {
-                AppUtils.ShowWarning("Будь ласка, заповніть всі поля.");
+                AppUtils.ShowWarning(string.Join("\n", errors.Select(err => "• " + err)), "Помилки валідації");
+                return;
+            }
+
+            if (DpBirthDate.SelectedDate == null)
+            {
+                AppUtils.ShowWarning("Будь ласка, вкажіть дату народження.");
                 return;
             }
 
             DateTime birthDate = DpBirthDate.SelectedDate.Value;
+
+            /* Коли у DTO буде метод Validate, треба бцде прописати щось типу
+             * * string dbErrors = new DB().ValidateOwnerData(lastName, firstName, birthDate);
+             * if (dbErrors != null)
+             * {
+             * AppUtils.ShowWarning(dbErrors, "Помилка валідації DTO / Бази Даних");
+             * return; // Зупиняємо збереження, якщо DTO знайшло помилки
+             * }
+             */
 
             if (_selectedOwner == null)
             {

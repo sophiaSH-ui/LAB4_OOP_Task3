@@ -1,6 +1,8 @@
-﻿// AddEditWindow.xaml.cs
+﻿using lab4_task3.DTO;
+using lab4_task3.views;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -8,8 +10,6 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using lab4_task3.DTO;
-using lab4_task3.views;
 
 namespace lab4_task3
 {
@@ -149,113 +149,136 @@ namespace lab4_task3
 
             await Task.Delay(500);
 
-            int ownerId = (int)CbOwner.SelectedValue;
-            int usageId = (int)CbPryznachennya.SelectedValue;
-            string soilType = (CbSoilType.SelectedItem as ComboBoxItem)?.Content.ToString();
-
-            List<List<int>> coords = new List<List<int>>();
-            foreach (var item in LbCoordinates.Items)
+            try
             {
-                var matches = Regex.Matches(item.ToString(), @"-?[\d]+");
-                coords.Add(new List<int> { int.Parse(matches[0].Value), int.Parse(matches[1].Value) });
+                int ownerId = (int)CbOwner.SelectedValue;
+                int usageId = (int)CbPryznachennya.SelectedValue;
+                string soilType = (CbSoilType.SelectedItem as ComboBoxItem)?.Content.ToString();
+
+                List<List<int>> coords = new List<List<int>>();
+                foreach (var item in LbCoordinates.Items)
+                {
+                    var matches = Regex.Matches(item.ToString(), @"-?[\d]+");
+                    coords.Add(new List<int> { int.Parse(matches[0].Value), int.Parse(matches[1].Value) });
+                }
+
+                DB db = new DB();
+                var allProps = db.GetProperties();
+                int savedId = 0;
+
+                if (_editProperty == null)
+                {
+                    Locality locality = allProps
+                        .Select(p => p.Locality)
+                        .FirstOrDefault(l => l.Title.Equals(_location, StringComparison.OrdinalIgnoreCase))
+                        ?? new Locality(_location);
+
+                    Description desc = new Description(groundWater, soilType, coords);
+                    Owner owner = new Owner(ownerId);
+                    Property newProp = new Property(owner, desc, locality, new Usage(usageId), marketValue);
+
+                    allProps = db.GetProperties();
+
+                    var singlePropList = new ObservableCollection<Property> { newProp };
+                    var singleOwnerList = new ObservableCollection<Owner> { owner };
+
+                    string propValidationReport = db.Validate(singlePropList);
+                    string ownerValidationReport = db.Validate(singleOwnerList);
+
+                    if (propValidationReport != null || ownerValidationReport != null)
+                    {
+                        string fullError = (propValidationReport ?? "") + (ownerValidationReport ?? "");
+
+                        newProp.Delete();
+                        desc.Delete();
+
+                        btnSave.IsEnabled = true;
+                        btnSave.Content = originalContent;
+                        AppUtils.ShowWarning("Неможливо зберегти! Виявлено некоректні дані:\n" + fullError, "Помилка збереження");
+                        return;
+                    }
+
+                    var overlapping = db.CheckOverlapping(newProp, allProps);
+                    if (overlapping != null)
+                    {
+                        newProp.Delete();
+                        desc.Delete();
+
+                        btnSave.IsEnabled = true;
+                        btnSave.Content = originalContent;
+                        var coords2 = string.Join(", ", overlapping.Description.Coordinates.Select(c => $"({c[0]};{c[1]})"));
+                        AppUtils.ShowWarning($"Накладання з ділянкою ID:{overlapping.ID}\nКоординати: {coords2}");
+                        return;
+                    }
+
+                    savedId = newProp.ID;
+                }
+                else
+                {
+                    var oldWater = _editProperty.Description.Water;
+                    var oldSoil = _editProperty.Description.Soil;
+                    var oldCoords = _editProperty.Description.Coordinates;
+
+                    Owner oldOwner = _editProperty.Owner;
+                    Usage oldUsage = _editProperty.Usage;
+                    Locality oldLocality = _editProperty.Locality;
+                    double oldPrice = _editProperty.Price;
+
+                    _editProperty.Description.Update(_editProperty.Description.ID, groundWater, soilType, coords);
+                    Owner owner = new Owner(ownerId);
+                    Usage usage = new Usage(usageId);
+                    _editProperty.Update(owner, _editProperty.Description, _editProperty.Locality, usage, marketValue);
+
+                    allProps = db.GetProperties();
+                    var updatedProp = allProps.FirstOrDefault(p => p.ID == _editProperty.ID);
+
+                    var singlePropList = new ObservableCollection<Property> { updatedProp };
+                    var singleOwnerList = new ObservableCollection<Owner> { updatedProp.Owner };
+
+                    string propValidationReport = db.Validate(singlePropList);
+                    string ownerValidationReport = db.Validate(singleOwnerList);
+
+                    if (propValidationReport != null || ownerValidationReport != null)
+                    {
+                        string fullError = (propValidationReport ?? "") + (ownerValidationReport ?? "");
+
+                        _editProperty.Description.Update(_editProperty.Description.ID, oldWater, oldSoil, oldCoords);
+                        _editProperty.Update(oldOwner, _editProperty.Description, oldLocality, oldUsage, oldPrice);
+
+                        btnSave.IsEnabled = true;
+                        btnSave.Content = originalContent;
+                        AppUtils.ShowWarning("Неможливо зберегти! Виявлено некоректні дані:\n" + fullError, "Помилка збереження");
+                        return;
+                    }
+
+                    var overlapping = db.CheckOverlapping(updatedProp, allProps);
+                    if (updatedProp != null && overlapping != null)
+                    {
+                        _editProperty.Description.Update(_editProperty.Description.ID, oldWater, oldSoil, oldCoords);
+                        _editProperty.Update(oldOwner, _editProperty.Description, oldLocality, oldUsage, oldPrice);
+
+                        btnSave.IsEnabled = true;
+                        btnSave.Content = originalContent;
+                        var coords2 = string.Join(", ", overlapping.Description.Coordinates.Select(c => $"({c[0]};{c[1]})"));
+                        AppUtils.ShowWarning($"Накладання з ділянкою ID:{overlapping.ID}\nКоординати: {coords2}");
+                        return;
+                    }
+
+                    savedId = _editProperty.ID;
+                }
+
+                btnSave.IsEnabled = true;
+                btnSave.Content = originalContent;
+                unsaved = false;
+                AppUtils.ShowInfo($"Дані успішно збережено! ID ділянки: {savedId}");
+                AppUtils.GoBack(this);
             }
-
-            DB db = new DB();
-            var allProps = db.GetProperties();
-            int savedId = 0;
-
-            if (_editProperty == null)
+            catch (Exception ex)
             {
-                Locality locality = allProps
-                    .Select(p => p.Locality)
-                    .FirstOrDefault(l => l.Title.Equals(_location, StringComparison.OrdinalIgnoreCase))
-                    ?? new Locality(_location);
-
-                Description desc = new Description(groundWater, soilType, coords);
-                Owner owner = new Owner(ownerId);
-                Property newProp = new Property(owner, desc, locality, new Usage(usageId), marketValue);
-
-                allProps = db.GetProperties();
-                string dbValidationReport = db.Validate(allProps);
-
-                if (dbValidationReport != null)
-                {
-                    newProp.Delete();
-                    desc.Delete();
-
-                    btnSave.IsEnabled = true;
-                    btnSave.Content = originalContent;
-                    AppUtils.ShowWarning("Помилка цілісності даних на рівні БД:\n" + dbValidationReport, "Помилка DTO");
-                    return;
-                }
-
-                var overlapping = db.CheckOverlapping(newProp, allProps);
-                if (overlapping != null)
-                {
-                    newProp.Delete();
-                    desc.Delete();
-
-                    btnSave.IsEnabled = true;
-                    btnSave.Content = originalContent;
-                    var coords2 = string.Join(", ", overlapping.Description.Coordinates.Select(c => $"({c[0]};{c[1]})"));
-                    AppUtils.ShowWarning($"Накладання з ділянкою ID:{overlapping.ID}\nКоординати: {coords2}");
-                    return;
-                }
-
-                savedId = newProp.ID;
+                btnSave.IsEnabled = true;
+                btnSave.Content = originalContent;
+                AppUtils.ShowWarning($"Операція відхилена! Перевірте правильність вводу.\n\nДеталі проблеми: {ex.Message}", "Критична помилка збереження");
             }
-            else
-            {
-                var oldWater = _editProperty.Description.Water;
-                var oldSoil = _editProperty.Description.Soil;
-                var oldCoords = _editProperty.Description.Coordinates;
-
-                Owner oldOwner = _editProperty.Owner;
-                Usage oldUsage = _editProperty.Usage;
-                Locality oldLocality = _editProperty.Locality;
-                double oldPrice = _editProperty.Price;
-
-                _editProperty.Description.Update(_editProperty.Description.ID, groundWater, soilType, coords);
-                Owner owner = new Owner(ownerId);
-                Usage usage = new Usage(usageId);
-                _editProperty.Update(owner, _editProperty.Description, _editProperty.Locality, usage, marketValue);
-
-                allProps = db.GetProperties();
-                string dbValidationReport = db.Validate(allProps);
-
-                if (dbValidationReport != null)
-                {
-                    _editProperty.Description.Update(_editProperty.Description.ID, oldWater, oldSoil, oldCoords);
-                    _editProperty.Update(oldOwner, _editProperty.Description, oldLocality, oldUsage, oldPrice);
-
-                    btnSave.IsEnabled = true;
-                    btnSave.Content = originalContent;
-                    AppUtils.ShowWarning("Помилка цілісності даних на рівні БД:\n" + dbValidationReport, "Помилка DTO");
-                    return;
-                }
-
-                var updatedProp = allProps.FirstOrDefault(p => p.ID == _editProperty.ID);
-                var overlapping = db.CheckOverlapping(updatedProp, allProps);
-                if (updatedProp != null && overlapping != null)
-                {
-                    _editProperty.Description.Update(_editProperty.Description.ID, oldWater, oldSoil, oldCoords);
-                    _editProperty.Update(oldOwner, _editProperty.Description, oldLocality, oldUsage, oldPrice);
-
-                    btnSave.IsEnabled = true;
-                    btnSave.Content = originalContent;
-                    var coords2 = string.Join(", ", overlapping.Description.Coordinates.Select(c => $"({c[0]};{c[1]})"));
-                    AppUtils.ShowWarning($"Накладання з ділянкою ID:{overlapping.ID}\nКоординати: {coords2}");
-                    return;
-                }
-
-                savedId = _editProperty.ID;
-            }
-
-            btnSave.IsEnabled = true;
-            btnSave.Content = originalContent;
-            unsaved = false;
-            AppUtils.ShowInfo($"Дані успішно збережено! ID ділянки: {savedId}");
-            AppUtils.GoBack(this);
         }
 
         private void BtnBack_Click(object sender, RoutedEventArgs e) => AppUtils.GoBack(this);

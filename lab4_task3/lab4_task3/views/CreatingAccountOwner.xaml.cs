@@ -80,46 +80,56 @@ namespace lab4_task3.views
             }
 
             DateTime birthDate = DpBirthDate.SelectedDate.Value;
-            DB db = new DB();
 
-            if (_selectedOwner == null)
+            try
             {
-                var newOwner = new Owner(firstName, lastName, birthDate);
+                DB db = new DB();
 
-                var allOwners = db.GetOwners();
-                string dbValidationReport = db.Validate(allOwners);
-
-                if (dbValidationReport != null)
+                if (_selectedOwner == null)
                 {
-                    newOwner.Delete();
-                    AppUtils.ShowWarning("Помилка цілісності даних у БД:\n" + dbValidationReport, "Помилка DTO");
-                    return;
+                    var newOwner = new Owner(firstName, lastName, birthDate);
+
+                    var allOwners = db.GetOwners();
+                    string dbValidationReport = db.Validate(allOwners);
+
+                    if (dbValidationReport != null)
+                    {
+                        newOwner.Delete();
+                        AppUtils.ShowWarning("Неможливо створити власника! Виявлено некоректні дані:\n" + dbValidationReport, "Помилка збереження");
+                        return;
+                    }
+
+                    AppUtils.ShowInfo("Нового власника успішно додано!");
                 }
-                AppUtils.ShowInfo("Нового власника успішно додано!");
+                else
+                {
+                    string oldFirstName = _selectedOwner.FirstName;
+                    string oldLastName = _selectedOwner.LastName;
+                    DateTime oldBirthDate = _selectedOwner.BirthDate;
+
+                    _selectedOwner.Update(firstName, lastName, birthDate);
+
+                    var allOwners = db.GetOwners();
+                    string dbValidationReport = db.Validate(allOwners);
+
+                    if (dbValidationReport != null)
+                    {
+                        _selectedOwner.Update(oldFirstName, oldLastName, oldBirthDate);
+                        AppUtils.ShowWarning("Неможливо оновити власника! Виявлено некоректні дані:\n" + dbValidationReport, "Помилка збереження");
+                        return;
+                    }
+
+                    AppUtils.ShowInfo("Дані власника оновлено!");
+                }
+
+                _unsaved = false;
+                LoadOwners();
+                BtnReset_Click(null, null);
             }
-            else
+            catch (Exception ex)
             {
-                string oldFirstName = _selectedOwner.FirstName;
-                string oldLastName = _selectedOwner.LastName;
-                DateTime oldBirthDate = _selectedOwner.BirthDate;
-
-                _selectedOwner.Update(firstName, lastName, birthDate);
-
-                var allOwners = db.GetOwners();
-                string dbValidationReport = db.Validate(allOwners);
-
-                if (dbValidationReport != null)
-                {
-                    _selectedOwner.Update(oldFirstName, oldLastName, oldBirthDate);
-                    AppUtils.ShowWarning("Помилка цілісності даних у БД:\n" + dbValidationReport, "Помилка DTO");
-                    return;
-                }
-                AppUtils.ShowInfo("Дані власника оновлено!");
+                AppUtils.ShowWarning($"Операція відхилена! Перевірте правильність вводу.\n\nДеталі проблеми: {ex.Message}", "Критична помилка збереження");
             }
-
-            _unsaved = false;
-            LoadOwners();
-            BtnReset_Click(null, null);
         }
 
         private void DgOwners_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -142,20 +152,27 @@ namespace lab4_task3.views
         {
             if (_selectedOwner != null && AppUtils.AskConfirmation("Ви впевнені, що хочете видалити цього власника? Це автоматично видалить усі його ділянки!", "Увага!"))
             {
-                var db = new DB();
-                var allProperties = db.GetProperties();
-
-                foreach (var prop in allProperties.Where(p => p.Owner.ID == _selectedOwner.ID))
+                try
                 {
-                    prop.Delete();
-                    prop.Description.Delete();
-                }
+                    var db = new DB();
+                    var allProperties = db.GetProperties();
 
-                _selectedOwner.Delete();
-                _unsaved = false;
-                LoadOwners();
-                BtnReset_Click(null, null);
-                AppUtils.ShowInfo("Власника та його ділянки успішно видалено.");
+                    foreach (var prop in allProperties.Where(p => p.Owner.ID == _selectedOwner.ID))
+                    {
+                        prop.Delete();
+                        prop.Description.Delete();
+                    }
+
+                    _selectedOwner.Delete();
+                    _unsaved = false;
+                    LoadOwners();
+                    BtnReset_Click(null, null);
+                    AppUtils.ShowInfo("Власника та його ділянки успішно видалено.");
+                }
+                catch (Exception ex)
+                {
+                    AppUtils.ShowWarning($"Помилка при видаленні:\n{ex.Message}", "Помилка");
+                }
             }
         }
 

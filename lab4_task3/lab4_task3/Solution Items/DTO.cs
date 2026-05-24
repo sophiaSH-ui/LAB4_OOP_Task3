@@ -365,7 +365,7 @@ namespace lab4_task3.DTO
 
         [Required(ErrorMessage = "Дата народження є обов'язковою")]
         [DataType(DataType.Date, ErrorMessage = "Невірний формат дати")]
-        [Range(typeof(DateTime), "1/1/1900", "12/31/2100", ErrorMessage = "Дата народження повинна бути між 01.01.1900 та 31.12.2100")]
+        [Range(typeof(DateTime), "1900-01-01", "2100-12-31", ErrorMessage = "Дата народження повинна бути між 01.01.1900 та 31.12.2100")]
 
         public DateTime BirthDate
         {
@@ -627,7 +627,7 @@ namespace lab4_task3.DTO
 
         [Required(ErrorMessage = "Ціна є обов'язковою")]
         [Range(0.01, double.MaxValue, ErrorMessage = "Ціна повинна бути більше 0")]
-        [RegularExpression(@"^\d+(\.\d{1,2})?$", ErrorMessage = "Ціна повинна бути числом з максимум двома знаками після коми")]
+        [RegularExpression(@"^\d+([\.,]\d{1,2})?$", ErrorMessage = "Ціна повинна бути числом з максимум двома знаками після коми/крапки")]
 
         public double Price
         {

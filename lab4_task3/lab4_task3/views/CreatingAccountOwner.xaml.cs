@@ -11,11 +11,31 @@ namespace lab4_task3.views
     {
         private ObservableCollection<Owner> _owners;
         private Owner _selectedOwner;
+        private bool _unsaved = false;
+        private bool _isInitializing = false;
 
         public CreatingAccountOwner()
         {
             InitializeComponent();
             LoadOwners();
+
+            TxtLastName.TextChanged += MarkAsUnsaved;
+            TxtFirstName.TextChanged += MarkAsUnsaved;
+            DpBirthDate.SelectedDateChanged += MarkAsUnsaved;
+            this.Closing += Window_Closing;
+        }
+
+        private void MarkAsUnsaved(object sender, RoutedEventArgs e)
+        {
+            if (!_isInitializing) _unsaved = true;
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (_unsaved && !AppUtils.AskConfirmation("Є незбережені зміни. Закрити без збереження?", "Увага"))
+            {
+                e.Cancel = true;
+            }
         }
 
         private void LoadOwners()
@@ -44,7 +64,6 @@ namespace lab4_task3.views
             string lastName = TxtLastName.Text?.Trim();
             string firstName = TxtFirstName.Text?.Trim();
 
-            // поточна локальна валідація через анотації для GUI
             var tempOwner = new TempOwnerData { LastName = lastName, FirstName = firstName };
             var errors = InputValidator.ValidateByAnnotations(tempOwner);
 
@@ -62,15 +81,6 @@ namespace lab4_task3.views
 
             DateTime birthDate = DpBirthDate.SelectedDate.Value;
 
-            /* Коли у DTO буде метод Validate, треба бцде прописати щось типу
-             * * string dbErrors = new DB().ValidateOwnerData(lastName, firstName, birthDate);
-             * if (dbErrors != null)
-             * {
-             * AppUtils.ShowWarning(dbErrors, "Помилка валідації DTO / Бази Даних");
-             * return; // Зупиняємо збереження, якщо DTO знайшло помилки
-             * }
-             */
-
             if (_selectedOwner == null)
             {
                 new Owner(firstName, lastName, birthDate);
@@ -82,6 +92,7 @@ namespace lab4_task3.views
                 AppUtils.ShowInfo("Дані власника оновлено!");
             }
 
+            _unsaved = false;
             LoadOwners();
             BtnReset_Click(null, null);
         }
@@ -91,11 +102,14 @@ namespace lab4_task3.views
             _selectedOwner = DgOwners.SelectedItem as Owner;
             if (_selectedOwner != null)
             {
+                _isInitializing = true;
                 TxtFirstName.Text = _selectedOwner.FirstName;
                 TxtLastName.Text = _selectedOwner.LastName;
                 DpBirthDate.SelectedDate = _selectedOwner.BirthDate;
                 BtnSave.Content = "✓ Оновити";
                 BtnDelete.IsEnabled = true;
+                _isInitializing = false;
+                _unsaved = false;
             }
         }
 
@@ -113,6 +127,7 @@ namespace lab4_task3.views
                 }
 
                 _selectedOwner.Delete();
+                _unsaved = false;
                 LoadOwners();
                 BtnReset_Click(null, null);
                 AppUtils.ShowInfo("Власника та його ділянки успішно видалено.");
@@ -121,6 +136,7 @@ namespace lab4_task3.views
 
         private void BtnReset_Click(object sender, RoutedEventArgs e)
         {
+            _isInitializing = true;
             TxtLastName.Clear();
             TxtFirstName.Clear();
             DpBirthDate.SelectedDate = null;
@@ -128,6 +144,8 @@ namespace lab4_task3.views
             DgOwners.SelectedItem = null;
             BtnSave.Content = "✓ Зберегти";
             BtnDelete.IsEnabled = false;
+            _isInitializing = false;
+            _unsaved = false;
         }
     }
 }

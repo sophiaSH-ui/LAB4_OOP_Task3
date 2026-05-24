@@ -1,4 +1,5 @@
-﻿using System;
+﻿// AddEditWindow.xaml.cs
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -15,6 +16,7 @@ namespace lab4_task3
     public partial class AddEditWindow : Window
     {
         private bool unsaved = false;
+        private bool _isInitializing = false;
         private List<Owner> ownersList = new List<Owner>();
         private List<Usage> usagesList = new List<Usage>();
         private string _location;
@@ -31,12 +33,17 @@ namespace lab4_task3
             _location = location;
             TxtLocation.Text = _location;
 
+            _isInitializing = true;
             LoadOwnersFromDatabase();
             LoadUsagesFromDatabase();
+            _isInitializing = false;
+
+            AttachDirtyTrackers();
         }
 
         public AddEditWindow(Property property) : this(property.Locality.Title)
         {
+            _isInitializing = true;
             _editProperty = property;
             TxtMarketValue.Text = property.Price.ToString().Replace(".", ",");
             TxtGroundWater.Text = property.Description.Water.ToString();
@@ -51,7 +58,24 @@ namespace lab4_task3
             foreach (var p in property.Description.Coordinates)
                 LbCoordinates.Items.Add($"X: {p[0]}  |  Y: {p[1]}");
 
+            _isInitializing = false;
             unsaved = false;
+
+            AttachDirtyTrackers();
+        }
+
+        private void AttachDirtyTrackers()
+        {
+            TxtMarketValue.TextChanged += MarkAsUnsaved;
+            TxtGroundWater.TextChanged += MarkAsUnsaved;
+            CbOwner.SelectionChanged += MarkAsUnsaved;
+            CbPryznachennya.SelectionChanged += MarkAsUnsaved;
+            CbSoilType.SelectionChanged += MarkAsUnsaved;
+        }
+
+        private void MarkAsUnsaved(object sender, RoutedEventArgs e)
+        {
+            if (!_isInitializing) unsaved = true;
         }
 
         private void LoadOwnersFromDatabase()
@@ -103,7 +127,6 @@ namespace lab4_task3
             double.TryParse(TxtMarketValue.Text, out double marketValue);
             int.TryParse(TxtGroundWater.Text, out int groundWater);
 
-            // поточна локальна валідація форми через анотації
             var tempProperty = new TempPropertyData { MarketValue = marketValue, GroundWater = groundWater };
             var errors = InputValidator.ValidateByAnnotations(tempProperty);
 
@@ -152,24 +175,19 @@ namespace lab4_task3
                 Owner owner = new Owner(ownerId);
                 Property newProp = new Property(owner, desc, locality, new Usage(usageId), marketValue);
 
-                /* Коли з'явиться метод масової перевірки треба прописати щось типу:
-                 * * // Отримуємо всі ділянки разом із новою для перевірки
-                 * var currentPropertiesCollection = db.GetProperties(); 
-                 * string dbValidationReport = db.Validate(currentPropertiesCollection);
-                 * * if (dbValidationReport != null)
-                 * {
-                 * newProp.Delete(); // Видаляємо з бази, якщо DTO забракувало дані
-                 * desc.Delete();
-                 * btnSave.IsEnabled = true;
-                 * btnSave.Content = originalContent;
-                 * AppUtils.ShowWarning(dbValidationReport, "Помилка цілісності DTO");
-                 * return;
-                 * }
-                 */
-
-                savedId = newProp.ID;
-
                 allProps = db.GetProperties();
+                string dbValidationReport = db.Validate(allProps);
+
+                if (dbValidationReport != null)
+                {
+                    newProp.Delete();
+                    desc.Delete();
+
+                    btnSave.IsEnabled = true;
+                    btnSave.Content = originalContent;
+                    AppUtils.ShowWarning("Помилка цілісності даних на рівні БД:\n" + dbValidationReport, "Помилка DTO");
+                    return;
+                }
 
                 var overlapping = db.CheckOverlapping(newProp, allProps);
                 if (overlapping != null)
@@ -183,6 +201,8 @@ namespace lab4_task3
                     AppUtils.ShowWarning($"Накладання з ділянкою ID:{overlapping.ID}\nКоординати: {coords2}");
                     return;
                 }
+
+                savedId = newProp.ID;
             }
             else
             {
@@ -190,14 +210,36 @@ namespace lab4_task3
                 var oldSoil = _editProperty.Description.Soil;
                 var oldCoords = _editProperty.Description.Coordinates;
 
+                Owner oldOwner = _editProperty.Owner;
+                Usage oldUsage = _editProperty.Usage;
+                Locality oldLocality = _editProperty.Locality;
+                double oldPrice = _editProperty.Price;
+
                 _editProperty.Description.Update(_editProperty.Description.ID, groundWater, soilType, coords);
+                Owner owner = new Owner(ownerId);
+                Usage usage = new Usage(usageId);
+                _editProperty.Update(owner, _editProperty.Description, _editProperty.Locality, usage, marketValue);
 
                 allProps = db.GetProperties();
+                string dbValidationReport = db.Validate(allProps);
+
+                if (dbValidationReport != null)
+                {
+                    _editProperty.Description.Update(_editProperty.Description.ID, oldWater, oldSoil, oldCoords);
+                    _editProperty.Update(oldOwner, _editProperty.Description, oldLocality, oldUsage, oldPrice);
+
+                    btnSave.IsEnabled = true;
+                    btnSave.Content = originalContent;
+                    AppUtils.ShowWarning("Помилка цілісності даних на рівні БД:\n" + dbValidationReport, "Помилка DTO");
+                    return;
+                }
+
                 var updatedProp = allProps.FirstOrDefault(p => p.ID == _editProperty.ID);
                 var overlapping = db.CheckOverlapping(updatedProp, allProps);
                 if (updatedProp != null && overlapping != null)
                 {
                     _editProperty.Description.Update(_editProperty.Description.ID, oldWater, oldSoil, oldCoords);
+                    _editProperty.Update(oldOwner, _editProperty.Description, oldLocality, oldUsage, oldPrice);
 
                     btnSave.IsEnabled = true;
                     btnSave.Content = originalContent;
@@ -206,9 +248,6 @@ namespace lab4_task3
                     return;
                 }
 
-                Owner owner = new Owner(ownerId);
-                Usage usage = new Usage(usageId);
-                _editProperty.Update(owner, updatedProp.Description, _editProperty.Locality, usage, marketValue);
                 savedId = _editProperty.ID;
             }
 
@@ -223,7 +262,7 @@ namespace lab4_task3
 
         private void Window_Closing(object sender, CancelEventArgs e)
         {
-            if (unsaved && !AppUtils.AskConfirmation("Закрити без збереження?", "Увага")) e.Cancel = true;
+            if (unsaved && !AppUtils.AskConfirmation("Є незбережені зміни. Закрити без збереження?", "Увага")) e.Cancel = true;
         }
 
         private void BtnAddNewOwner_Click(object sender, RoutedEventArgs e)
@@ -269,8 +308,10 @@ namespace lab4_task3
 
         private void BtnReset_Click(object sender, RoutedEventArgs e)
         {
+            _isInitializing = true;
             CbOwner.SelectedIndex = -1; CbPryznachennya.SelectedIndex = -1; CbSoilType.SelectedIndex = -1;
             TxtMarketValue.Clear(); TxtGroundWater.Clear(); LbCoordinates.Items.Clear();
+            _isInitializing = false;
             unsaved = true;
         }
     }

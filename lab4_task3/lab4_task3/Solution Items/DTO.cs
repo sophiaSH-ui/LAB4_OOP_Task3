@@ -188,6 +188,33 @@ namespace lab4_task3.DTO
             }
         }
 
+        public string? Validate(ObservableCollection<Owner> owners)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+
+            foreach (Owner owner in owners)
+            {
+                var context = new ValidationContext(owner);
+                var results = new List<ValidationResult>();
+
+                bool isValid = Validator.TryValidateObject(owner, context, results, validateAllProperties: true);
+
+                if (!isValid)
+                {
+                    stringBuilder.AppendLine($"№{owner.ID} ({owner.FirstName} {owner.LastName})");
+                }
+            }
+
+            if (stringBuilder.Length > 0)
+            {
+                return stringBuilder.ToString();
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         enum PointPosition { Outside, OnBoundary, Inside }
 
         public Property? CheckOverlapping(Property property, ObservableCollection<Property> properties)

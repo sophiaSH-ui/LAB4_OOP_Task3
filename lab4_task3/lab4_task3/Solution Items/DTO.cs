@@ -1,12 +1,14 @@
 ﻿using Npgsql;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Text;
 
 namespace lab4_task3.DTO
 {
@@ -159,6 +161,33 @@ namespace lab4_task3.DTO
             return count;
         }
 
+        public string? Validate(ObservableCollection<Property> properties)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+
+            foreach (Property property in properties)
+            {
+                var context = new ValidationContext(property);
+                var results = new List<ValidationResult>();
+
+                bool isValid = Validator.TryValidateObject(property, context, results, validateAllProperties: true);
+
+                if (!isValid)
+                {
+                    stringBuilder.AppendLine($"№{property.ID} ({property.ToString()})");
+                }
+            }
+
+            if (stringBuilder.Length > 0)
+            {
+                return stringBuilder.ToString();
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         enum PointPosition { Outside, OnBoundary, Inside }
 
         public Property? CheckOverlapping(Property property, ObservableCollection<Property> properties)
@@ -259,6 +288,13 @@ namespace lab4_task3.DTO
         private DateTime birthDate;
         private int id;
 
+        [Required(ErrorMessage = "Ім'я є обов'язковим")]
+        [StringLength(50, MinimumLength = 2,
+        ErrorMessage = "Ім'я: від 2 до 50 символів")]
+
+        [RegularExpression(@"^[\p{L}'\-]+$",
+        ErrorMessage = "Ім'я може містити лише літери, дефіс та апостроф")]
+
         public string FirstName
         {
             get
@@ -276,6 +312,13 @@ namespace lab4_task3.DTO
             }
         }
 
+        [Required(ErrorMessage = "Прізвище є обов'язковим")]
+        [StringLength(50, MinimumLength = 2,
+        ErrorMessage = "Прізвище: від 2 до 50 символів")]
+
+        [RegularExpression(@"^[\p{L}'\-]+$",
+        ErrorMessage = "Прізвище може містити лише літери, дефіс та апостроф")]
+
         public string LastName
         {
             get
@@ -292,6 +335,10 @@ namespace lab4_task3.DTO
                 lastName = value;
             }
         }
+
+        [Required(ErrorMessage = "Дата народження є обов'язковою")]
+        [DataType(DataType.Date, ErrorMessage = "Невірний формат дати")]
+        [Range(typeof(DateTime), "1/1/1900", "12/31/2100", ErrorMessage = "Дата народження повинна бути між 01.01.1900 та 31.12.2100")]
 
         public DateTime BirthDate
         {
@@ -506,8 +553,6 @@ namespace lab4_task3.DTO
             this.id = propertyId;
         }
 
-        //додати в інформації про ділянку
-
         public override string ToString()
         {
             return $"Земельна ділянка №{id} вартістю {price} у. о., знаходиться в {locality.Title}, тип використання - {usage}, власник - {owner.FirstName} {owner.LastName}.";
@@ -552,6 +597,10 @@ namespace lab4_task3.DTO
                 return usage;
             }
         }
+
+        [Required(ErrorMessage = "Ціна є обов'язковою")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Ціна повинна бути більше 0")]
+        [RegularExpression(@"^\d+(\.\d{1,2})?$", ErrorMessage = "Ціна повинна бути числом з максимум двома знаками після коми")]
 
         public double Price
         {
@@ -667,6 +716,10 @@ namespace lab4_task3.DTO
             }
         }
 
+        [Required(ErrorMessage = "Рівень ґрунтових вод є обов'язковим")]
+        [Range(0, int.MaxValue, ErrorMessage = "Рівень ґрунтових вод не може бути від'ємним")]
+        [RegularExpression(@"^\d+$", ErrorMessage = "Рівень ґрунтових вод має бути цілим числом")]
+
         public int Water
         {
             get
@@ -674,6 +727,10 @@ namespace lab4_task3.DTO
                 return water;
             }
         }
+
+        [Required(ErrorMessage = "Тип ґрунту є обов'язковим")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "Тип ґрунту повинен містити від 2 до 100 символів")]
+        [RegularExpression(@"^[\p{L}\s\-]+$", ErrorMessage = "Тип ґрунту може містити тільки літери, пробіли та дефіси")]
 
         public string Soil
         {
@@ -764,6 +821,10 @@ namespace lab4_task3.DTO
                 return id;
             }
         }
+
+        [Required(ErrorMessage = "Назва є обов'язковою")]
+        [StringLength(100, MinimumLength = 2, ErrorMessage = "Назва повинна містити від 2 до 100 символів")]
+        [RegularExpression(@"^[\p{L}\s\-]+$", ErrorMessage = "Назва може містити тільки літери, пробіли та дефіси")]
 
         public string Title
         {
